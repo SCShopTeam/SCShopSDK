@@ -1,0 +1,6 @@
+framework module WKWebViewExtension {
+  umbrella header "WKWebViewExtension-umbrella.h"
+
+  export *
+  module * { export * }
+}

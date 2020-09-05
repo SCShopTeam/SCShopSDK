@@ -1,0 +1,62 @@
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#else
+#ifndef FOUNDATION_EXPORT
+#if defined(__cplusplus)
+#define FOUNDATION_EXPORT extern "C"
+#else
+#define FOUNDATION_EXPORT extern
+#endif
+#endif
+#endif
+
+//
+//  CommonPrefix.pch
+//  shopping
+//
+//  Created by gejunyu on 2020/7/3.
+//  Copyright © 2020 jsmcc. All rights reserved.
+//
+
+#ifndef CommonPrefix_pch
+#define CommonPrefix_pch
+
+//header
+#import "SCPublicDefine.h"
+
+//category
+#import "UIColor+SCHex.h"
+#import "UIImage+SCExtension.h"
+#import "UIView+SCExtension.h"
+#import "UIButton+SCEextension.h"
+#import "NSString+SCExtension.h"
+#import "NSError+SCExtension.h"
+#import "NSObject+SCHUD.h"
+
+//View
+#import "SCTableView.h"
+#import "SCCollectionView.h"
+#import "SCWebViewCustom.h"
+
+//Util
+#import "SCUtilities.h"
+#import "SCNetworkManager.h"
+#import "SCRequest.h"
+#import "SCRequestParams.h"
+#import "SCNetworkTool.h"
+#import "SCCacheManager.h"
+#import "SCURLSerialization.h"
+
+//Models
+#import "SCUserInfo.h"
+
+//Third Libraries
+#import "NSObject+YYModel.h"
+#import "Masonry.h"
+#import "SDWebImage.h"
+
+#import "SCGetAuthToken.h"
+#endif /* CommonPrefix_pch */
+
+
+

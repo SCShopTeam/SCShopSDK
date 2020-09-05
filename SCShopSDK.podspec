@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SCShopSDK'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of SCShopSDK.'
+  s.version          = '0.8.6'
+  s.summary          = 'shopping'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -17,26 +17,48 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
-  s.description      = <<-DESC
-TODO: Add long description of the pod here.
-                       DESC
+  s.description      = "A shopping framework demo"
 
-  s.homepage         = 'https://github.com/gejunyu5/SCShopSDK'
+  s.homepage         = 'https://github.com/SCShopTeam/SCShopSDK'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'gejunyu5' => '393864523@qq.com' }
-  s.source           = { :git => 'https://github.com/gejunyu5/SCShopSDK.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/SCShopTeam/SCShopSDK.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 
-  s.source_files = 'SCShopSDK/Classes/**/*'
+  #####代码
+  s.source_files = 'SCShopSDK/Classes/**/*.{h,m,pch}','SCShopSDK/Classes/**/**/*.{h,m}','SCShopSDK/Classes/**/**/**/*.{h,m}','SCShopSDK/Classes/**/**/**/**/*.{h,m}'
+
+  s.public_header_files = 'SCShopSDK/Classes/Util/SCShoppingManager.h', 'SCShopSDK/Classes/ViewControllers/WebView/SCURLSerialization.h','SCShopSDK/Classes/Util/SCShopSDK.h'
+  s.prefix_header_file = 'SCShopSDK/Classes/Util/SCCommonPrefix.pch'
+  ######
   
-  # s.resource_bundles = {
-  #   'SCShopSDK' => ['SCShopSDK/Assets/*.png']
-  # }
+    ## 图片资源 打包时注释,否则图片会打包进framework
+#    s.resource_bundles = {
+#        'SCShoppingResource' => ['SCShopSDK/Assets/*.png']
+#    }
+    ###
+    
+      #framework
+    #  s.vendored_framework   = 'SCShopSDK/Framework/SCShopSDK.framework'
+      #####
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.user_target_xcconfig = {'OTHER_LDFLAGS' => ['-ObjC','-all_load']}
+  s.static_framework = true;
+  s.requires_arc = true
+  
+  s.libraries = 'z', 'sqlite3'
+  s.frameworks = 'UIKit', 'MapKit', 'CoreGraphics', 'MobileCoreServices', 'Security', 'SystemConfiguration', 'CoreTelephony', 'MessageUI', 'QuartzCore', 'CoreFoundation', 'CoreText', 'CoreImage', 'ImageIO', 'AssetsLibrary', 'Accelerate', 'WebKit', 'CoreLocation' , 'EventKit', 'JavaScriptCore', 'AdSupport'
+
+  s.dependency 'AFNetworking', '~> 3.2.0'
+  s.dependency 'FMDB', '~> 2.7.2'
+  s.dependency 'YYModel', '~> 1.0.4'
+  s.dependency 'SDWebImage', '~> 5.8.1'
+  s.dependency 'SDCycleScrollView', '~> 1.80'
+  s.dependency 'MJRefresh', '~> 3.4.3'
+  s.dependency 'Masonry', '~> 1.1.0'
+  s.dependency 'WebViewJavascriptBridge', '~> 6.0'
+  s.dependency 'WKWebViewExtension', '~> 0.1'
 end
