@@ -326,7 +326,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
 #pragma mark --登陆成功通知
 -(void)loginSuccessNotifity{
     NSLog(@"--sc-- 重新加载request");
-//    [self customUserAgent];
+    [self customUserAgent];
     NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
       originalCookies = [[NSArray alloc] initWithArray:[storage cookies]];
     [self.myWebView loadRequest:self.myWebView.currentRequest];

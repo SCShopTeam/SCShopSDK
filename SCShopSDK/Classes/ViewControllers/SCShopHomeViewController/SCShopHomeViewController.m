@@ -32,19 +32,22 @@
     
     [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSCSDDP_A01" url:@"" inPage:NSStringFromClass(self.class)];
     
-    [self requestData:1];
+    [self requestData:1 showHud:YES requestHeader:YES];
 }
 
-- (void)requestData:(NSInteger)pageNum
+- (void)requestData:(NSInteger)pageNum showHud:(BOOL)showHud requestHeader:(BOOL)requestHeader
 {   
     if (!VALID_STRING(self.tenantNum)) {
         return;
     }
     
+    if (showHud) {
+        [self showLoading];
+    }
+    
     dispatch_group_t group = dispatch_group_create();
     
-    if (pageNum == 1 && !self.viewModel.tenantInfo) {
-        [self showLoading];
+    if (pageNum == 1 && requestHeader && !self.viewModel.tenantInfo) {
         // 请求商铺信息
         dispatch_group_enter(group);
         [self.viewModel requestTenantInfo:_tenantNum completion:^(NSString * _Nullable errorMsg) {
@@ -146,7 +149,7 @@
         @weakify(self)
         _collectionView.refreshingBlock = ^(NSInteger page) {
             @strongify(self)
-            [self requestData:page];
+            [self requestData:page showHud:NO requestHeader:YES];
         };
     }
     return _collectionView;
@@ -162,7 +165,7 @@
         _siftView.selectBlock = ^{
           @strongify(self)
             self.collectionView.page = 1;
-            [self requestData:1];
+            [self requestData:1 showHud:YES requestHeader:NO];
         };
         
     }

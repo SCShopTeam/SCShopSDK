@@ -22,7 +22,9 @@
 #import "SCTagView.h"
 #import "SCCollectionViewFlowLayout.h"
 #import "SCHomeEmptyView.h"
+//删
 //#import "SCWitStoreViewController.h"
+//#import "SCShopHomeViewController.h"
 
 typedef NS_ENUM(NSInteger, SCHomeSection) {
     SCHomeSectionBanner,      //轮播
@@ -454,6 +456,13 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         [backButton sc_addEventTouchUpInsideHandle:^(UIButton * _Nonnull sender) {
             [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_A01" url:@"" inPage:NSStringFromClass(self.class)];
             [SCShoppingManager dissmissMallPage];
+            //删
+//            SCWitStoreViewController *vc = [SCWitStoreViewController new];
+//            [self.navigationController pushViewController:vc animated:YES];
+            
+//            SCShopHomeViewController *vc = [SCShopHomeViewController new];
+//            vc.tenantNum = @"supp329910042810";
+//            [self.navigationController pushViewController:vc animated:YES];
         }];
         [_topView addSubview:backButton];
         

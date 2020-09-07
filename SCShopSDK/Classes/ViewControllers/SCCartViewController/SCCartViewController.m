@@ -41,7 +41,7 @@
     mutiTap.numberOfTapsRequired = 5;
     [self.navigationController.navigationBar addGestureRecognizer:mutiTap];
     
-    
+    [self showLoading];
 }
 
 - (void)mutiTapAction
@@ -52,15 +52,11 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self requestData:YES];
+    [self requestData];
 }
 
-- (void)requestData:(BOOL)showHud
+- (void)requestData
 {
-    if (showHud) {
-        [self showLoading];
-    }
-    
     dispatch_group_t group = dispatch_group_create();
     // 请求购物车列表
     dispatch_group_enter(group);
@@ -265,7 +261,7 @@
     [ac addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [self showLoading];
         [SCRequest requestCartDelete:item.cartItemNum itemNum:item.itemNum success:^(id  _Nullable responseObject) {
-            [self requestData:NO];
+            [self requestData];
             
         } failure:^(NSString * _Nullable errorMsg) {
             [self stopLoading];
@@ -304,7 +300,7 @@
         @weakify(self)
         _collectionView.refreshingBlock = ^(NSInteger page) {
             @strongify(self)
-            [self requestData:NO];
+            [self requestData];
         };
     }
     return _collectionView;

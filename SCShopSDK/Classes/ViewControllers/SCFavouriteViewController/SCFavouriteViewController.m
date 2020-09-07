@@ -25,22 +25,18 @@
     [super viewDidLoad];
     
     self.title = @"商品收藏";
-
+    [self showLoading];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
-    [self requestData:YES];
+    [self requestData];
 }
 
-- (void)requestData:(BOOL)showHud
+- (void)requestData
 {
-    if (showHud) {
-        [self showLoading];
-    }
-    
     dispatch_group_t group = dispatch_group_create();
     // 请求收藏
     dispatch_group_enter(group);
@@ -290,7 +286,7 @@
         @weakify(self)
         _collectionView.refreshingBlock = ^(NSInteger page) {
             @strongify(self)
-            [self requestData:NO];
+            [self requestData];
         };
     }
     return _collectionView;

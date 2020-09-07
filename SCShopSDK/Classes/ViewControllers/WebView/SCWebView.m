@@ -512,33 +512,33 @@
             NSLog(@"%@",@"--sc-- 代理设置cookie成功回调");
         }];
     }
-    NSString *s = request.URL.absoluteString;
-    if (ISIOS11 && [s containsString:@"wap.js.10086.cn"])
-    {
-        [self copyNSHTTPCookieStorageToWKHTTPCookieStoreWithCompletionHandler:^{
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                //                    NSMutableURLRequest *nRequest = [NSMutableURLRequest requestWithURL:requestNew.URL];
-                //
-                //                    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-                //                    if ([SCUtilities isValidArray:cookies])
-                //                    {
-                //                        NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
-                //                        if ([SCUtilities isValidDictionary:dict])
-                //                        {
-                //                            nRequest.allHTTPHeaderFields = dict;
-                //                        }
-                //                    }
-                //
-                
-                [(WKWebView *)self.realWebView loadRequest:requestNew];
-            });
-        }];
-    }
-    else
+//    NSString *s = request.URL.absoluteString;
+//    if (ISIOS11 && [s containsString:@"wap.js.10086.cn"])
+//    {
+//        [self copyNSHTTPCookieStorageToWKHTTPCookieStoreWithCompletionHandler:^{
+//
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//
+//                //                    NSMutableURLRequest *nRequest = [NSMutableURLRequest requestWithURL:requestNew.URL];
+//                //
+//                //                    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+//                //                    if ([SCUtilities isValidArray:cookies])
+//                //                    {
+//                //                        NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+//                //                        if ([SCUtilities isValidDictionary:dict])
+//                //                        {
+//                //                            nRequest.allHTTPHeaderFields = dict;
+//                //                        }
+//                //                    }
+//                //
+//
+//                [(WKWebView *)self.realWebView loadRequest:requestNew];
+//            });
+//        }];
+//    }
+//    else
     {// 非10086域名或不是白名单必要塞cookie不进行塞cookie操作
-        [self addCookie:[request.URL absoluteString] request:request];
+//        [self addCookie:[request.URL absoluteString] request:request];
         NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
         if ([SCUtilities isValidArray:cookies])
         {
