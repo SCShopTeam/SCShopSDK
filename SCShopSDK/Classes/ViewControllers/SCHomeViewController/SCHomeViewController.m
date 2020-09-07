@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 #define kBannerH     SCREEN_FIX(219.5) + STATUS_BAR_HEIGHT
 #define kGridH       SCREEN_FIX(201)
 #define kNearH       (self.viewModel.nearShopModel ? SCREEN_FIX(373) : 0)
-#define kAdH         (self.viewModel.adList.count ? SCREEN_FIX(111) : SCREEN_FIX(0))
+#define kAdH         (self.viewModel.adList.count ? SCREEN_FIX(120) : SCREEN_FIX(0))
 
 @interface SCHomeViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) UIView *topView; //搜索框
@@ -164,7 +164,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         height = kAdH;
         
     }else if (section == SCHomeSectionTagItems) { //tag
-        height = SCREEN_FIX(49.5);
+        height = SCREEN_FIX(55);
         
     }else {  //空数据
         height = (self.viewModel.commodityList && self.viewModel.commodityList.count == 0) ? SCREEN_FIX(220) : 0;

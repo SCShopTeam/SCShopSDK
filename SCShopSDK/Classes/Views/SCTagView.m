@@ -91,6 +91,8 @@
     
     [collectionView reloadData];
     
+    [collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+    
     if (_selectBlock) {
         _selectBlock(indexPath.row);
     }

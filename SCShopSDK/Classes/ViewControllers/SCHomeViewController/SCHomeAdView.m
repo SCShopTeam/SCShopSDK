@@ -60,10 +60,12 @@
     if (!_btnList) {
         CGFloat w      = SCREEN_FIX(162.5);
         CGFloat h      = SCREEN_FIX(90);
+        CGFloat margin = SCREEN_FIX(10);
+        CGFloat x      = (self.width - w*2 - margin)/2;
         
         NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:2];
         for (int i=0; i<2; i++) {
-            UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(SCREEN_FIX(20)+(w+SCREEN_FIX(10))*i,self.height-h, w, h)];
+            UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(x + (w+margin)*i,(self.height-h)/2, w, h)];
             btn.layer.cornerRadius = 8;
             btn.layer.masksToBounds = YES;
             btn.adjustsImageWhenHighlighted = NO;

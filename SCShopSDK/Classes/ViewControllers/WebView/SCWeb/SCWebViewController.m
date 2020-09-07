@@ -207,7 +207,7 @@
         NSString *s = urlStr;
         
         NSURL *url = [NSURL URLWithString:s];
-
+        
         NSString *phone = [SCGetAuthToken mallPhone];
         NSDictionary *properties2 = [[NSMutableDictionary alloc] init];
         [properties2 setValue:phone forKey:NSHTTPCookieValue];

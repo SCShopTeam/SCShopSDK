@@ -222,18 +222,20 @@
     if (!_itemList) {
         NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:3];
         CGFloat w = SCREEN_FIX(80);
-        CGFloat margin = SCREEN_FIX(8);
+        CGFloat margin = SCREEN_FIX(4);
+        CGFloat x = SCREEN_FIX(102.5);
         for (int i=0; i<3; i++) {
-            SCShowItemButton *btn = [[SCShowItemButton alloc] initWithFrame:CGRectMake(SCREEN_FIX(102.5) + (w+margin)*i, SCREEN_FIX(39.5), w, SCREEN_FIX(98.5))];
+            SCShowItemButton *btn = [[SCShowItemButton alloc] initWithFrame:CGRectMake(x, SCREEN_FIX(39.5), w, SCREEN_FIX(98.5))];
             [self addSubview:btn];
             [btn addTarget:self action:@selector(itemSelected:) forControlEvents:UIControlEventTouchUpInside];
             [mulArr addObject:btn];
             
             //分隔线
             if (i<2) {
-                UIView *sepline = [[UIView alloc] initWithFrame:CGRectMake(btn.right + margin/2, btn.top, 1, btn.height)];
+                UIView *sepline = [[UIView alloc] initWithFrame:CGRectMake(btn.right + margin, btn.top, 0.5, btn.height)];
                 sepline.backgroundColor = HEX_RGB(@"#CCCCCC");
                 [self addSubview:sepline];
+                x = sepline.right + margin;
             }
 
         }

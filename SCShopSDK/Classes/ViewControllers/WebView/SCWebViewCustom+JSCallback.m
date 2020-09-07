@@ -686,14 +686,18 @@
 {
     __block typeof(self) wkSelf = self;
     
-    [self.bridge registerHandler:@"scSetCookieBlock" handler:^(id data, WVJBResponseCallback responseCallback) {
-          NSString  *cmtokenid = [SCGetAuthToken cmtokenId];
-          NSString *userAreaNum = [SCGetAuthToken userAreaNum];
-          NSString *mallMobile = [SCGetAuthToken mallPhone];
-          NSDictionary *dic = @{@"cmtokenid":cmtokenid,@"userAreaNum":userAreaNum,@"mallMobile":mallMobile};
-          responseCallback(dic);
-          
-      }];
+    if (!IS_RELEASE_ENVIRONMENT) {
+        [self.bridge registerHandler:@"scSetCookieBlock" handler:^(id data, WVJBResponseCallback responseCallback) {
+                NSString  *cmtokenid = [SCGetAuthToken cmtokenId];
+                NSString *userAreaNum = [SCGetAuthToken userAreaNum];
+                NSString *mallMobile = [SCGetAuthToken mallPhone];
+                NSDictionary *dic = @{@"cmtokenid":cmtokenid,@"userAreaNum":userAreaNum,@"mallMobile":mallMobile};
+                responseCallback(dic);
+                
+            }];
+    }
+    
+  
     
     //隐藏页面标题栏
     [self.bridge registerHandler:@"scHideTitle" handler:^(id data, WVJBResponseCallback responseCallback) {
