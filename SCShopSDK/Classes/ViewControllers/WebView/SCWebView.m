@@ -240,7 +240,7 @@
        
        if ([urlString containsString:@"weixin://wap/pay?"] || [urlString containsString:@"alipay://alipayclient"]) {
            if([[UIApplication sharedApplication] respondsToSelector:@selector(openURL:options:completionHandler:)]) {
-               decisionHandler(WKNavigationActionPolicyCancel);
+//               decisionHandler(WKNavigationActionPolicyCancel);
                NSURL*url = [NSURL URLWithString:urlString];
                if (@available(iOS 10.0, *)) {
                    [[UIApplication sharedApplication] openURL:url options:@{UIApplicationOpenURLOptionUniversalLinksOnly: @NO} completionHandler:^(BOOL success) {
@@ -248,7 +248,8 @@
                } else {
                    [[UIApplication sharedApplication]openURL:url];
                }
-               decisionHandler(WKNavigationActionPolicyCancel);
+                decisionHandler(WKNavigationActionPolicyCancel);
+               return;
            }else{
                
                [[UIApplication sharedApplication]openURL:navigationAction.request.URL];

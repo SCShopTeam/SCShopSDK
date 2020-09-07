@@ -58,6 +58,11 @@ typedef void(^SC_ADTouchClickBlock)(void);
 */
 typedef void(^SC_SearchBlock)( NSDictionary * _Nullable result,  NSString * _Nullable errorMsg);
 
+/**
+ *web外用
+ */
+typedef void(^SC_WebBlock)(void);
+
 
 @protocol SCShoppingDelegate <NSObject>
 //登陆成功必须回调返回
@@ -78,6 +83,8 @@ typedef void(^SC_SearchBlock)( NSDictionary * _Nullable result,  NSString * _Nul
 //搜索
 - (void)scSearch:(NSString *)text backData:(SC_SearchBlock)callBack;
 
+//web
+-(void)scWebWithUrl:(NSString *)urlStr nav:(UINavigationController *)nav back:(SC_WebBlock)callBack;
 
 @end
 

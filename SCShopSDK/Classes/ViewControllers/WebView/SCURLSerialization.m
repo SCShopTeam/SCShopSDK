@@ -30,14 +30,26 @@ static SCURLSerialization *urlSerialization = nil;
 -(void)gotoWebcustom:(NSString *)url title:(NSString *)title navigation:(UINavigationController *)nav{
     
     if ([SCUtilities isValidString:url] && ([url containsString:@"http"] || [url containsString:@"https"]) && nav != nil) {
-        SCWebViewCustom *custom = [[SCWebViewCustom alloc]init];
-//        SCWebViewController *custom = [[SCWebViewController alloc]init];
-        if ([SCUtilities isValidString:title]) {
-            custom.title = title;
+        
+        SCShoppingManager *manager = [SCShoppingManager sharedInstance];
+        if (manager.delegate && [manager.delegate respondsToSelector:@selector(scWebWithUrl:nav:back:)]) {
+            [manager.delegate scWebWithUrl:url nav:nav back:^{
+                
+            }];
+        }else{
+            SCWebViewCustom *custom = [[SCWebViewCustom alloc]init];
+            //        SCWebViewController *custom = [[SCWebViewController alloc]init];
+            if ([SCUtilities isValidString:title]) {
+                custom.title = title;
+            }
+            
+            custom.urlString = url;
+            [nav pushViewController:custom animated:YES];
         }
         
-        custom.urlString = url;
-        [nav pushViewController:custom animated:YES];
+        
+        
+        
     }else{
         return;
     }
