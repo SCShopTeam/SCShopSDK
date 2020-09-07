@@ -326,7 +326,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
 #pragma mark --登陆成功通知
 -(void)loginSuccessNotifity{
     NSLog(@"--sc-- 重新加载request");
-    [self customUserAgent];
+//    [self customUserAgent];
     [self.myWebView loadRequest:self.myWebView.currentRequest];
 }
 
@@ -558,7 +558,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
         [self.myWebView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
             WKWebView* wkWebview = (WKWebView*)self.myWebView.realWebView;
             NSString *oldUA = result;
-            NSString *newUA =[NSString stringWithFormat:@"%@ Jsmcc/1.0 %@", oldUA, [SCUtilities suffixParameters:self.urlString]];
+            NSString *newUA =[NSString stringWithFormat:@"%@ Jsmcc/1.0 Mall/1.0 %@", oldUA, [SCUtilities suffixParameters:self.urlString]];
             wkWebview.customUserAgent = newUA;
         }];
     }
