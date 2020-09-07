@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCWitStoreSortView : UITableViewHeaderFooterView
+@interface SCWitStoreSortView : UIView
 
 @property (nonatomic, copy) void (^sortBlock)(SCWitSortType sortType);
 

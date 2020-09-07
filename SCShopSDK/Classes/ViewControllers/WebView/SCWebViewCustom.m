@@ -562,6 +562,9 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
             wkWebview.customUserAgent = newUA;
         }];
     }
+    
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    originalCookies = [[NSArray alloc] initWithArray:[storage cookies]];
 }
 
 - (void)viewWillAppear:(BOOL)animated

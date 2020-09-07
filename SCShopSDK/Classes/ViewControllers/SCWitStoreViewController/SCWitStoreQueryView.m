@@ -96,8 +96,13 @@
             [btn setTitle:str forState:UIControlStateNormal];
             [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             [btn addTarget:self action:@selector(btnSelect:) forControlEvents:UIControlEventTouchUpInside];
-            [self.contentView addSubview:btn];
             
+            if (idx == titles.count - 1) {
+                [btn setImage:SCIMAGE(@"sc_wit_down") forState:UIControlStateNormal];
+                [btn layoutButtonWithEdgeInsetsStyle:XGButtonEdgeInsetsStyleRight imageTitleSpace:SCREEN_FIX(2)];
+            }
+            
+            [self.contentView addSubview:btn];
             [mulArr addObject:btn];
         }];
 

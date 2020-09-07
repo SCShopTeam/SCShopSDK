@@ -13,6 +13,7 @@
 @end
 
 @interface SCWitStoreSortView ()
+@property (nonatomic, strong) UIImageView *backImgView;
 @property (nonatomic, strong) NSArray <SCWitSortButton *> *btnList;
 @end
 
@@ -21,9 +22,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor whiteColor];
-        self.layer.cornerRadius = 8;
-        self.layer.masksToBounds = YES;
+
     }
     return self;
 }
@@ -42,14 +41,33 @@
     self.hidden = YES;
 }
 
+- (UIImageView *)backImgView
+{
+    if (!_backImgView) {
+        _backImgView = [[UIImageView alloc] initWithFrame:self.bounds];
+        _backImgView.image = SCIMAGE(@"sc_wit_sort");
+        _backImgView.userInteractionEnabled = YES;
+        [self addSubview:_backImgView];
+    }
+    return _backImgView;
+}
+
 - (NSArray<SCWitSortButton *> *)btnList
 {
     if (!_btnList) {
         NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:2];
-    
-        CGFloat h = self.height/2;
+        
+        //背景图
+        CGFloat x = SCREEN_FIX(6.5);
+        CGFloat y = SCREEN_FIX(11);
+        CGFloat w = self.backImgView.width - x*2;
+        CGFloat bottom = SCREEN_FIX(8.5);
+        CGFloat h = self.backImgView.height - y - bottom;
+        
+        CGFloat btnH = h/2;
+        
         for (int i=0; i<2; i++) {
-            SCWitSortButton *btn = [[SCWitSortButton alloc] initWithFrame:CGRectMake(0, h*i, self.width, h)];
+            SCWitSortButton *btn = [[SCWitSortButton alloc] initWithFrame:CGRectMake(x, y+btnH*i, w, btnH)];
             if (i == 0) {
                 [btn setTitle:@"有券优先" forState:UIControlStateNormal];
                 btn.sortType = SCWitSortTypeCoupon;
@@ -57,7 +75,7 @@
                 [btn setTitle:@"人少优先" forState:UIControlStateNormal];
                 btn.sortType = SCWitSortTypePeople;
             }
-            [self addSubview:btn];
+            [self.backImgView addSubview:btn];
             [mulArr addObject:btn];
             
             @weakify(self)
@@ -69,9 +87,19 @@
                     self.sortBlock(((SCWitSortButton *) sender).sortType);
                 }
             }];
+            
         }
         
         _btnList = mulArr.copy;
+        
+        //分隔线
+        CGFloat lx = x + SCREEN_FIX(9);
+        CGFloat lw = self.backImgView.width - lx*2;
+        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(lx, 0, lw, 0.5)];
+        line.centerY = h/2+y;
+        line.backgroundColor = HEX_RGB(@"#DBDBDB");
+        [self.backImgView addSubview:line];
+
     }
     return _btnList;
 }
@@ -90,7 +118,7 @@
         self.backgroundColor = [UIColor whiteColor];
         self.titleLabel.font = SCFONT_SIZED(12);
         [self setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        [self setTitleColor:HEX_RGB(@"#4AAAFB") forState:UIControlStateSelected];
+        [self setTitleColor:HEX_RGB(@"#4992FB") forState:UIControlStateSelected];
     }
     return self;
 }

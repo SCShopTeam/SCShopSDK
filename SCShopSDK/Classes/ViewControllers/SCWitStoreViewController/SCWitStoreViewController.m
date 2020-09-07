@@ -262,6 +262,11 @@
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self hideNoNeedUI];
+}
+
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     CGFloat offsetY = scrollView.contentOffset.y;
@@ -275,7 +280,7 @@
         [self.queryView showBgColor:NO];
     }
     self.queryView.top = newY;
-    self.sortView.top  = self.queryView.bottom;
+    self.sortView.top  = self.queryView.bottom - SCREEN_FIX(15);
 }
 
 #pragma mark -UITextFieldDelegate
@@ -519,11 +524,11 @@
 
 - (SCWitStoreSortView *)sortView
 {
-    if (!_sortView) {
-        CGFloat w = self.queryView.width/4;
-        CGFloat x = SCREEN_WIDTH - kWitStoreHorMargin - w;
+    if (!_sortView) {  //176*166
+        CGFloat w = SCREEN_FIX(88);
+        CGFloat x = SCREEN_WIDTH - SCREEN_FIX(8) - w;
         
-        _sortView = [[SCWitStoreSortView alloc] initWithFrame:CGRectMake(x, self.queryView.bottom, w, SCREEN_FIX(60))];
+        _sortView = [[SCWitStoreSortView alloc] initWithFrame:CGRectMake(x, self.queryView.bottom - SCREEN_FIX(15), w, SCREEN_FIX(83))];
         _sortView.hidden = YES;
         [self.view addSubview:_sortView];
         
