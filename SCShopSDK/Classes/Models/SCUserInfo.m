@@ -16,7 +16,6 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         user = [[SCUserInfo alloc] init];
-        
     });
     return user;
 }

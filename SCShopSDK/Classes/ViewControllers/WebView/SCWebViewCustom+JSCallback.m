@@ -686,6 +686,7 @@
 {
     __block typeof(self) wkSelf = self;
     
+    // H5回调获取 cmtokenid信息
 //    if (!IS_RELEASE_ENVIRONMENT) {
 //        [self.bridge registerHandler:@"scSetCookieBlock" handler:^(id data, WVJBResponseCallback responseCallback) {
 //                NSString  *cmtokenid = [SCGetAuthToken cmtokenId];
@@ -696,7 +697,6 @@
 //
 //            }];
 //    }
-    
   
     
     //隐藏页面标题栏

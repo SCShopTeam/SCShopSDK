@@ -238,17 +238,17 @@
        
        urlString = [urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
        
-       if ([urlString containsString:@"weixin://wap/pay?"]) {
+       if ([urlString containsString:@"weixin://wap/pay?"] || [urlString containsString:@"alipay://alipayclient"]) {
            if([[UIApplication sharedApplication] respondsToSelector:@selector(openURL:options:completionHandler:)]) {
-               NSString *payHost = navigationAction.request.URL.host;
-               NSString *payAbs = navigationAction.request.URL.absoluteString;
-               NSURL *payUrl = navigationAction.request.URL.absoluteURL;
                decisionHandler(WKNavigationActionPolicyCancel);
                NSURL*url = [NSURL URLWithString:urlString];
-               [[UIApplication sharedApplication] openURL:url options:@{UIApplicationOpenURLOptionUniversalLinksOnly: @NO} completionHandler:^(BOOL success) {
-                   NSLog(@"...");
-               }];
-               return;
+               if (@available(iOS 10.0, *)) {
+                   [[UIApplication sharedApplication] openURL:url options:@{UIApplicationOpenURLOptionUniversalLinksOnly: @NO} completionHandler:^(BOOL success) {
+                   }];
+               } else {
+                   [[UIApplication sharedApplication]openURL:url];
+               }
+               decisionHandler(WKNavigationActionPolicyCancel);
            }else{
                
                [[UIApplication sharedApplication]openURL:navigationAction.request.URL];

@@ -48,7 +48,7 @@
 
 
 //优惠券
-#define SC_MYCOUPON_URL  @"https://wap.js.10086.cn/kqzx/resource/wap/html_mycard/my_mall_coupon_info.html"
+#define SC_MYCOUPON_URL  @"https://wap.js.10086.cn/kqzx/resource/wap/html_mycard/my_mall_coupon.html"
 //客服
 #define SC_KEFU_URL @"https://cnr.asiainfo.com/xin_ucfront/uc_channel_access/h5webchat/webChat.html?param="
 //商城订单详情
