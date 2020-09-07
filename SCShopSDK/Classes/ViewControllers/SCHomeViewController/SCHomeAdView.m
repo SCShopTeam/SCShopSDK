@@ -65,7 +65,7 @@
         
         NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:2];
         for (int i=0; i<2; i++) {
-            UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(x + (w+margin)*i,(self.height-h)/2, w, h)];
+            UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(x + (w+margin)*i,self.height-h-SCREEN_FIX(10), w, h)];
             btn.layer.cornerRadius = 8;
             btn.layer.masksToBounds = YES;
             btn.adjustsImageWhenHighlighted = NO;

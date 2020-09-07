@@ -33,15 +33,22 @@
 
 - (void)prepareUI
 {
-    self.backgroundColor = [UIColor whiteColor];
+    self.contentView.backgroundColor = [UIColor whiteColor];
+    self.contentView.layer.cornerRadius = SCREEN_FIX(5);
+    self.contentView.layer.masksToBounds = YES;
     
     //阴影
     self.layer.shadowOffset  = CGSizeMake(0, 2);
     self.layer.shadowColor   = [UIColor lightGrayColor].CGColor;
     self.layer.shadowOpacity = 0.3;
     self.layer.shadowRadius  = 4;
-    self.layer.cornerRadius  = SCREEN_FIX(5);
     self.layer.masksToBounds = NO;
+    
+//    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.contentView.bounds byRoundingCorners:UIRectCornerTopLeft|UIRectCornerTopRight|UIRectCornerBottomLeft|UIRectCornerBottomRight cornerRadii:CGSizeMake(SCREEN_FIX(5), SCREEN_FIX(5))];
+//    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+//    maskLayer.frame = self.contentView.bounds;
+//    maskLayer.path = maskPath.CGPath;
+//    self.contentView.layer.mask = maskLayer;
 }
 
 - (void)setModel:(SCCommodityModel *)model

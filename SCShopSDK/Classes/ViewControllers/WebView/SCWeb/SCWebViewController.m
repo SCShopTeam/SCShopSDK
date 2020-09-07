@@ -208,6 +208,7 @@
         
         NSURL *url = [NSURL URLWithString:s];
         
+
         NSString *phone = [SCGetAuthToken mallPhone];
         NSDictionary *properties2 = [[NSMutableDictionary alloc] init];
         [properties2 setValue:phone forKey:NSHTTPCookieValue];
@@ -215,7 +216,7 @@
         [properties2 setValue:[url host] forKey:NSHTTPCookieDomain];
         [properties2 setValue:@"/" forKey:NSHTTPCookiePath];
         NSHTTPCookie *cookie2 = [NSHTTPCookie cookieWithProperties:properties2];
-
+        
         NSArray *arrCookies = [NSArray arrayWithObjects:cookie2, nil];
         
         self.cookieArray = arrCookies;//////

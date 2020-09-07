@@ -1,5 +1,5 @@
 //
-//  SSCShopSDK.h
+//  SCShopSDK.h
 //  shopping
 //
 //  Created by gejunyu on 2020/9/1.
@@ -7,7 +7,7 @@
 //
 
 /***
- version : 0.9.1
+ version : 0.9.2
  */
 
 #ifndef SCShopSDK_h

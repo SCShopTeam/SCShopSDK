@@ -35,7 +35,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 
 #define kSectionNum (SCHomeSectionEmptyData + 1)
 
-#define kBannerH     SCREEN_FIX(219.5) + STATUS_BAR_HEIGHT
+#define kBannerH     SCREEN_FIX(214.5) + STATUS_BAR_HEIGHT
 #define kGridH       SCREEN_FIX(201)
 #define kNearH       (self.viewModel.nearShopModel ? SCREEN_FIX(373) : 0)
 #define kAdH         (self.viewModel.adList.count ? SCREEN_FIX(120) : SCREEN_FIX(0))
@@ -437,9 +437,23 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         }];
         [_topView addSubview:backButton];
         
+        //客服按钮
+        CGFloat sWh = SCREEN_FIX(25);
+        UIButton *serviceBtn = [[UIButton alloc] initWithFrame:CGRectMake(_topView.width - SCREEN_FIX(16.5) - sWh, SCREEN_FIX(17.5) + STATUS_BAR_HEIGHT, sWh, sWh)];
+        [serviceBtn setImage:SCIMAGE(@"sc_service") forState:UIControlStateNormal];
+        @weakify(self)
+        [serviceBtn sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+            @strongify(self)
+            NSString *param = [NSString stringWithFormat:@"phoneNum=%@&tenantId=1&skillId=1&requestSource=2",[SCUserInfo currentUser].phoneNumber];
+            NSString *base64Param = [NSString base64StringFromText:param];
+            NSString *fullUrl = [NSString stringWithFormat:@"%@%@",SC_KEFU_URL,base64Param];
+            [self pushToWebView:fullUrl title:@"客服"];
+        }];
+        [_topView addSubview:serviceBtn];
+        
         //搜索框
         CGFloat sX = backButton.right + SCREEN_FIX(15);
-        CGFloat sW = _topView.width - sX - SCREEN_FIX(19.5);
+        CGFloat sW = serviceBtn.left - sX - SCREEN_FIX(10);
         UIButton *searchButton = [[UIButton alloc] initWithFrame:CGRectMake(sX, 0, sW, SCREEN_FIX(32.5))];
         searchButton.centerY = backButton.centerY;
         searchButton.backgroundColor = [UIColor whiteColor];
@@ -457,7 +471,6 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         searchButton.adjustsImageWhenHighlighted = NO;
         [_topView addSubview:searchButton];
         
-        @weakify(self)
         [searchButton sc_addEventTouchUpInsideHandle:^(UIButton * _Nonnull sender) {
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_A02" url:@"" inPage:NSStringFromClass(self.class)];
@@ -476,7 +489,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         
         SCCollectionViewFlowLayout *layout = [SCCollectionViewFlowLayout new];
 //        UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
-        layout.minimumLineSpacing      = SCREEN_FIX(18);
+        layout.minimumLineSpacing      = SCREEN_FIX(15);
         layout.minimumInteritemSpacing = SCREEN_FIX(13.5);
         layout.itemSize                = CGSizeMake(kCommodityItemW, kCommodityItemH);
         layout.scrollDirection         = UICollectionViewScrollDirectionVertical;

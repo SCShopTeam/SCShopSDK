@@ -42,7 +42,7 @@ DEF_SINGLETON(SCNetworkTool)
             self.isRelease = YES;
             
         }else { //首次加载，默认情况下的环境
-            self.isRelease = YES;
+            self.isRelease = NO;
         }
         
     }
