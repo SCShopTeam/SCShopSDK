@@ -199,83 +199,82 @@
 
 - (void)webView:(WKWebView*)webView decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-    NSString *host = [navigationAction.request.URL host];
-    [[NSUserDefaults standardUserDefaults] setValue:host forKey:@"wxPay"];
-    
-    BOOL resultBOOL = [self callback_webViewShouldStartLoadWithRequest:navigationAction.request navigationType:navigationAction.navigationType];
-    BOOL isLoadingDisableScheme = [self isLoadingWKWebViewDisableScheme:navigationAction.request.URL];
-    WeakSelf;
-    NSString *scheme = [navigationAction.request.URL scheme];
-    if ([scheme isEqualToString:@"https"] || [scheme isEqualToString:@"http"])
-    {
-        //简单判断host，真实App代码中，需要更精确判断itunes链接
-        //处理WKWebView对跳转app store的限制
-        if (([[navigationAction.request.URL host] isEqualToString:@"itunes.apple.com"]|| [[navigationAction.request.URL host] isEqualToString:@"testflight.apple.com"]) && [[UIApplication sharedApplication] openURL:navigationAction.request.URL])
-        {
-            decisionHandler(WKNavigationActionPolicyCancel);
-            return;
-        }
-        
-        if (@available(iOS 11.0, *)) {
-            [self copyPageLoadingNSHTTPCookieStorageToWKHTTPCookieStoreWithCompletionHandler:^{
-            }];
-        }else{
-            //为了解决跨域问题，每次跳转url时把cookies拼接上
-            NSMutableURLRequest *request = (NSMutableURLRequest *)navigationAction.request;
-            NSMutableURLRequest *mutableRequest = [request mutableCopy];
-            request = [mutableRequest copy];
-            NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-            if ([SCUtilities isValidArray:cookies])
-            {
-                NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
-                if ([SCUtilities isValidDictionary:dict])
-                {
-                    request.allHTTPHeaderFields = dict;
-                }
-            }
-        }
-    }
-    
-    NSString*urlString = [[navigationAction.request URL] absoluteString];
-    
-    urlString = [urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
-    if ([urlString containsString:@"weixin://wap/pay?"]) {
-        if([[UIApplication sharedApplication] respondsToSelector:@selector(openURL:options:completionHandler:)]) {
-            NSString *payHost = navigationAction.request.URL.host;
-            NSString *payAbs = navigationAction.request.URL.absoluteString;
-            NSURL *payUrl = navigationAction.request.URL.absoluteURL;
-            decisionHandler(WKNavigationActionPolicyCancel);
-            NSURL*url = [NSURL URLWithString:urlString];
-            [[UIApplication sharedApplication] openURL:url options:@{UIApplicationOpenURLOptionUniversalLinksOnly: @NO} completionHandler:^(BOOL success) {
-                NSLog(@"...");
-            }];
-            return;
-        }else{
-            
-            [[UIApplication sharedApplication]openURL:navigationAction.request.URL];
-        }
-    }
-    
-    if (resultBOOL && !isLoadingDisableScheme) {
-        weakSelf.currentRequest = navigationAction.request;
-        if (navigationAction.targetFrame == nil) {
-            [webView loadRequest:navigationAction.request];
-        }
-        
-        //防止一个网页多次回调造成崩溃
-        WebViewJavascriptBridgeBase *base = [[WebViewJavascriptBridgeBase alloc] init];
-        if ([base isWebViewJavascriptBridgeURL:navigationAction.request.URL]) {
-            return;
-        }
-        
-        decisionHandler(WKNavigationActionPolicyAllow);
-        return;
-    }
-    else {
-        decisionHandler(WKNavigationActionPolicyCancel);
-        return;
-    }
+       BOOL resultBOOL = [self callback_webViewShouldStartLoadWithRequest:navigationAction.request navigationType:navigationAction.navigationType];
+       BOOL isLoadingDisableScheme = [self isLoadingWKWebViewDisableScheme:navigationAction.request.URL];
+       WeakSelf;
+        NSString *scheme = [navigationAction.request.URL scheme];
+       if ([scheme isEqualToString:@"https"] || [scheme isEqualToString:@"http"])
+       {
+           //简单判断host，真实App代码中，需要更精确判断itunes链接
+           //处理WKWebView对跳转app store的限制
+              if (([[navigationAction.request.URL host] isEqualToString:@"itunes.apple.com"]|| [[navigationAction.request.URL host] isEqualToString:@"testflight.apple.com"]) && [[UIApplication sharedApplication] openURL:navigationAction.request.URL])
+              {
+                  decisionHandler(WKNavigationActionPolicyCancel);
+                  return;
+              }
+
+           if (@available(iOS 11.0, *)) {
+              [self copyPageLoadingNSHTTPCookieStorageToWKHTTPCookieStoreWithCompletionHandler:^{
+              }];
+               }else
+               {
+                   //为了解决跨域问题，每次跳转url时把cookies拼接上
+                   NSMutableURLRequest *request = (NSMutableURLRequest *)navigationAction.request;
+                   NSMutableURLRequest *mutableRequest = [request mutableCopy];
+                   request = [mutableRequest copy];
+                   NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+                   if ([SCUtilities isValidArray:cookies])
+                   {
+                       NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+                       if ([SCUtilities isValidDictionary:dict])
+                       {
+                           request.allHTTPHeaderFields = dict;
+                       }
+                   }
+               }
+       }
+       
+       NSString*urlString = [[navigationAction.request URL] absoluteString];
+       
+       urlString = [urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+       
+       if ([urlString containsString:@"weixin://wap/pay?"]) {
+           if([[UIApplication sharedApplication] respondsToSelector:@selector(openURL:options:completionHandler:)]) {
+               NSString *payHost = navigationAction.request.URL.host;
+               NSString *payAbs = navigationAction.request.URL.absoluteString;
+               NSURL *payUrl = navigationAction.request.URL.absoluteURL;
+               decisionHandler(WKNavigationActionPolicyCancel);
+               NSURL*url = [NSURL URLWithString:urlString];
+               [[UIApplication sharedApplication] openURL:url options:@{UIApplicationOpenURLOptionUniversalLinksOnly: @NO} completionHandler:^(BOOL success) {
+                   NSLog(@"...");
+               }];
+               return;
+           }else{
+               
+               [[UIApplication sharedApplication]openURL:navigationAction.request.URL];
+           }
+       }
+
+       
+       if (resultBOOL && !isLoadingDisableScheme) {
+           weakSelf.currentRequest = navigationAction.request;
+           if (navigationAction.targetFrame == nil) {
+               [webView loadRequest:navigationAction.request];
+           }
+           
+           //防止一个网页多次回调造成崩溃
+                 WebViewJavascriptBridgeBase *base = [[WebViewJavascriptBridgeBase alloc] init];
+                 if ([base isWebViewJavascriptBridgeURL:navigationAction.request.URL]) {
+                     return;
+                 }
+           
+           decisionHandler(WKNavigationActionPolicyAllow+2);
+           return;
+       }
+       else {
+           decisionHandler(WKNavigationActionPolicyCancel);
+           return;
+       }
 }
 - (void)webView:(WKWebView*)webView didStartProvisionalNavigation:(WKNavigation*)navigation
 {
@@ -500,61 +499,58 @@
 {
     self.originRequest = request;
     self.currentRequest = request;
-     NSMutableURLRequest *requestNew = [NSMutableURLRequest requestWithURL:request.URL];
-            if(![[request.URL absoluteString] isEqualToString:@"about:blank"])
-            {
-    //            [self writeCurrentCookie:requestNew];
-            }
-           
-    //        [ECMCWebView ecmc_registerProtocolWithHTTP];
-            SCShoppingManager *manager = [SCShoppingManager sharedInstance];
-            
-            if (manager.delegate && [manager.delegate respondsToSelector:@selector(scConfigCookiesWithUrl:wkweb:back:)]) {
-                [manager.delegate scConfigCookiesWithUrl:requestNew  wkweb:self.realWebView back:^(BOOL success) {
-                    NSLog(@"%@",@"--sc-- 代理设置cookie成功回调");
-                }];
-            }
-            NSString *s = request.URL.absoluteString;
-            if (ISIOS11 && [s containsString:@"wap.js.10086.cn"])
-            {
-                [self copyNSHTTPCookieStorageToWKHTTPCookieStoreWithCompletionHandler:^{
-    //            NSURL *url = [NSURL URLWithString:@"https://www.v2ex.com"];
-    //            NSURLRequest *request = [NSURLRequest requestWithURL:url];
-                dispatch_async(dispatch_get_main_queue(), ^{
+    NSMutableURLRequest *requestNew = [NSMutableURLRequest requestWithURL:request.URL];
+    if(![[request.URL absoluteString] isEqualToString:@"about:blank"])
+    {
+        //            [self writeCurrentCookie:requestNew];
+    }
+    
+    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
+    
+    if (manager.delegate && [manager.delegate respondsToSelector:@selector(scConfigCookiesWithUrl:wkweb:back:)]) {
+        [manager.delegate scConfigCookiesWithUrl:requestNew  wkweb:self.realWebView back:^(BOOL success) {
+            NSLog(@"%@",@"--sc-- 代理设置cookie成功回调");
+        }];
+    }
+    NSString *s = request.URL.absoluteString;
+    if (ISIOS11 && [s containsString:@"wap.js.10086.cn"])
+    {
+        [self copyNSHTTPCookieStorageToWKHTTPCookieStoreWithCompletionHandler:^{
 
-                    NSMutableURLRequest *nRequest = [NSMutableURLRequest requestWithURL:requestNew.URL];
-
-                    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-                    if ([SCUtilities isValidArray:cookies])
-                    {
-                        NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
-                        if ([SCUtilities isValidDictionary:dict])
-                        {
-                            nRequest.allHTTPHeaderFields = dict;
-                        }
-                    }
-                    
-                    
-                    
-                    [(WKWebView *)self.realWebView loadRequest:nRequest];
-                });
-                }];
-            }
-             else
-             {// 非10086域名或不是白名单必要塞cookie不进行塞cookie操作
-                        [self addCookie:[request.URL absoluteString] request:request];
-                        NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-                        if ([SCUtilities isValidArray:cookies])
-                        {
-                            NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
-                            if ([SCUtilities isValidDictionary:dict])
-                            {
-                                requestNew.allHTTPHeaderFields = dict;
-                            }
-                 }
-
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                //                    NSMutableURLRequest *nRequest = [NSMutableURLRequest requestWithURL:requestNew.URL];
+                //
+                //                    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+                //                    if ([SCUtilities isValidArray:cookies])
+                //                    {
+                //                        NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+                //                        if ([SCUtilities isValidDictionary:dict])
+                //                        {
+                //                            nRequest.allHTTPHeaderFields = dict;
+                //                        }
+                //                    }
+                //
+                
                 [(WKWebView *)self.realWebView loadRequest:requestNew];
+            });
+        }];
+    }
+    else
+    {// 非10086域名或不是白名单必要塞cookie不进行塞cookie操作
+        [self addCookie:[request.URL absoluteString] request:request];
+        NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+        if ([SCUtilities isValidArray:cookies])
+        {
+            NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+            if ([SCUtilities isValidDictionary:dict])
+            {
+                requestNew.allHTTPHeaderFields = dict;
             }
+        }
+        
+        [(WKWebView *)self.realWebView loadRequest:requestNew];
+    }
     
     
     
@@ -565,64 +561,60 @@
 
 
 // 白名单加cookie
--(NSMutableArray <NSHTTPCookie *> *)addCookie:(NSString*)urlString request:(NSURLRequest *)request
+-(void)addCookie:(NSString*)urlString request:(NSURLRequest *)request
 {
     if([SCUtilities isValidString:urlString]
-       && ([urlString hasPrefix:@"http"] || [urlString hasPrefix:@"https"])){
+       && ([urlString hasPrefix:@"http"] || [urlString hasPrefix:@"https"])
+       && ![urlString containsString:@"wap.js.10086.cn"]){
         
         NSURL *url      = [request URL];
         
-        NSMutableArray *cookies = [NSMutableArray array];
+        NSLog(@"--sc-- 已登陆，设置cookie-%@",urlString);
+        
+        NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        
         NSString* cmtokenid = [SCGetAuthToken cmtokenId];
-        if ([SCUserInfo currentUser].isLogin){
-            NSLog(@"--sc-- 已登陆，设置cookie-%@",urlString);
-                        NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        if([SCUtilities isValidString:cmtokenid])
+        {
+            NSDictionary *properties = [[NSMutableDictionary alloc] init];
+            [properties setValue:cmtokenid forKey:NSHTTPCookieValue];
+            [properties setValue:@"cmtokenid" forKey:NSHTTPCookieName];
+            [properties setValue:[url host] forKey:NSHTTPCookieDomain];
+            [properties setValue:@"/" forKey:NSHTTPCookiePath];
             
-            if([SCUtilities isValidString:cmtokenid])
-            {
-                NSDictionary *properties = [[NSMutableDictionary alloc] init];
-                [properties setValue:cmtokenid forKey:NSHTTPCookieValue];
-                [properties setValue:@"cmtokenid" forKey:NSHTTPCookieName];
-                [properties setValue:[url host] forKey:NSHTTPCookieDomain];
-                [properties setValue:@"/" forKey:NSHTTPCookiePath];
-                
-                NSHTTPCookie* cookie = [NSHTTPCookie cookieWithProperties:properties];
-                [cookies addObject:cookie];
-                [storage setCookie:cookie];
-                //                    if(!self.usingWebViewUI)
-                //                    {
-                //                        WKWebView* wkwebView = self.realWebView;
-                //                        if (@available(iOS 11.0, *)) {
-                //                            WKHTTPCookieStore *cookieStroe = wkwebView.configuration.websiteDataStore.httpCookieStore;
-                //                            [cookieStroe setCookie:cookie completionHandler:^{
-                //                            }];
-                //                        }
-                //                    }
-                NSString* userAreaNum = [SCGetAuthToken userAreaNum];//[SCUtilities getUnifyAuthToken:@"userAreaNum"] ;
-                if(![SCUtilities isValidString:userAreaNum])
-                {
-                    userAreaNum = [SCUserInfo currentUser].uan;
-                }
-                NSDictionary *properties1 = [[NSMutableDictionary alloc] init];
-                [properties1 setValue:[SCUtilities isValidString:userAreaNum]?userAreaNum:@"" forKey:NSHTTPCookieValue];
-                [properties1 setValue:@"userAreaNum" forKey:NSHTTPCookieName];
-                [properties1 setValue:[url host] forKey:NSHTTPCookieDomain];
-                [properties1 setValue:@"/"forKey:NSHTTPCookiePath];
-                
-                NSHTTPCookie* cookie1 = [NSHTTPCookie cookieWithProperties:properties1];
-                [storage setCookie:cookie1];
-                [cookies addObject:cookie1];
-                //                    if(!self.usingWebViewUI)
-                //                    {
-                //                            WKWebView* wkwebView = self.realWebView;
-                //                            if (@available(iOS 11.0, *))
-                //                            {
-                //                                WKHTTPCookieStore *cookieStroe = wkwebView.configuration.websiteDataStore.httpCookieStore;
-                //                                [cookieStroe setCookie:cookie1 completionHandler:^{
-                //                                }];
-                //                            }
-                //                    }
+            NSHTTPCookie* cookie = [NSHTTPCookie cookieWithProperties:properties];
+            [storage setCookie:cookie];
+            
+            WKWebView* wkwebView = self.realWebView;
+            
+            if (@available(iOS 11.0, *)) {
+                WKHTTPCookieStore *cookieStroe = wkwebView.configuration.websiteDataStore.httpCookieStore;
+                [cookieStroe setCookie:cookie completionHandler:^{
+                }];
             }
+            
+            
+            NSString* userAreaNum = [SCGetAuthToken userAreaNum];
+            if(![SCUtilities isValidString:userAreaNum])
+            {
+                userAreaNum = [SCUserInfo currentUser].uan;
+            }
+            NSDictionary *properties1 = [[NSMutableDictionary alloc] init];
+            [properties1 setValue:userAreaNum forKey:NSHTTPCookieValue];
+            [properties1 setValue:@"userAreaNum" forKey:NSHTTPCookieName];
+            [properties1 setValue:[url host] forKey:NSHTTPCookieDomain];
+            [properties1 setValue:@"/"forKey:NSHTTPCookiePath];
+            
+            NSHTTPCookie* cookie1 = [NSHTTPCookie cookieWithProperties:properties1];
+            [storage setCookie:cookie1];
+            
+            if (@available(iOS 11.0, *))
+            {
+                WKHTTPCookieStore *cookieStroe = wkwebView.configuration.websiteDataStore.httpCookieStore;
+                [cookieStroe setCookie:cookie1 completionHandler:^{
+                }];
+            }
+            
             
             NSString *phone = [SCUserInfo currentUser].phoneNumber? :@"";
             NSDictionary *properties3 = [[NSMutableDictionary alloc] init];
@@ -630,62 +622,48 @@
             [properties3 setValue:@"mallMobile" forKey:NSHTTPCookieName];
             [properties3 setValue:[url host] forKey:NSHTTPCookieDomain];
             [properties3 setValue:@"/" forKey:NSHTTPCookiePath];
-            
+           
             NSHTTPCookie* cookie3 = [NSHTTPCookie cookieWithProperties:properties3];
             [storage setCookie:cookie3];
-            [cookies addObject:cookie3];
-                        
-            return cookies;
             
-        }else{
-            NSLog(@"--sc-- 没有登陆，没有设置cookie-%@",urlString);
-            return nil;
+            if (@available(iOS 11.0, *))
+            {
+                WKHTTPCookieStore *cookieStroe = wkwebView.configuration.websiteDataStore.httpCookieStore;
+                [cookieStroe setCookie:cookie3 completionHandler:^{
+                }];
+            }
         }
-        return nil;
     }
-    return nil;
-    
 }
 
 // 页面开始加载 同步一次cookie
 -(void)copyNSHTTPCookieStorageToWKHTTPCookieStoreWithCompletionHandler:(nullable void (^)(void))theCompletionHandler {
-    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-    if (@available(iOS 11.0, *)) {
-        WKWebView* webView = _realWebView;
-        WKHTTPCookieStore *cookieStroe = webView.configuration.websiteDataStore.httpCookieStore;
-        [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
-        
-        if (cookies.count == 0) {
-             NSLog(@"--sc-- 页面开始加载copy Cookies : sharedHTTPCookieStorage 没有cookie");
-            !theCompletionHandler ?: theCompletionHandler();
-            return;
-        }
-        
-        NSArray *cookiesCopy =[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies] ;
-        
-        for (NSHTTPCookie *cookie in cookiesCopy) {
-            
-            NSString *cookieName = cookie.name;
-            NSString *cookieValue = cookie.value;
-            NSLog(@"--sc-- 页面开始加载copy Cookies :%@--%@",cookieName,cookieValue);
-            
-            
-            // ios12.1系统经常会不走completionHandler方法
-            [cookieStroe setCookie:cookie completionHandler:^{
-            }];
-            if ([[cookies lastObject] isEqual:cookie])
-            {
+     NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+        if (@available(iOS 11.0, *)) {
+            WKWebView* webView = _realWebView;
+            WKHTTPCookieStore *cookieStroe = webView.configuration.websiteDataStore.httpCookieStore;
+             [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+            if (cookies.count == 0) {
                 !theCompletionHandler ?: theCompletionHandler();
+                return;
             }
+
+                NSArray *cookiesCopy =[[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies] ;
+                for (NSHTTPCookie *cookie in cookiesCopy) {
+
+                    // ios12.1系统经常会不走completionHandler方法
+                    [cookieStroe setCookie:cookie completionHandler:^{
+                     }];
+                    if ([[cookies lastObject] isEqual:cookie])
+                    {
+                        !theCompletionHandler ?: theCompletionHandler();
+                     }
+                }
             
+        } else {
+            // Fallback on earlier versions
+             !theCompletionHandler ?: theCompletionHandler();
         }
-        //        }];
-        //        [SCWebViewCustom clearWKCookies];
-        
-    } else {
-        // Fallback on earlier versions
-        !theCompletionHandler ?: theCompletionHandler();
-    }
 }
 
 // 页面加载过程或加载完成 同步一次cookie

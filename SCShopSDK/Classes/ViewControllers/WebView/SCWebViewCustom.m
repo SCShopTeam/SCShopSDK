@@ -96,20 +96,8 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
 }
 
 
-- (void)webViewloadRequest:(NSString*)tempUrl1
+- (void)webViewloadRequest:(NSString*)tempUrl
 {
-    NSString *tempUrl = @"";
-    
-    if ([tempUrl1 containsString:@"wap.js.10086.cn"]) {
-
-         //http://122.51.195.231:8082/b2c/pages/goodsDetails.html?categoryNum=pd9l#   http://122.51.195.231:8082/b2c/pages/daySale.html
-         NSArray *arr = [self.urlString componentsSeparatedByString:@"/pages/"];
-         NSString *nUrl = [@"http://122.51.195.231:8082/b2c/pages/" stringByAppendingString:arr.lastObject];
-         tempUrl = nUrl;
-    }else{
-        tempUrl = tempUrl1;
-    }
-    
     
     if (![SCUtilities isValidString:tempUrl])
     {
@@ -117,14 +105,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
     }
     // 将多配置的空格还原
     tempUrl = [tempUrl stringByReplacingOccurrencesOfString:@" " withString:@""];
-    //    if(![tempUrl containsString:@"?"])
-    //    {
-    //        tempUrl = [NSString stringWithFormat:@"%@?yctest=1",tempUrl];
-    //    }
-    //    else
-    //    {
-    //         tempUrl = [NSString stringWithFormat:@"%@&yctest=1",tempUrl];
-    //    }
+    
     self.urlString = tempUrl;
     self.currentPageUrl = tempUrl;
     if([SCUtilities isValidString:self.urlString])
@@ -149,10 +130,8 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
             NSString *lastString = tempArr[1];
             if ([SCUtilities isValidString:lastString])
             {
-                
                 // 只对问号后面的进行url编码，前面的不编码
                 lastString = [lastString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-                
                 
                 NSMutableString *lastStr = [NSMutableString stringWithString:lastString];
                 [lastStr deleteCharactersInRange:NSMakeRange(0,1)];
@@ -183,24 +162,8 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:temp]];
         [SCUtilities appendParametersToHTTPHeader:request];
         
-        SCShoppingManager *manager = [SCShoppingManager sharedInstance];
-        if (manager.delegate && [manager.delegate respondsToSelector:@selector(scConfigCookiesWithUrl:wkweb:back:)]) {
-            [manager.delegate scConfigCookiesWithUrl:request wkweb:self.myWebView.realWebView back:^(BOOL success) {
-                 [self.myWebView loadRequest:request];
-            }];
-        }else{
-            [self configCookieWithRequest:request];
-             [self.myWebView loadRequest:request];
-        }
+        [self.myWebView loadRequest:request];
         
-       
-        //        NSString *htmlPath = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"html"];
-        //        NSString *appHtml = [NSString stringWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
-        //        NSURL *baseURL = [NSURL fileURLWithPath:htmlPath];
-        //        [self.myWebView loadHTMLString:appHtml baseURL:baseURL];
-        // 自动播放 参数
-        //        self.myWebView.allowsInlineMediaPlayback = YES;
-        //        self.myWebView.mediaPlaybackRequiresUserAction = NO;
         // 开始加载滚动条
         [_progressLayer startLoad];
         
@@ -696,6 +659,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
         
         if (!isVueUrl) {
             [self clearResource];
+            [self.bridge setWebViewDelegate:nil];
             self.bridge = nil;
             [_bridge setWebViewDelegate:nil];
             [self.navigationController popViewControllerAnimated:YES];
@@ -706,6 +670,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
     if (![self.myWebView canGoBack])
     {
         [self clearResource];
+        [self.bridge setWebViewDelegate:nil];
         self.bridge = nil;
         [_bridge setWebViewDelegate:nil];
         [self.navigationController popViewControllerAnimated:YES];
@@ -718,8 +683,8 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
 
 - (void)shut:(id)sender
 {
-    self.bridge = nil;
     [_bridge setWebViewDelegate:nil];
+    self.bridge = nil;
     [self clearResource];
     [self.navigationController popViewControllerAnimated:YES];
     //    [self dismissViewControllerAnimated:YES completion:^{
@@ -955,7 +920,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
     
 }
 
--(void) clearResource
+-(void)clearResource
 {
     //释放webView
     [self.myWebView stopLoading];
@@ -1132,10 +1097,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
 
 - (void)copyNSHTTPCookieStorageToWKHTTPCookieStore
 {
-    if (!self.myWebView.usingUIWebView )
-    {
         [self.myWebView copyNSHTTPCookieStorageToWKHTTPCookieStoreWithCompletionHandler:nil];
-    }
 }
 
 - (void)webViewProgress:(SCWebView*)webView updateProgress:(NSProgress *)progress
