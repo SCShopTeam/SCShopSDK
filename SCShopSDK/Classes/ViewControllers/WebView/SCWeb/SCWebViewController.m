@@ -217,7 +217,8 @@
         [properties2 setValue:@"/" forKey:NSHTTPCookiePath];
         NSHTTPCookie *cookie2 = [NSHTTPCookie cookieWithProperties:properties2];
         
-        NSArray *arrCookies = [NSArray arrayWithObjects:cookie2, nil];
+
+                NSArray *arrCookies = [NSArray arrayWithObjects:cookie2, nil];
         
         self.cookieArray = arrCookies;//////
         NSDictionary *dictCookies = [NSHTTPCookie requestHeaderFieldsWithCookies:arrCookies];//将cookie设置到头中

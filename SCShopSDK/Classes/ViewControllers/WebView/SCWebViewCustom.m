@@ -263,10 +263,14 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
 
 - (void)createWebview
 {
-    self.myWebView  = [[SCWKWebViewPool sharedInstance] getReusedWebViewForHolder:self];
-    [self.myWebView.realWebView  useExternalNavigationDelegate];
+//    self.myWebView  = [[SCWKWebViewPool sharedInstance] getReusedWebViewForHolder:self];
+    self.myWebView = [[SCWebView alloc] initWithFrame:CGRectMake(0.0,
+                                                                                                 0.0,
+                                                                                                 CGRectGetWidth(self.view.bounds),
+                                                                                                 CGRectGetHeight(self.view.bounds)) usingUIWebView:NO];
+//    [self.myWebView.realWebView  useExternalNavigationDelegate];
     //        [self.myWebView.realWebView setMainNavigationDelegate:self.myWebView];
-    self.myWebView.delegate = self;
+//    self.myWebView.delegate = self;
     
     
     

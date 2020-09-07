@@ -22,6 +22,7 @@
 #import "SCTagView.h"
 #import "SCCollectionViewFlowLayout.h"
 #import "SCHomeEmptyView.h"
+#import "SCWitStoreViewController.h"
 
 typedef NS_ENUM(NSInteger, SCHomeSection) {
     SCHomeSectionBanner,      //轮播
@@ -35,10 +36,10 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 
 #define kSectionNum (SCHomeSectionEmptyData + 1)
 
-#define kBannerH     SCREEN_FIX(214.5) + STATUS_BAR_HEIGHT
+#define kBannerH     SCREEN_FIX(219.5) + STATUS_BAR_HEIGHT
 #define kGridH       SCREEN_FIX(201)
 #define kNearH       (self.viewModel.nearShopModel ? SCREEN_FIX(373) : 0)
-#define kAdH         (self.viewModel.adList.count ? SCREEN_FIX(120) : SCREEN_FIX(0))
+#define kAdH         (self.viewModel.adList.count ? SCREEN_FIX(117) : SCREEN_FIX(0))
 
 @interface SCHomeViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) UIView *topView; //搜索框

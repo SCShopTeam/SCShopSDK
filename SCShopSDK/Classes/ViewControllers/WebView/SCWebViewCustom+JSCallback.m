@@ -686,16 +686,16 @@
 {
     __block typeof(self) wkSelf = self;
     
-    if (!IS_RELEASE_ENVIRONMENT) {
-        [self.bridge registerHandler:@"scSetCookieBlock" handler:^(id data, WVJBResponseCallback responseCallback) {
-                NSString  *cmtokenid = [SCGetAuthToken cmtokenId];
-                NSString *userAreaNum = [SCGetAuthToken userAreaNum];
-                NSString *mallMobile = [SCGetAuthToken mallPhone];
-                NSDictionary *dic = @{@"cmtokenid":cmtokenid,@"userAreaNum":userAreaNum,@"mallMobile":mallMobile};
-                responseCallback(dic);
-                
-            }];
-    }
+//    if (!IS_RELEASE_ENVIRONMENT) {
+//        [self.bridge registerHandler:@"scSetCookieBlock" handler:^(id data, WVJBResponseCallback responseCallback) {
+//                NSString  *cmtokenid = [SCGetAuthToken cmtokenId];
+//                NSString *userAreaNum = [SCGetAuthToken userAreaNum];
+//                NSString *mallMobile = [SCGetAuthToken mallPhone];
+//                NSDictionary *dic = @{@"cmtokenid":cmtokenid,@"userAreaNum":userAreaNum,@"mallMobile":mallMobile};
+//                responseCallback(dic);
+//
+//            }];
+//    }
     
   
     
