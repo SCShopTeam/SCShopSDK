@@ -14,8 +14,6 @@
 @property (nonatomic, strong) SDCycleScrollView *cycleView;
 @property (nonatomic, strong) CAGradientLayer *gradientLayer; //渐变色
 @property (nonatomic, strong) NSMutableDictionary *colorDict;
-@property (nonatomic, strong) NSArray *localImagePath;
-@property (nonatomic, assign) BOOL isShowUrl;
 @end
 
 @implementation SCHomeBannerView
@@ -23,19 +21,9 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self prepareUI];
+        [self gradientLayer];
     }
     return self;
-}
-
-- (void)prepareUI
-{
-    [self gradientLayer];
-    
-    UIImage *defaultImage = SCIMAGE(@"sc_home_banner");
-    if (defaultImage) {
-        self.localImagePath = @[defaultImage];
-    }
 }
 
 - (void)setBannerList:(NSArray<SCHomeTouchModel *> *)bannerList
@@ -45,16 +33,13 @@
     }
     
     _bannerList = bannerList;
-    
-    _isShowUrl = YES;
+
     [self.colorDict removeAllObjects];
     
     NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:bannerList.count];
     
     for (SCHomeTouchModel *model in bannerList) {
-        if (VALID_STRING(model.picUrl)) {
-            [mulArr addObject:model.picUrl];
-        }
+        [mulArr addObject:(model.picUrl?:@"")];
     }
     
     self.cycleView.imageURLStringsGroup = mulArr;
@@ -62,24 +47,11 @@
     [self cycleScrollView:self.cycleView didScrollToIndex:0];
 }
 
-- (void)setLocalImagePath:(NSArray *)localImagePath
-{
-    if (!VALID_ARRAY(localImagePath) || localImagePath == _localImagePath) {
-        return;
-    }
-    
-    _isShowUrl = NO;
-    _localImagePath = localImagePath;
-    [self.colorDict removeAllObjects];
-    self.cycleView.localizationImageNamesGroup = localImagePath;
-    [self cycleScrollView:self.cycleView didScrollToIndex:0];
-}
-
 #pragma mark -SDCycleScrollViewDelegate
 /** 点击图片回调 */
 - (void)cycleScrollView:(SDCycleScrollView *)cycleScrollView didSelectItemAtIndex:(NSInteger)index
 {
-    if (!_isShowUrl || index >= self.bannerList.count || index < 0 || !_selectBlock) {
+    if (index >= self.bannerList.count || index < 0 || !_selectBlock) {
         return;
     }
     
@@ -91,38 +63,28 @@
 /** 图片滚动回调 */
 - (void)cycleScrollView:(SDCycleScrollView *)cycleScrollView didScrollToIndex:(NSInteger)index
 {
-    if ((index >= self.bannerList.count && index >= self.localImagePath.count)|| index < 0 ) {
+    if (index >= self.bannerList.count || index < 0 ) {
         return;
     }
     
-    NSString *colorKey = [NSString stringWithFormat:@"%li",index];
+    SCHomeTouchModel *model = self.bannerList[index];
     
-    if (VALID_DICTIONARY(self.colorDict) && [self.colorDict.allKeys containsObject:colorKey]) {
-        UIColor *color = self.colorDict[colorKey];
+    NSString *colorKey = [NSString stringWithFormat:@"%li",index];
+    UIColor *color = self.colorDict[colorKey];
+    
+    if ([color isKindOfClass:UIColor.class]) {
         self.gradientLayer.colors = @[(__bridge id)color.CGColor,(__bridge id)[UIColor whiteColor].CGColor];
         return;
     }
-    
-    
-    if (_isShowUrl) {
-        SCHomeTouchModel *model = self.bannerList[index];
-        [[SDWebImageManager sharedManager] loadImageWithURL:[NSURL URLWithString:model.picUrl] options:0 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
-            UIImage *targetImg = image ?: IMG_PLACE_HOLDER;
-            [targetImg getPaletteImageColor:^(SCPaletteColorModel *recommendColor, NSDictionary *allModeColorDic, NSError *error) {
-                UIColor *imgColor = recommendColor ? HEX_RGB(recommendColor.imageColorString) : HEX_RGB(@"#EE2C3A");
-                self.gradientLayer.colors = @[(__bridge id)imgColor.CGColor,(__bridge id)[UIColor whiteColor].CGColor];
-                self.colorDict[colorKey] = imgColor;
-            }];
-        }];
-        
-    }else {
-        UIImage *img = self.localImagePath[index];
-        [img getPaletteImageColor:^(SCPaletteColorModel *recommendColor, NSDictionary *allModeColorDic, NSError *error) {
-            UIColor *imgColor = HEX_RGB(recommendColor.imageColorString);
+
+    [[SDWebImageManager sharedManager] loadImageWithURL:[NSURL URLWithString:(model.picUrl?:@"")] options:0 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
+        UIImage *targetImg = image ?: IMG_PLACE_HOLDER;
+        [targetImg getPaletteImageColor:^(SCPaletteColorModel *recommendColor, NSDictionary *allModeColorDic, NSError *error) {
+            UIColor *imgColor = recommendColor ? HEX_RGB(recommendColor.imageColorString) : HEX_RGB(@"#EE2C3A");
             self.gradientLayer.colors = @[(__bridge id)imgColor.CGColor,(__bridge id)[UIColor whiteColor].CGColor];
             self.colorDict[colorKey] = imgColor;
         }];
-    }
+    }];
     
     
 }

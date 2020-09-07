@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SCShopSDK'
-  s.version          = '0.9.4'
+  s.version          = '0.9.5'
   s.summary          = 'shopping'
 
 # This description is used to generate tags and improve search results.
@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
   
     ## 图片资源 打包时注释,否则图片会打包进framework
 #    s.resource_bundles = {
-#        'SCShoppingResource' => ['SCShopSDK/Assets/*.png']
+#        'SCShopResource' => ['SCShopSDK/Assets/*.png']
 #    }
     ###
     
@@ -59,6 +59,6 @@ Pod::Spec.new do |s|
   s.dependency 'SDCycleScrollView', '~> 1.80'
   s.dependency 'MJRefresh', '~> 3.4.3'
   s.dependency 'Masonry', '~> 1.1.0'
-  s.dependency 'WebViewJavascriptBridge', '~> 6.0'
+  s.dependency 'WebViewJavascriptBridge', '~> 6.0.3'
   s.dependency 'WKWebViewExtension', '~> 0.1'
 end

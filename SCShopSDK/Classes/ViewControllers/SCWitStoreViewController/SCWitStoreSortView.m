@@ -69,11 +69,11 @@
         for (int i=0; i<2; i++) {
             SCWitSortButton *btn = [[SCWitSortButton alloc] initWithFrame:CGRectMake(x, y+btnH*i, w, btnH)];
             if (i == 0) {
-                [btn setTitle:@"有券优先" forState:UIControlStateNormal];
-                btn.sortType = SCWitSortTypeCoupon;
+                [btn setTitle:@"距离优先" forState:UIControlStateNormal];
+                btn.sortType = SCWitSortTypeNear;
             }else {
-                [btn setTitle:@"人少优先" forState:UIControlStateNormal];
-                btn.sortType = SCWitSortTypePeople;
+                [btn setTitle:@"旗舰优先" forState:UIControlStateNormal];
+                btn.sortType = SCWitSortTypeVIP;
             }
             [self.backImgView addSubview:btn];
             [mulArr addObject:btn];

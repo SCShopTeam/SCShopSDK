@@ -33,7 +33,7 @@
     //打包
     NSBundle *frameworkBundle = [NSBundle mainBundle];
 
-    NSURL *bundleUrl = [frameworkBundle.resourceURL URLByAppendingPathComponent:@"SCShoppingResource.bundle"];
+    NSURL *bundleUrl = [frameworkBundle.resourceURL URLByAppendingPathComponent:@"SCShopResource.bundle"];
     NSBundle *resourceBundle = [NSBundle bundleWithURL:bundleUrl];
     if (resourceBundle) {
         NSString *scaleStr = scale <= 1 ? @"" : [NSString stringWithFormat:@"@%lix",scale];
