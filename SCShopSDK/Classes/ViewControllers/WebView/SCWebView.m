@@ -514,9 +514,9 @@
         }];
     }
 //    NSString *s = request.URL.absoluteString;
-//    if (ISIOS11 && [s containsString:@"wap.js.10086.cn"])
-//    {
-//        [self copyNSHTTPCookieStorageToWKHTTPCookieStoreWithCompletionHandler:^{
+    if (ISIOS11 )
+    {
+        [self copyNSHTTPCookieStorageToWKHTTPCookieStoreWithCompletionHandler:^{
 //
 //            dispatch_async(dispatch_get_main_queue(), ^{
 //
@@ -535,8 +535,8 @@
 //
 //                [(WKWebView *)self.realWebView loadRequest:requestNew];
 //            });
-//        }];
-//    }
+        }];
+    }
 //    else
     {// 非10086域名或不是白名单必要塞cookie不进行塞cookie操作
 //        [self addCookie:[request.URL absoluteString] request:request];
