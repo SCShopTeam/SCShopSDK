@@ -146,9 +146,9 @@
 - (UILabel *)couponTipLabel
 {
     if (!_couponTipLabel) {
-        _couponTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(18), SCREEN_FIX(43.5), SCREEN_FIX(70), SCREEN_FIX(55))];
+        _couponTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(18), SCREEN_FIX(43.5), SCREEN_FIX(75), SCREEN_FIX(55))];
         _couponTipLabel.textColor = [UIColor grayColor];
-        _couponTipLabel.font = SCFONT_SIZED(12);
+        _couponTipLabel.font = SCFONT_SIZED_FIX(11);
         _couponTipLabel.numberOfLines = 2;
         [self addSubview:_couponTipLabel];
     }

@@ -207,7 +207,34 @@
         NSString *s = urlStr;
         
         NSURL *url = [NSURL URLWithString:s];
-
+        
+        //    >>>>>删  打包删除
+//        NSString *cmtokenid = [SCGetAuthToken cmtokenId];
+//        NSDictionary *properties = [[NSMutableDictionary alloc] init];
+//        [properties setValue:cmtokenid forKey:NSHTTPCookieValue];
+//        [properties setValue:@"cmtokenid" forKey:NSHTTPCookieName];
+//
+//        [properties setValue:[url host] forKey:NSHTTPCookieDomain];
+//        [properties setValue:@"/" forKey:NSHTTPCookiePath];
+//
+//        NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:properties];
+//
+//        NSString *userAreaNum =  [SCGetAuthToken userAreaNum];
+//        if(![SCUtilities isValidString:userAreaNum])
+//        {
+//            userAreaNum = [SCUserInfo currentUser].uan;
+//        }
+//        NSDictionary *properties1 = [[NSMutableDictionary alloc] init];
+//        [properties1 setValue:[SCUtilities isValidString:userAreaNum]?userAreaNum:@"" forKey:NSHTTPCookieValue];
+//        [properties1 setValue:@"userAreaNum" forKey:NSHTTPCookieName];
+//        [properties1 setValue:[url host] forKey:NSHTTPCookieDomain];
+//        [properties1 setValue:@"/"forKey:NSHTTPCookiePath];
+//        NSHTTPCookie *cookie1 = [NSHTTPCookie cookieWithProperties:properties1];
+//
+        //        <<<<<<  打包删除  删到此处
+        //        ==========
+        
+        
         NSString *phone = [SCGetAuthToken mallPhone];
         NSDictionary *properties2 = [[NSMutableDictionary alloc] init];
         [properties2 setValue:phone forKey:NSHTTPCookieValue];
@@ -216,7 +243,11 @@
         [properties2 setValue:@"/" forKey:NSHTTPCookiePath];
         NSHTTPCookie *cookie2 = [NSHTTPCookie cookieWithProperties:properties2];
         
-        NSArray *arrCookies = [NSArray arrayWithObjects:cookie2, nil];
+        
+        //>>>>>删  打包删除
+//        NSArray *arrCookies = [NSArray arrayWithObjects:cookie,cookie1, cookie2, nil];
+        ////>>>>>删  打包删除  >> 打包替换
+                NSArray *arrCookies = [NSArray arrayWithObjects:cookie2, nil];
         
         self.cookieArray = arrCookies;//////
         NSDictionary *dictCookies = [NSHTTPCookie requestHeaderFieldsWithCookies:arrCookies];//将cookie设置到头中

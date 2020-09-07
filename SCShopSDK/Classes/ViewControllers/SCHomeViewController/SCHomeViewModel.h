@@ -11,12 +11,13 @@
 #import "SCCommodityModel.h"
 #import "SCHomeTouchModel.h"
 #import "SCHomeShopModel.h"
+@class SCHomeCacheModel;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCHomeViewModel : NSObject
 @property (nonatomic, strong, readonly) NSArray <SCCategoryModel *> *categoryList;           //分类
-@property (nonatomic, strong, readonly) NSMutableArray <SCCommodityModel *> *commodityList;  //商品
+@property (nonatomic, weak, readonly) SCHomeCacheModel *currentCacheModel;                   //商品列表缓存
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *bannerList;            //banner
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *touchList;             //触点
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *adList;                //广告
@@ -24,14 +25,22 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSArray <SCHomeShopModel *> *goodShopList;           //发现好店
 
 
-@property (nonatomic, assign, readonly) BOOL hasMoreData;            //是否请求完数据
-@property (nonatomic, assign, readonly) BOOL commodityRequestFinish; //是否正在请求商品中
+- (void)requestCategoryList:(SCHttpRequestCompletion)completion;
 
-- (void)requestCommodityList:(NSInteger)pageNum completion:(SCHttpRequestCompletion)completion;
+- (void)getCommodityList:(NSInteger)pageNum showCache:(BOOL)showCache completion:(SCHttpRequestCompletion)completion;
 
 - (void)requestTouchData:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
 
 - (void)requestStoreRecommend:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
+
+@end
+
+
+@interface SCHomeCacheModel : NSObject
+@property (nonatomic, strong) NSMutableArray <SCCommodityModel *> *commodityList;
+@property (nonatomic, assign) NSInteger page;
+@property (nonatomic, assign) BOOL hasMoreData;
+@property (nonatomic, assign) CGFloat contentOffsetY;
 
 @end
 

@@ -13,108 +13,156 @@
 #import "SCLocationService.h"
 
 @interface SCHomeViewModel ()
-@property (nonatomic, assign) BOOL hasMoreData;
 @property (nonatomic, strong) NSArray <SCCategoryModel *> *categoryList;
-@property (nonatomic, strong) NSMutableArray <SCCommodityModel *> *commodityList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *bannerList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *touchList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *adList;                //广告
 @property (nonatomic, strong) SCHomeShopModel *nearShopModel;                      //附近门店
 @property (nonatomic, strong) NSArray <SCHomeShopModel *> *goodShopList;           //发现好店
 
-@property (nonatomic, assign) BOOL isCategoryRequesting;
 @property (nonatomic, assign) BOOL isShopRequesting;
-@property (nonatomic, assign) BOOL commodityRequestFinish;
+@property (nonatomic, weak) SCHomeCacheModel *currentCacheModel;                   //商品列表缓存
+@property (nonatomic, strong) NSMutableDictionary <NSNumber *, SCHomeCacheModel *> *commodityDict;
+
 @end
 
 @implementation SCHomeViewModel
 
-- (void)requestCommodityList:(NSInteger)pageNum completion:(SCHttpRequestCompletion)completion
+- (void)requestCategoryList:(SCHttpRequestCompletion)completion
 {
-    self.commodityRequestFinish = NO;
-    
-    //先看列表标签是否已经请求好
-    if (VALID_ARRAY(self.categoryList)) {
-        [self requestCommodityDatas:pageNum completion:completion];
-        
-        return;
-    }
-    
-    //看看是否在请求
-    if (_isCategoryRequesting) {
-        return;
-    }
-    
-    _isCategoryRequesting = YES;
-    //没有标签先请求
     [SCCategoryViewModel requestCategory:^(NSArray<SCCategoryModel *> * _Nonnull categoryList) {
-        self.isCategoryRequesting = NO;
-        
-        if (categoryList.count > 0) {
-            categoryList.firstObject.selected = YES;  //默认第一个选中
+        if (categoryList.count == 0) {
+            self.categoryList = nil;
+            if (completion) {
+                completion(@"获取分类信息失败");
+            }
+            return;
         }
         
+        categoryList.firstObject.selected = YES;  //默认第一个选中
         self.categoryList = categoryList;
+        [self.commodityDict removeAllObjects];
         
-        [self requestCommodityDatas:pageNum completion:completion];
-        
-    } failure:^(NSString * _Nullable errorMsg) {
-        self.isCategoryRequesting = NO;
-        if (completion) {
-            completion(errorMsg);
-        }
-    }];
-
-
-}
-
-- (void)requestCommodityDatas:(NSInteger)pageNum completion:(SCHttpRequestCompletion)completion
-{
-    if (self.categoryList.count == 0) {
-        if (completion) {
-            completion(@"param null");
-        }
-        return;
-    }
-    
-    self.commodityRequestFinish = NO;
-    
-    if (pageNum == 1) {
-        if (!_commodityList) {
-            _commodityList = [NSMutableArray arrayWithCapacity:kCountCurPage];
-        }else {
-            [_commodityList removeAllObjects];
-        }
-    }
-    
-    
-
-    NSString *typeNum = @"";
-    
-    for (SCCategoryModel *cModel in self.categoryList) {
-        if (cModel.selected) {
-            typeNum = cModel.typeNum;
-            break;
-        }
-    }
-    
-    [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
-        self.commodityRequestFinish = YES;
-        
-        [self.commodityList addObjectsFromArray:commodityList];
-        self.hasMoreData = commodityList.count >= kCountCurPage;
+        //分类信息请求完，提前请求所有商品列表(除了第一个选中的,外部会请求)
+        [self.categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull cModel, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (idx > 0) {
+                [self requestCommodityListData:1 index:idx completion:nil];
+            }
+            
+        }];
         
         if (completion) {
             completion(nil);
         }
         
+
+        
+        
     } failure:^(NSString * _Nullable errorMsg) {
-        self.commodityRequestFinish = YES;
+        if (completion) {
+            completion(@"获取分类信息失败");
+        }
+    }];
+}
+
+
+- (void)getCommodityList:(NSInteger)pageNum showCache:(BOOL)showCache completion:(SCHttpRequestCompletion)completion
+{
+    __block NSInteger index = 0;
+    [self.categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull cModel, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (cModel.selected) {
+            index = idx;
+            *stop = YES;
+        }
+    }];
+    
+    SCHomeCacheModel *cacheModel = self.commodityDict[@(index)];
+    
+    if (showCache && cacheModel) {
+        self.currentCacheModel = cacheModel;
+        if (completion) {
+            completion(nil);
+        }
+        
+    }else {
+        [self requestCommodityListData:pageNum index:index completion:completion];
+    }
+
+}
+
+- (void)requestCommodityListData:(NSInteger)pageNum index:(NSInteger)index completion:(SCHttpRequestCompletion)completion
+{
+
+    SCCategoryModel *categoryModel = self.categoryList[index];
+    NSString *typeNum = categoryModel.typeNum ?: @"";
+    
+    [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
+        SCHomeCacheModel *cacheModel = self.commodityDict[@(index)];
+        if (!cacheModel) {
+            cacheModel = [SCHomeCacheModel new];
+            self.commodityDict[@(index)] = cacheModel;
+        }
+        
+        if (pageNum == 1) {
+            cacheModel.page = 1;
+            [cacheModel.commodityList removeAllObjects];
+        }
+        
+        [cacheModel.commodityList addObjectsFromArray:commodityList];
+        cacheModel.hasMoreData = commodityList.count >= kCountCurPage;
+        cacheModel.page = pageNum;
+        
+        if (categoryModel.selected) {
+            self.currentCacheModel = cacheModel;
+            if (completion) {
+                completion(nil);
+            }
+        }
+
+
+    } failure:^(NSString * _Nullable errorMsg) {
         
         if (completion) {
             completion(errorMsg);
         }
     }];
+    
+    //    if (pageNum == 1) {
+    //        if (!_commodityList) {
+    //            _commodityList = [NSMutableArray arrayWithCapacity:kCountCurPage];
+    //        }else {
+    //            [_commodityList removeAllObjects];
+    //        }
+    //    }
+    //
+    //
+    //
+    //    NSString *typeNum = @"";
+    //
+    //    for (SCCategoryModel *cModel in self.categoryList) {
+    //        if (cModel.selected) {
+    //            typeNum = cModel.typeNum;
+    //            break;
+    //        }
+    //    }
+    //
+    //    [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
+    //        self.commodityRequestFinish = YES;
+    //
+    //        [self.commodityList addObjectsFromArray:commodityList];
+    //        self.hasMoreData = commodityList.count >= kCountCurPage;
+    //
+    //        if (completion) {
+    //            completion(nil);
+    //        }
+    //
+    //    } failure:^(NSString * _Nullable errorMsg) {
+    //        self.commodityRequestFinish = YES;
+    //
+    //        if (completion) {
+    //            completion(errorMsg);
+    //        }
+    //    }];
 }
 
 - (void)requestTouchData:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
@@ -289,5 +337,26 @@
     }];
 }
 
+- (NSMutableDictionary<NSNumber *,SCHomeCacheModel *> *)commodityDict
+{
+    if (!_commodityDict) {
+        _commodityDict = [NSMutableDictionary dictionary];
+    }
+    return _commodityDict;
+}
+
+@end
+
+
+
+@implementation SCHomeCacheModel
+
+- (NSMutableArray<SCCommodityModel *> *)commodityList
+{
+    if (!_commodityList) {
+        _commodityList = [NSMutableArray array];
+    }
+    return _commodityList;
+}
 
 @end

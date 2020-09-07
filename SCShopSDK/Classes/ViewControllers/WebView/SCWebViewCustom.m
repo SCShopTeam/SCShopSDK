@@ -327,6 +327,8 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
 -(void)loginSuccessNotifity{
     NSLog(@"--sc-- 重新加载request");
 //    [self customUserAgent];
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+      originalCookies = [[NSArray alloc] initWithArray:[storage cookies]];
     [self.myWebView loadRequest:self.myWebView.currentRequest];
 }
 
@@ -563,8 +565,6 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
         }];
     }
     
-    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    originalCookies = [[NSArray alloc] initWithArray:[storage cookies]];
 }
 
 - (void)viewWillAppear:(BOOL)animated

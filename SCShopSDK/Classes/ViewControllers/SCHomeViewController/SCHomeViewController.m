@@ -56,7 +56,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     [self prepareUI];
     
     [self showLoading];
-    [self requestData:1 onlyCommodity:NO];
+    [self requestTotalData:1];
     
 }
 
@@ -80,9 +80,9 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 
 
 #pragma mark -request
-- (void)requestData:(NSInteger)page onlyCommodity:(BOOL)onlyCommodity
+- (void)requestTotalData:(NSInteger)page
 {
-    if (page == 1 && !onlyCommodity) {
+    if (page == 1) {
         //请求触点
         [self requestTouchData];
         
@@ -90,12 +90,13 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         [self requestStoreRecommand];
     }
     
-    if (onlyCommodity) {
-        [self showLoading];
+    if (self.viewModel.categoryList.count > 0) { //请求商品
+        [self requestCommodityList:page showCache:NO];
+        
+    }else { //请求分类
+        [self requestCategoryList];
     }
-    
-    //请求商品
-    [self requestCommodityList:page];
+
     
 }
 
@@ -103,14 +104,27 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 - (void)requestTouchData
 {
     [self.viewModel requestTouchData:^(id  _Nullable responseObject) {
-        //如果商品已经请求完整个页面已经刷新，就更新下section0,1,4.  商品还没有请求，则不用操作，后续商品请求结束会刷新整个页面
-        if (self.viewModel.commodityRequestFinish) {
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionBanner]];
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGrid]];
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionAd]];
-        }
+        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionBanner]];
+        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGrid]];
+        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionAd]];
         
     } failure:^(NSString * _Nullable errorMsg) {
+    }];
+}
+
+//请求分类
+- (void)requestCategoryList
+{
+    [self.viewModel requestCategoryList:^(NSString * _Nullable errorMsg) {
+        if (errorMsg) {
+            [self stopLoading];
+            [self showWithStatus:errorMsg];
+            
+        }else {
+            self.collectionView.page = 1;
+            [self requestCommodityList:1 showCache:NO];
+        }
+        
     }];
 }
 
@@ -118,22 +132,21 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 - (void)requestStoreRecommand
 {
     [self.viewModel requestStoreRecommend:^(id  _Nullable responseObject) {
-        //如果商品已经请求完整个页面已经刷新，就更新下section2,3.  商品还没有请求，则不用操作，后续商品请求结束会刷新整个页面
-        if (self.viewModel.commodityRequestFinish) {
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionNear]];
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGood]];
-        }
+        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionNear]];
+        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGood]];
     } failure:^(NSString * _Nullable errorMsg) {
     }];
     
 }
 
 //请求商品
-- (void)requestCommodityList:(NSInteger)page
+- (void)requestCommodityList:(NSInteger)page showCache:(BOOL)showCache
 {
-    [self.viewModel requestCommodityList:page completion:^(NSString * _Nullable errorMsg) {
+    [self.viewModel getCommodityList:page showCache:showCache completion:^(NSString * _Nullable errorMsg) {
         [self stopLoading];
-        [self.collectionView reloadDataShowFooter:self.viewModel.hasMoreData];
+        SCHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
+        self.collectionView.page = cacheModel.page;
+        [self.collectionView reloadDataShowFooter:cacheModel.hasMoreData];
     }];
     
 }
@@ -168,7 +181,8 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         height = SCREEN_FIX(55);
         
     }else {  //空数据
-        height = (self.viewModel.commodityList && self.viewModel.commodityList.count == 0) ? SCREEN_FIX(220) : 0;
+        SCHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
+        height = (cacheModel && cacheModel.commodityList.count == 0) ? SCREEN_FIX(220) : 0;
     }
     
     return CGSizeMake(width, height);
@@ -292,7 +306,8 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     if (section == SCHomeSectionTagItems) {
-        return self.viewModel.commodityList.count;
+        SCHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
+        return cacheModel.commodityList.count;
     }
     return 0;
 }
@@ -317,8 +332,10 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     
     SCShopCollectionCell *cell = (SCShopCollectionCell *)[collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(SCShopCollectionCell.class) forIndexPath:indexPath];
     
-    if (indexPath.row < self.viewModel.commodityList.count) {
-        SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
+    SCHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
+    
+    if (indexPath.row < cacheModel.commodityList.count) {
+        SCCommodityModel *model = cacheModel.commodityList[indexPath.row];
         cell.model = model;
     }
     
@@ -330,7 +347,9 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     if (indexPath.section != SCHomeSectionTagItems) {
         return;
     }
-    SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
+    SCHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
+    
+    SCCommodityModel *model = cacheModel.commodityList[indexPath.row];
     
     [self pushToWebView:model.detailUrl title:@"商品详情"];
 }
@@ -407,7 +426,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_E%@%@", (code.length == 1 ? @"0" : @""), code) url:@"" inPage:NSStringFromClass(self.class)];
     
     self.collectionView.page = 1;
-    [self requestData:1 onlyCommodity:YES];
+    [self requestCommodityList:1 showCache:YES];
     
     //悬停高度
     CGFloat hoverY = kBannerH - self.topView.height + kGridH + kNearH + [SCGoodShopView sectionHeight:self.viewModel.goodShopList.count] + kAdH;
@@ -517,7 +536,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         @weakify(self)
         _collectionView.refreshingBlock = ^(NSInteger page) {
             @strongify(self)
-            [self requestData:page onlyCommodity:NO];
+            [self requestTotalData:page];
         };
     }
     return _collectionView;
