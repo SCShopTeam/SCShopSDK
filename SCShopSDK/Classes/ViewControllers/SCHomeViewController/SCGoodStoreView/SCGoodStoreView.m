@@ -1,27 +1,27 @@
 //
-//  SCGoodShopView.m
+//  SCGoodStoreView.m
 //  shopping
 //
 //  Created by gejunyu on 2020/8/17.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCGoodShopView.h"
-#import "SCGoodShopCell.h"
+#import "SCGoodStoreView.h"
+#import "SCGoodStoreCell.h"
  
 #define kGrayLineH SCREEN_FIX(13.5)
 #define kTopViewH  SCREEN_FIX(41.5)
 
 static NSInteger kMaxGoodShopCount = 3;
 
-@interface SCGoodShopView () <UITableViewDelegate, UITableViewDataSource>
+@interface SCGoodStoreView () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UIView *grayLine;
 @property (nonatomic, strong) UIView *topView;
 @property (nonatomic, strong) UITableView *tableView;
 
 @end
 
-@implementation SCGoodShopView
+@implementation SCGoodStoreView
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -38,14 +38,14 @@ static NSInteger kMaxGoodShopCount = 3;
     self.tableView.height = self.height - self.tableView.top;
 }
 
-- (void)setGoodShopList:(NSArray<SCHomeShopModel *> *)goodShopList
+- (void)setGoodStoreList:(NSArray<SCHomeStoreModel *> *)goodStoreList
 {
-    if (!VALID_ARRAY(goodShopList)) {
-        _goodShopList = nil;
+    if (!VALID_ARRAY(goodStoreList)) {
+        _goodStoreList = nil;
         return;
     }
     
-    _goodShopList = goodShopList.count > kMaxGoodShopCount ? [goodShopList subarrayWithRange:NSMakeRange(0, kMaxGoodShopCount)] : goodShopList;
+    _goodStoreList = goodStoreList.count > kMaxGoodShopCount ? [goodStoreList subarrayWithRange:NSMakeRange(0, kMaxGoodShopCount)] : goodStoreList;
 
     [self.tableView reloadData];
 }
@@ -57,7 +57,7 @@ static NSInteger kMaxGoodShopCount = 3;
         
     }else {
         NSInteger count = MIN(rowNumber, kMaxGoodShopCount);
-        return kGrayLineH + kTopViewH + kGoodShopRowH*count;
+        return kGrayLineH + kTopViewH + kGoodStoreRowH *count;
     }
 }
 
@@ -65,19 +65,19 @@ static NSInteger kMaxGoodShopCount = 3;
 #pragma mark -UITableViewDelegate, UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.goodShopList.count;
+    return self.goodStoreList.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return kGoodShopRowH;
+    return kGoodStoreRowH;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SCGoodShopCell *cell = (SCGoodShopCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCGoodShopCell.class) forIndexPath:indexPath];
+    SCGoodStoreCell *cell = (SCGoodStoreCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCGoodStoreCell.class) forIndexPath:indexPath];
     
-    SCHomeShopModel *model = self.goodShopList[indexPath.row];
+    SCHomeStoreModel *model = self.goodStoreList[indexPath.row];
     cell.model = model;
     
     @weakify(self)
@@ -156,7 +156,7 @@ static NSInteger kMaxGoodShopCount = 3;
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.scrollEnabled = NO;
-        [_tableView registerClass:SCGoodShopCell.class forCellReuseIdentifier:NSStringFromClass(SCGoodShopCell.class)];
+        [_tableView registerClass:SCGoodStoreCell.class forCellReuseIdentifier:NSStringFromClass(SCGoodStoreCell.class)];
         [self addSubview:_tableView];
     }
     return _tableView;

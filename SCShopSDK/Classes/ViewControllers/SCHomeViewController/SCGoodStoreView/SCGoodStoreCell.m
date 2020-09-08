@@ -1,12 +1,12 @@
 //
-//  SCGoodShopCell.m
+//  SCGoodStoreCell.m
 //  shopping
 //
 //  Created by gejunyu on 2020/8/17.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCGoodShopCell.h"
+#import "SCGoodStoreCell.h"
 
 @interface SCShowItemButton : UIControl
 @property (nonatomic, strong) UIImageView *icon;
@@ -15,19 +15,18 @@
 @end
 
 
-@interface SCGoodShopCell ()
+@interface SCGoodStoreCell ()
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UIButton *styleIcon;
 @property (nonatomic, strong) NSArray <UILabel *> *couponLabelList; //优惠券
 @property (nonatomic, strong) UILabel *couponTipLabel;
 @property (nonatomic, strong) NSArray <SCShowItemButton *> *itemList;
 @property (nonatomic, strong) UIButton *enterShopBtn; //进店逛逛
-@property (nonatomic, strong) UILabel *addressLabel; //地址
 @property (nonatomic, strong) UIView *line;
 
 @end
 
-@implementation SCGoodShopCell
+@implementation SCGoodStoreCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -40,7 +39,7 @@
     return self;
 }
 
-- (void)setModel:(SCHomeShopModel *)model
+- (void)setModel:(SCHomeStoreModel *)model
 {
     _model = model;
     
@@ -58,10 +57,6 @@
         }else {
             self.styleIcon.hidden = YES;
         }
-        
-            //店铺地址
-        //    self.addressLabel.text = [NSString stringWithFormat:@"店铺地址：%@",model.shopInfo.];
-            self.addressLabel.text = @"店铺地址:暂无";
     }
 
     
@@ -204,19 +199,6 @@
     return _enterShopBtn;
 }
 
-- (UILabel *)addressLabel
-{
-    if (!_addressLabel) {
-        CGFloat margin = SCREEN_FIX(14.5);
-        _addressLabel = [[UILabel alloc] initWithFrame:CGRectMake(margin, SCREEN_FIX(150.5), self.width-margin*2, SCREEN_FIX(12))];
-        _addressLabel.font = SCFONT_SIZED(12);
-        _addressLabel.textColor = HEX_RGB(@"#999999");
-        _addressLabel.textAlignment = NSTextAlignmentLeft;
-        [self addSubview:_addressLabel];
-    }
-    return _addressLabel;
-}
-
 - (NSArray<SCShowItemButton *> *)itemList
 {
     if (!_itemList) {
@@ -249,7 +231,7 @@
 {
     if (!_line) {
         CGFloat margin = SCREEN_FIX(14.5);
-        _line = [[UIView alloc] initWithFrame:CGRectMake(margin, kGoodShopRowH - 0.5, SCREEN_WIDTH-margin*2, 0.5)];
+        _line = [[UIView alloc] initWithFrame:CGRectMake(margin, kGoodStoreRowH - 0.5, SCREEN_WIDTH-margin*2, 0.5)];
         _line.backgroundColor = HEX_RGB(@"#DBDBDB");
         [self.contentView addSubview:_line];
     }

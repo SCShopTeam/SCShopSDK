@@ -1,5 +1,5 @@
 //
-//  SCHomeNearShopView.h
+//  SCHomeRecommendStoreView.h
 //  shopping
 //
 //  Created by gejunyu on 2020/8/20.
@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SCHomeShopModel.h"
+#import "SCHomeStoreModel.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCHomeNearShopView : UICollectionReusableView
-@property (nonatomic, strong) SCHomeShopModel *model;
+@interface SCHomeRecommendStoreView : UICollectionReusableView
+@property (nonatomic, strong) SCHomeStoreModel *model;
 
 
 @property (nonatomic, copy) void (^enterShopBlock)(SCHShopInfoModel *shopInfoModel);

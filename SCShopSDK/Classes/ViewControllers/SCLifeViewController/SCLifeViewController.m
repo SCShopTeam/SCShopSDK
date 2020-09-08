@@ -96,7 +96,6 @@
 {
     SCLifeSubViewController *vc = (SCLifeSubViewController *)pendingViewControllers.firstObject;
     _targetIndex = [self.viewModel.subVcList indexOfObject:vc];
-    NSLog(@"%li",_targetIndex);
 }
 
 
@@ -110,7 +109,8 @@
 - (SCTagView *)tagView
 {
     if (!_tagView) {
-        _tagView = [[SCTagView alloc] initWithFrame:CGRectMake(0, SCREEN_FIX(5), self.view.width, SCREEN_FIX(30))];
+        _tagView = [[SCTagView alloc] initWithFrame:CGRectMake(0, SCREEN_FIX(0), self.view.width,SCREEN_FIX(40))];
+        _tagView.contentEdgeInsets = UIEdgeInsetsMake(0, 0, SCREEN_FIX(5), 0);
         [self.view addSubview:_tagView];
         
         @weakify(self)
@@ -135,7 +135,8 @@
         _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
         _pageViewController.delegate = self;
         _pageViewController.dataSource = self;
-        _pageViewController.view.bounds = self.view.bounds;
+        CGFloat y = self.tagView.bottom - STATUS_BAR_HEIGHT;
+        _pageViewController.view.bounds = CGRectMake(0, y, self.view.width, self.view.height - y);
         [self addChildViewController:_pageViewController];
         [self.view addSubview:_pageViewController.view];
     }

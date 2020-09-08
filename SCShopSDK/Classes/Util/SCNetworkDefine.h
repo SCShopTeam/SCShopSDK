@@ -51,6 +51,7 @@
 #define SC_MYCOUPON_URL  @"https://wap.js.10086.cn/kqzx/resource/wap/html_mycard/my_mall_coupon.html"
 //客服
 #define SC_KEFU_URL @"https://cnr.asiainfo.com/xin_ucfront/uc_channel_access/h5webchat/webChat.html?param="
+#define SC_ONLINE_SERVICE_URL @"https://wap.js.10086.cn/OnLine.thtml?&ent=5b95a47f84f94b718c36d1818b1feaac"
 //商城订单详情
 #define SC_SC_ORDER_DETAIL(orderId) [NSString stringWithFormat:@"%@/mall/pages/orderDetail.html?orderNum=%@",BASE_WEB_URL,orderId]
 //门店订单详情

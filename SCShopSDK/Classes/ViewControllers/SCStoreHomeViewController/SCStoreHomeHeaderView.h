@@ -1,5 +1,5 @@
 //
-//  SCShopHomeHeaderView.h
+//  SCStoreHomeHeaderView.h
 //  shopping
 //
 //  Created by gejunyu on 2020/7/23.
@@ -11,9 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCShopHomeHeaderView : UICollectionReusableView
+@interface SCStoreHomeHeaderView : UICollectionReusableView
 
 @property (nonatomic, strong) SCTenantInfoModel *tenantInfo;
+
+@property (nonatomic, copy) void (^bannerBlock)(SCTenantInfoModel *tenantInfo);
 
 @end
 

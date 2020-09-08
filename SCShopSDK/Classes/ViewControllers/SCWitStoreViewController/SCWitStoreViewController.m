@@ -59,39 +59,27 @@
 - (void)requestAreaList
 {
     //请求地市
-    [self showLoading];
     [self.viewModel requestAreaList:^(NSString * _Nonnull areaName) {
         [self.areaBtn setTitle:areaName forState:UIControlStateNormal];
-        [self requestStoreList:1 showHud:NO];
+        [self requestStoreList:1 showCache:NO];
     }];
 
 }
 
-- (void)requestStoreList:(NSInteger)page showHud:(BOOL)showHud
+- (void)requestStoreList:(NSInteger)page showCache:(BOOL)showCache
 {
-    if (showHud) {
-        [self showLoading];
-    }
-    
-    if (page == 1) {
-        self.tableView.page = 1;
-    }
-    
-    self.viewModel.requestModel.queryType == SCWitQueryTypeSearch ? [self.tableView hidesRefreshHeader] : [self.tableView showsRefreshHeader];
-
-    [self.viewModel requestAggregateStoreWithPage:page completion:^(NSString * _Nullable errorMsg) {
+    [self.viewModel getAggregateStore:page showCache:showCache completion:^(NSString * _Nullable errorMsg) {
         [self stopLoading];
-        [self.tableView reloadDataShowFooter:self.viewModel.hasMoreData];
+        SCWitStoreCacheModel *cacheModel = self.viewModel.currentCacheModel;
         
-        if (page == 1) {
-            [self.tableView setContentOffset:CGPointMake(0, 0) animated:NO];
-        }
+        self.tableView.page = cacheModel.page;
+        [self updateNearStoreInfo:page];
+//        [self.tableView reloadDataShowFooter:cacheModel.hasMoreData];
+        [self.tableView reloadData];
+        cacheModel.hasMoreData ? [self.tableView showsRefreshFooter] : [self.tableView hidesRefreshFooter];
         
-        if (errorMsg) {
-            [self showWithStatus:errorMsg];
-            
-        }else {
-            [self updateNearStoreInfo:page];
+        if (showCache) {
+            [self resizeContentOffset];
         }
     }];
 
@@ -166,7 +154,8 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     if (section == 0) {
-        if (self.viewModel.storeList.count > 0) {
+        SCWitStoreCacheModel *cacheModel = self.viewModel.currentCacheModel;
+        if (cacheModel.storeList.count > 0) {
             return 0;
         }else {
             return SCREEN_FIX(280);
@@ -180,10 +169,10 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    
     if (section == 0) {
         SCWitNoStoreHeaderView *view = [tableView dequeueReusableHeaderFooterViewWithIdentifier:NSStringFromClass(SCWitNoStoreHeaderView.class)];
-        view.showTip = self.viewModel.storeList && self.viewModel.storeList.count == 0;
+        NSArray *list = self.viewModel.currentCacheModel.storeList;
+        view.showTip = list && list.count == 0;
         return view;
         
     }else {
@@ -200,7 +189,8 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (section == 0) {
-        return self.viewModel.storeList.count;
+        SCWitStoreCacheModel *cacheModel = self.viewModel.currentCacheModel;
+        return cacheModel.storeList.count;
         
     }else {
         return self.viewModel.professionalList.count;
@@ -210,8 +200,9 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    SCWitStoreCacheModel *cacheModel = self.viewModel.currentCacheModel;
     
-    SCWitStoreModel *model = indexPath.section == 0 ? self.viewModel.storeList[indexPath.row] : self.viewModel.professionalList[indexPath.row] ;
+    SCWitStoreModel *model = indexPath.section == 0 ? cacheModel.storeList[indexPath.row] : self.viewModel.professionalList[indexPath.row] ;
     return model.rowHeight;
 }
 
@@ -222,7 +213,9 @@
     NSInteger section = indexPath.section;
     NSInteger row     = indexPath.row;
     
-    NSArray <SCWitStoreModel *> *dataList = section == 0 ? self.viewModel.storeList : self.viewModel.professionalList;
+    SCWitStoreCacheModel *cacheModel = self.viewModel.currentCacheModel;
+    
+    NSArray <SCWitStoreModel *> *dataList = section == 0 ? cacheModel.storeList : self.viewModel.professionalList;
     
     if (row == 0) {  //第一个cell是顶部圆角
         if (dataList.count == 1) { //只有一个cell
@@ -293,7 +286,7 @@
         requestModel.queryStr  = textField.text;
         requestModel.queryType = SCWitQueryTypeSearch;
         _deleteSearchButton.hidden = NO;
-        [self requestStoreList:1 showHud:YES];
+        [self requestStoreList:1 showCache:YES];
         
     }else {
         [self textFieldClear];
@@ -308,7 +301,7 @@
     _deleteSearchButton.hidden = YES;
     self.searchField.text = nil;
     self.viewModel.requestModel.queryType = SCWitQueryTypeNear;
-    [self requestStoreList:1 showHud:YES];
+    [self requestStoreList:1 showCache:YES];
     [self.queryView clear];
 }
 
@@ -331,8 +324,11 @@
         self.searchField.text = nil;
         //重置筛选条件
         [self.queryView clear];
+        //清除缓存
+        [self.viewModel cleanCacheData];
         
-        [self requestStoreList:1 showHud:YES];
+        [self showLoading];
+        [self requestStoreList:1 showCache:NO];
     }];
 }
 
@@ -354,6 +350,16 @@
 {
     [self.searchField resignFirstResponder];
     self.sortView.hidden = YES;
+}
+
+//修正偏移量
+- (void)resizeContentOffset
+{
+    CGFloat hoverY = self.headerView.height - self.topView.height + kWitStoreCorner;
+    
+    if (self.tableView.contentOffset.y > hoverY) {
+        [self.tableView setContentOffset:CGPointMake(0, hoverY) animated:NO];
+    }
 }
 
 #pragma mark -UI
@@ -434,14 +440,13 @@
         [_tableView registerClass:SCWitProfessionalHeaderView.class forHeaderFooterViewReuseIdentifier:NSStringFromClass(SCWitProfessionalHeaderView.class)];
         [_tableView registerClass:SCWitNoStoreHeaderView.class forHeaderFooterViewReuseIdentifier:NSStringFromClass(SCWitNoStoreHeaderView.class)];
         
-        [_tableView showsRefreshHeader];
         [_tableView showsRefreshFooter];
         
         @weakify(self)
         _tableView.refreshingBlock = ^(NSInteger page) {
             @strongify(self)
             [self hideNoNeedUI];
-            [self requestStoreList:page showHud:NO];
+            [self requestStoreList:page showCache:NO];
         };
     }
     return _tableView;
@@ -489,6 +494,7 @@
     return _headerView;
 }
 
+
 - (SCWitStoreQueryView *)queryView
 {
     if (!_queryView) {
@@ -514,7 +520,7 @@
             @strongify(self)
             [self hideNoNeedUI];
             self.viewModel.requestModel.queryType = queryType;
-            [self requestStoreList:1 showHud:YES];
+            [self requestStoreList:1 showCache:YES];
         };
         
         [self.view addSubview:_queryView];
@@ -537,8 +543,7 @@
             @strongify(self)
             [self hideNoNeedUI];
             self.viewModel.requestModel.sortType = sortType;
-
-            [self requestStoreList:1 showHud:YES];
+            [self requestStoreList:1 showCache:YES];
         };
     }
     return _sortView;

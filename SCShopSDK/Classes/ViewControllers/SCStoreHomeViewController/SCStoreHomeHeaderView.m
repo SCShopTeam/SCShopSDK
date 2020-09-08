@@ -1,22 +1,22 @@
 //
-//  SCShopHomeHeaderView.m
+//  SCStoreHomeHeaderView.m
 //  shopping
 //
 //  Created by gejunyu on 2020/7/23.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCShopHomeHeaderView.h"
+#import "SCStoreHomeHeaderView.h"
 
 
-@interface SCShopHomeHeaderView ()
+@interface SCStoreHomeHeaderView ()
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UIImageView *tagView;
-@property (nonatomic, strong) UIImageView *bannerView;  //IOS_T_NZDSCSDDP_A01
+@property (nonatomic, strong) UIButton *bannerView;  //IOS_T_NZDSCSDDP_A01
 
 @end
 
-@implementation SCShopHomeHeaderView
+@implementation SCStoreHomeHeaderView
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -37,7 +37,7 @@
     self.tagView.hidden = ![tenantInfo.tenantType isEqualToString:@"1"];
     self.tagView.left = self.titleLabel.right + SCREEN_FIX(4);
     
-    [self.bannerView sd_setImageWithURL:[NSURL URLWithString:tenantInfo.tenantIcon] placeholderImage:IMG_PLACE_HOLDER];
+    [self.bannerView sd_setBackgroundImageWithURL:[NSURL URLWithString:tenantInfo.tenantIcon] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
     
 }
 
@@ -64,12 +64,20 @@
     return _tagView;
 }
 
-- (UIImageView *)bannerView
+- (UIButton *)bannerView
 {
     if (!_bannerView) {
         CGFloat y = SCREEN_FIX(45);
-        _bannerView = [[UIImageView alloc] initWithFrame:CGRectMake(0, y, self.width, self.height - y)];
+        _bannerView = [[UIButton alloc] initWithFrame:CGRectMake(0, y, self.width, self.height - y)];
         [self addSubview:_bannerView];
+        
+        @weakify(self)
+        [_bannerView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+           @strongify(self)
+            if (self.bannerBlock) {
+                self.bannerBlock(self.tenantInfo);
+            }
+        }];
     }
     return _bannerView;
 }

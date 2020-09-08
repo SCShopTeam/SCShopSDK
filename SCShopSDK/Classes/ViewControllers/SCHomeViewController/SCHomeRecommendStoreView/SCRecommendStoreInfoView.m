@@ -1,15 +1,15 @@
 //
-//  SCNearShopInfoView.m
+//  SCRecommendStoreInfoView.m
 //  shopping
 //
 //  Created by gejunyu on 2020/8/20.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCNearShopInfoView.h"
-#import "SCHomeShopModel.h"
+#import "SCRecommendStoreInfoView.h"
+#import "SCHomeStoreModel.h"
 
-@interface SCNearShopInfoView ()
+@interface SCRecommendStoreInfoView ()
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UIButton *styleIcon;
 @property (nonatomic, strong) UIButton *enterButton;
@@ -18,7 +18,7 @@
 
 @end
 
-@implementation SCNearShopInfoView
+@implementation SCRecommendStoreInfoView
 
 - (instancetype)initWithFrame:(CGRect)frame
 {

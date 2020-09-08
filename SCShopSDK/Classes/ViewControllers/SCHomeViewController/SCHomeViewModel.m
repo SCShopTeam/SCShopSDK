@@ -17,10 +17,10 @@
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *bannerList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *touchList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *adList;                //广告
-@property (nonatomic, strong) SCHomeShopModel *nearShopModel;                      //附近门店
-@property (nonatomic, strong) NSArray <SCHomeShopModel *> *goodShopList;           //发现好店
+@property (nonatomic, strong) SCHomeStoreModel *recommendStoreModel;               //推荐门店
+@property (nonatomic, strong) NSArray <SCHomeStoreModel *> *goodStoreList;         //发现好店
 
-@property (nonatomic, assign) BOOL isShopRequesting;
+@property (nonatomic, assign) BOOL isStoreRequesting;
 @property (nonatomic, weak) SCHomeCacheModel *currentCacheModel;                   //商品列表缓存
 @property (nonatomic, strong) NSMutableDictionary <NSNumber *, SCHomeCacheModel *> *commodityDict;
 
@@ -88,6 +88,8 @@
     SCCategoryModel *categoryModel = self.categoryList[index];
     NSString *typeNum = categoryModel.typeNum ?: @"";
     
+    self.currentCacheModel = nil;
+    
     [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
         SCHomeCacheModel *cacheModel = self.commodityDict[@(index)];
         if (!cacheModel) {
@@ -96,7 +98,6 @@
         }
         
         if (pageNum == 1) {
-            cacheModel.page = 1;
             [cacheModel.commodityList removeAllObjects];
         }
         
@@ -258,9 +259,9 @@
 }
 
 
-- (void)requestStoreRecommend:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
+- (void)requestStoreList:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
-    if (self.isShopRequesting) {
+    if (self.isStoreRequesting) {
         return;
     }
 
@@ -271,7 +272,7 @@
             }
             
         }else {
-            [self requestStoreRecommendWithLongitude:longitude latitude:latitude success:success failure:failure];
+            [self requestStoreDataWithLongitude:longitude latitude:latitude success:success failure:failure];
             
         }
     }];
@@ -280,9 +281,9 @@
     
 }
 
-- (void)requestStoreRecommendWithLongitude:(NSString *)longitude latitude:(NSString *)latitude success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
+- (void)requestStoreDataWithLongitude:(NSString *)longitude latitude:(NSString *)latitude success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
-    self.isShopRequesting = YES;
+    self.isStoreRequesting = YES;
     
     NSDictionary *param = @{@"longitude": longitude,
                             @"latitude": latitude};
@@ -290,7 +291,7 @@
     [SCRequestParams shareInstance].requestNum = @"shop.recommend";
 
     [SCNetworkManager POST:SC_SHOP_RECOMMEND parameters:param success:^(id  _Nullable responseObject) {
-        self.isShopRequesting = NO;
+        self.isStoreRequesting = NO;
         NSString *key = @"shopList";
         if (![SCNetworkTool checkResult:responseObject key:key forClass:NSArray.class failure:failure]) {
             return;
@@ -304,17 +305,17 @@
             if (!VALID_DICTIONARY(dict)) {
                 continue;
             }
-            SCHomeShopModel *model = [SCHomeShopModel yy_modelWithDictionary:dict];
+            SCHomeStoreModel *model = [SCHomeStoreModel yy_modelWithDictionary:dict];
 
             if (model.shopInfo.isFindGood) {   //发现好店
                 [mulArr addObject:model];
                 
             }else {   //附近门店
-                self.nearShopModel = model;
+                self.recommendStoreModel = model;
             }
         }
         
-        self.goodShopList = mulArr;
+        self.goodStoreList = mulArr;
         
         
         if (success) {
@@ -322,7 +323,7 @@
         }
         
     } failure:^(NSString * _Nullable errorMsg) {
-        self.isShopRequesting = NO;
+        self.isStoreRequesting = NO;
         if (failure) {
             failure(errorMsg);
         }

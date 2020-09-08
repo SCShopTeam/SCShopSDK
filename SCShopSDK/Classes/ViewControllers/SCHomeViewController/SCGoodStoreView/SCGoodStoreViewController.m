@@ -1,19 +1,19 @@
 //
-//  SCGoodShopViewController.m
+//  SCGoodStoreViewController.m
 //  shopping
 //
 //  Created by gejunyu on 2020/8/20.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCGoodShopViewController.h"
-#import "SCGoodShopCell.h"
+#import "SCGoodStoreViewController.h"
+#import "SCGoodStoreCell.h"
 
-@interface SCGoodShopViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface SCGoodStoreViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView *tableView;
 @end
 
-@implementation SCGoodShopViewController
+@implementation SCGoodStoreViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -33,19 +33,19 @@
 #pragma mark -UITableViewDelegate, UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.viewModel.goodShopList.count;
+    return self.viewModel.goodStoreList.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return kGoodShopRowH;
+    return kGoodStoreRowH;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SCGoodShopCell *cell = (SCGoodShopCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCGoodShopCell.class) forIndexPath:indexPath];
+    SCGoodStoreCell *cell = (SCGoodStoreCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCGoodStoreCell.class) forIndexPath:indexPath];
     
-    SCHomeShopModel *model = self.viewModel.goodShopList[indexPath.row];
+    SCHomeStoreModel *model = self.viewModel.goodStoreList[indexPath.row];
     
     cell.model = model;
     
@@ -80,7 +80,7 @@
         _tableView.dataSource = self;
         _tableView.separatorStyle = UITableViewCellSelectionStyleNone;
         [self.view addSubview:_tableView];
-        [_tableView registerClass:SCGoodShopCell.class forCellReuseIdentifier:NSStringFromClass(SCGoodShopCell.class)];
+        [_tableView registerClass:SCGoodStoreCell.class forCellReuseIdentifier:NSStringFromClass(SCGoodStoreCell.class)];
     }
     return _tableView;
 }

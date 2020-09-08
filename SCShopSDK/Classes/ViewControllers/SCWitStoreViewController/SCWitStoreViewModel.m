@@ -17,15 +17,17 @@
 
 @interface SCWitStoreViewModel ()
 @property (nonatomic, strong) SCWitStoreModel *nearStoreModel;                //距离最近
-@property (nonatomic, strong) NSMutableArray <SCWitStoreModel *> *storeList;  //查询列表
+//@property (nonatomic, strong) NSMutableArray <SCWitStoreModel *> *storeList;  //查询列表
 @property (nonatomic, strong) NSArray <SCWitStoreModel *> *professionalList;  //猜你喜欢
 @property (nonatomic, strong) NSArray <SCAreaModel *> *areaList;              //地市列表
 @property (nonatomic, strong) NSArray <SCWitStoreGoodModel *> *goodsList;     //推荐商品
-@property (nonatomic, assign) BOOL hasMoreData;
+//@property (nonatomic, assign) BOOL hasMoreData;
+@property (nonatomic, weak) SCWitStoreCacheModel *currentCacheModel;
 
 @property (nonatomic, strong) SCWitRequestModel *requestModel;
-
-
+@property (nonatomic, copy) NSString *currentKey;
+@property (nonatomic, strong) NSMutableDictionary <NSString *, SCWitStoreCacheModel *> *storeDict;
+@property (nonatomic, strong) SCWitStoreCacheModel *searchResultModel;
 
 @end
 
@@ -37,6 +39,11 @@
         [self requestProfessionalStore];
     }
     return self;
+}
+
+- (void)cleanCacheData
+{
+    [self.storeDict removeAllObjects];
 }
 
 //地市列表
@@ -85,47 +92,85 @@
     }];
 }
 
-//门店
-- (void)requestAggregateStoreWithPage:(NSInteger)page completion:(SCHttpRequestCompletion)completion
+- (NSString *)getCacheKey
 {
-    self.requestModel.page = page;
-    NSDictionary *param = [self.requestModel getParams];
+    NSMutableString *key = [NSMutableString stringWithFormat:@"%li_%li",self.requestModel.queryType,self.requestModel.sortType];
     
-    if (!_storeList) {
-        _storeList = [NSMutableArray arrayWithCapacity:kCountCurPage];
+    if (self.requestModel.queryType == SCWitQueryTypeSearch) {
+        [key appendFormat:@"_%@", self.requestModel.queryStr];
+        
     }
-    
-    if (page == 1) {
-        [self.storeList removeAllObjects];
-    }
-    
-    self.hasMoreData = NO;
-    
-    [SCNetworkManager POST:SC_AGGREGATE_STORE parameters:param success:^(id  _Nullable responseObject) {
-        NSString *key = @"result";
+    return key;
+}
 
-        
-        if (![SCNetworkTool checkResult:responseObject key:key forClass:NSArray.class completion:completion]) {
-            return;
-        }
-        
-        
-        NSArray *result = responseObject[A_RESULT][key];
-        self.hasMoreData = result.count >= kCountCurPage;
-        
-        NSMutableArray *models = [self handleStoreResult:result];
-        
-        [self.storeList addObjectsFromArray:models];
-        
-        if (page == 1 && self.requestModel.queryType == SCWitQueryTypeNear && self.requestModel.sortType == SCWitSortTypeNear && self.storeList.count > 0 ) {
-            //更新最近门店信息
-            self.nearStoreModel = self.storeList.firstObject;
-        }
-
+- (void)getAggregateStore:(NSInteger)page showCache:(BOOL)showCache completion:(SCHttpRequestCompletion)completion
+{
+    NSString *key = [self getCacheKey];
+    self.currentKey = key;
+    
+    SCWitStoreCacheModel *cacheModel = self.storeDict[key];
+    
+    if (showCache && cacheModel) {
+        self.currentCacheModel = cacheModel;
         if (completion) {
             completion(nil);
         }
         
+    }else {
+        [self requestAggregateStoreData:page completion:completion];
+    }
+
+}
+
+//门店
+- (void)requestAggregateStoreData:(NSInteger)page completion:(SCHttpRequestCompletion)completion
+{
+    self.requestModel.page = page;
+    NSDictionary *param = [self.requestModel getParams];
+    
+    self.currentCacheModel = nil;
+
+    [SCNetworkManager POST:SC_AGGREGATE_STORE parameters:param success:^(id  _Nullable responseObject) {
+        NSString *resultKey = @"result";
+
+        if (![SCNetworkTool checkResult:responseObject key:resultKey forClass:NSArray.class completion:completion]) {
+            return;
+        }
+        
+        
+        NSArray *result = responseObject[A_RESULT][resultKey];
+        
+        NSMutableArray *models = [self handleStoreResult:result];
+        
+        if (page == 1 && self.requestModel.queryType == SCWitQueryTypeNear && self.requestModel.sortType == SCWitSortTypeNear && models.count > 0 ) {
+            //更新最近门店信息
+            self.nearStoreModel = models.firstObject;
+        }
+
+        //做缓存
+        NSString *cacheKey = [self getCacheKey];
+        
+        SCWitStoreCacheModel *cacheModel = self.storeDict[cacheKey];
+        
+        if (!cacheModel) {
+            cacheModel = [SCWitStoreCacheModel new];
+            self.storeDict[cacheKey] = cacheModel;
+        }
+        
+        if (page == 1) {
+            [cacheModel.storeList removeAllObjects];
+        }
+        
+        [cacheModel.storeList addObjectsFromArray:models];
+        cacheModel.hasMoreData = result.count >= kCountCurPage;
+        cacheModel.page = page;
+        
+        if ([self.currentKey isEqualToString:cacheKey]) {
+            self.currentCacheModel = cacheModel;
+            if (completion) {
+                completion(nil);
+            }
+        }
 
     } failure:^(NSString * _Nullable errorMsg) {
         if (completion) {
@@ -364,6 +409,14 @@
     return _requestModel;
 }
 
+- (NSMutableDictionary<NSString *,SCWitStoreCacheModel *> *)storeDict
+{
+    if (!_storeDict) {
+        _storeDict = [NSMutableDictionary dictionary];
+    }
+    return _storeDict;
+}
+
 @end
 
 
@@ -426,3 +479,15 @@
 @end
 
 
+
+@implementation SCWitStoreCacheModel
+
+- (NSMutableArray<SCWitStoreModel *> *)storeList
+{
+    if (!_storeList) {
+        _storeList = [NSMutableArray array];
+    }
+    return _storeList;
+}
+
+@end

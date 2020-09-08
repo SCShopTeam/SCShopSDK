@@ -1,5 +1,5 @@
 //
-//  SCHomeShopModel.h
+//  SCHomeStoreModel.h
 //  shopping
 //
 //  Created by gejunyu on 2020/8/19.
@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCHomeShopModel : NSObject
+@interface SCHomeStoreModel : NSObject
 @property (nonatomic, strong) SCHShopInfoModel *shopInfo;
 @property (nonatomic, strong) NSArray <SCHBannerModel *> *bannerList;
 @property (nonatomic, strong) NSArray <SCHActModel *> *actList;

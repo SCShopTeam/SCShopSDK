@@ -1,5 +1,5 @@
 //
-//  SCGoodShopViewController.h
+//  SCGoodStoreViewController.h
 //  shopping
 //
 //  Created by gejunyu on 2020/8/20.
@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCGoodShopViewController : SCBaseViewController
+@interface SCGoodStoreViewController : SCBaseViewController
 @property (nonatomic, strong) SCHomeViewModel *viewModel;
 
 @end

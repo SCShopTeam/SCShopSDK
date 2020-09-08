@@ -9,7 +9,7 @@
 #import "SCURLSerialization.h"
 #import "SCWebViewCustom.h"
 #import "SCShoppingManager.h"
-#import "SCShopHomeViewController.h"
+#import "SCStoreHomeViewController.h"
 #import "SCLifeViewController.h"
 #import "SCCartViewController.h"
 #import "SCMainTabBarController.h"
@@ -56,7 +56,7 @@ static SCURLSerialization *urlSerialization = nil;
 }
 
 -(void)gotoController:(NSString *)url navigation:(UINavigationController *)nav{
-  //jsmcc://M/5?tenantNum=TN00000010
+    //jsmcc://M/5?tenantNum=TN00000010
     //phonestore://jumpToLogin
     if (![SCUtilities isValidString:url] || [url containsString:@"http"] || [url containsString:@"https"] ) {
         return;
@@ -92,7 +92,7 @@ static SCURLSerialization *urlSerialization = nil;
             }
         }
         
-       
+        
         if ([cmd isEqualToString:@"M/1"] ||
             [cmd isEqualToString:@"M/2"] ||
             [cmd isEqualToString:@"M/3"] ||
@@ -106,7 +106,7 @@ static SCURLSerialization *urlSerialization = nil;
             UITabBarController *tabBar = [SCUtilities currentTabBarController];
             
             if (!tabBar) {
-                
+                [SCShoppingManager showMallPageFrom:nav pageType:num-1];
             }else{
                 for (int i=0; i<tabBar.viewControllers.count; i++)
                 {
@@ -115,24 +115,22 @@ static SCURLSerialization *urlSerialization = nil;
                 }
                 [tabBar setSelectedIndex:num-1];
             }
-            
-
         }
         
-       
+        
         if ([cmd isEqualToString:@"M/5"]) { //商铺详情
             NSString *num = paramDic[@"tenantNum"];//[paramArr.lastObject componentsSeparatedByString:@"="].lastObject;
-            SCShopHomeViewController *shop = [[SCShopHomeViewController alloc]init];
+            SCStoreHomeViewController *shop = [[SCStoreHomeViewController alloc]init];
             shop.tenantNum = num;
             [nav pushViewController:shop animated:YES];
         }else if ([cmd isEqualToString:@"M/6"]){  //配件
             if ([SCUtilities isValidDictionary:paramDic]) {
-               
+                
                 SCLifeViewController *tag = [[SCLifeViewController alloc]init];
                 tag.paramDic = paramDic;
                 [nav pushViewController:tag animated:YES];
             }
-           
+            
         }else if ([cmd isEqualToString:@"M/7"]){  //购物车
             SCCartViewController *cat = [[SCCartViewController alloc]init];
             [nav pushViewController:cat animated:YES];
@@ -154,12 +152,25 @@ static SCURLSerialization *urlSerialization = nil;
             if (manager.delegate && [manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
                 [manager.delegate scLoginWithNav:nav back:^(UIViewController * _Nonnull controller) {
                     [[NSNotificationCenter defaultCenter]postNotificationName:@"ocCallBackJsFunction" object:@{@"name":@"ztLoginCallBack"}];
-
+                    
                 }];
                 
             }
         }
     }
+}
+
+
+-(void)ecmcJumpToShopWithUrl:(NSString *)url navigation:(UINavigationController *)nav delegate:(id)delegate{
+    
+    if (delegate) {
+        [SCShoppingManager sharedInstance].delegate = delegate;
+    }
+    
+    if ([SCUtilities isValidString:url] && nav) {
+        [self gotoController:url navigation:nav];
+    }
+    
 }
 
 @end

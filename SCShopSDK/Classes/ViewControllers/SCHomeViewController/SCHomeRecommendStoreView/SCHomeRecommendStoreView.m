@@ -1,26 +1,26 @@
 //
-//  SCHomeNearShopView.m
+//  SCHomeRecommendStoreView.m
 //  shopping
 //
 //  Created by gejunyu on 2020/8/20.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCHomeNearShopView.h"
+#import "SCHomeRecommendStoreView.h"
 #import <SDCycleScrollView/SDCycleScrollView.h>
-#import "SCNearShopActView.h"
-#import "SCNearShopInfoView.h"
+#import "SCRecommendStoreActView.h"
+#import "SCRecommendStoreInfoView.h"
 
-@interface SCHomeNearShopView () <SDCycleScrollViewDelegate>
+@interface SCHomeRecommendStoreView () <SDCycleScrollViewDelegate>
 @property (nonatomic, strong) UIView *topView;
-@property (nonatomic, strong) SCNearShopInfoView *shopInfoView;
+@property (nonatomic, strong) SCRecommendStoreInfoView *shopInfoView;
 @property (nonatomic, strong) SDCycleScrollView *bannerView;
-@property (nonatomic, strong) SCNearShopActView *actView;
+@property (nonatomic, strong) SCRecommendStoreActView *actView;
 
 
 @end
 
-@implementation SCHomeNearShopView
+@implementation SCHomeRecommendStoreView
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -30,7 +30,7 @@
     return self;
 }
 
-- (void)setModel:(SCHomeShopModel *)model
+- (void)setModel:(SCHomeStoreModel *)model
 {
     _model = model;
     
@@ -89,10 +89,10 @@
     return _topView;
 }
 
-- (SCNearShopInfoView *)shopInfoView
+- (SCRecommendStoreInfoView *)shopInfoView
 {
     if (!_shopInfoView) {
-        _shopInfoView = [[SCNearShopInfoView alloc] initWithFrame:CGRectMake(0, self.topView.bottom, self.width, SCREEN_FIX(80))];
+        _shopInfoView = [[SCRecommendStoreInfoView alloc] initWithFrame:CGRectMake(0, self.topView.bottom, self.width, SCREEN_FIX(80))];
         [self addSubview:_shopInfoView];
         @weakify(self)
         _shopInfoView.enterShopBlock = ^(SCHShopInfoModel * _Nonnull model) {
@@ -119,11 +119,11 @@
     return _bannerView;
 }
 
-- (SCNearShopActView *)actView
+- (SCRecommendStoreActView *)actView
 {
     if (!_actView) {
         CGFloat y = self.bannerView.bottom;
-        _actView = [[SCNearShopActView alloc] initWithFrame:CGRectMake(0, y, self.width, self.height-y)];
+        _actView = [[SCRecommendStoreActView alloc] initWithFrame:CGRectMake(0, y, self.width, self.height-y)];
         [self addSubview:_actView];
         
         @weakify(self)

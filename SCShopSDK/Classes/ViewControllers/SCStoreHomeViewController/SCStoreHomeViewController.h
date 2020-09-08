@@ -1,5 +1,5 @@
 //
-//  SCShopHomeViewController.h
+//  SCStoreHomeViewController.h
 //  shopping
 //
 //  Created by gejunyu on 2020/7/23.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCShopHomeViewController : SCBaseViewController
+@interface SCStoreHomeViewController : SCBaseViewController
 
 
 @property(nonatomic,strong)NSString *tenantNum;

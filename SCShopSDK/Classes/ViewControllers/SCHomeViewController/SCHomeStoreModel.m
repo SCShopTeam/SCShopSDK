@@ -1,14 +1,14 @@
 //
-//  SCHomeShopModel.m
+//  SCHomeStoreModel.m
 //  shopping
 //
 //  Created by gejunyu on 2020/8/19.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCHomeShopModel.h"
+#import "SCHomeStoreModel.h"
 
-@implementation SCHomeShopModel
+@implementation SCHomeStoreModel
 
 + (NSDictionary<NSString *,id> *)modelContainerPropertyGenericClass
 {

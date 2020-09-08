@@ -1,13 +1,13 @@
 //
-//  SCNearShopActView.m
+//  SCRecommendStoreActView.m
 //  shopping
 //
 //  Created by gejunyu on 2020/8/20.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCNearShopActView.h"
-#import "SCHomeShopModel.h"
+#import "SCRecommendStoreActView.h"
+#import "SCHomeStoreModel.h"
 
 @interface SCActShopView : UIView
 @property (nonatomic, assign) NSInteger index;
@@ -18,7 +18,7 @@
 
 @end
 
-@interface SCNearShopActView ()
+@interface SCRecommendStoreActView ()
 @property (nonatomic, strong) UILabel *leftTitleLabel;
 @property (nonatomic, strong) UILabel *leftSubTitleLabel;
 @property (nonatomic, strong) UILabel *rigthTitleLabel;
@@ -27,7 +27,7 @@
 
 @end
 
-@implementation SCNearShopActView
+@implementation SCRecommendStoreActView
 
 - (void)actShopSelect:(SCHActImageModel *)model index:(NSInteger)index
 {

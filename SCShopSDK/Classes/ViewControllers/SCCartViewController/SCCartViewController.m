@@ -40,8 +40,6 @@
     UITapGestureRecognizer *mutiTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mutiTapAction)];
     mutiTap.numberOfTapsRequired = 5;
     [self.navigationController.navigationBar addGestureRecognizer:mutiTap];
-    
-    [self showLoading];
 }
 
 - (void)mutiTapAction

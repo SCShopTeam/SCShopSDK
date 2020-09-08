@@ -1,5 +1,5 @@
 //
-//  SCGoodShopCell.h
+//  SCGoodStoreCell.h
 //  shopping
 //
 //  Created by gejunyu on 2020/8/17.
@@ -7,14 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SCHomeShopModel.h"
+#import "SCHomeStoreModel.h"
 
-#define kGoodShopRowH SCREEN_FIX(170)
+#define kGoodStoreRowH SCREEN_FIX(158)
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCGoodShopCell : UITableViewCell
-@property (nonatomic, strong) SCHomeShopModel *model;
+@interface SCGoodStoreCell : UITableViewCell
+@property (nonatomic, strong) SCHomeStoreModel *model;
 
 @property (nonatomic, copy) void (^enterShopBlock)(SCHShopInfoModel *shopModel);
 @property (nonatomic, copy) void (^imgBlock)(NSInteger index, SCHActImageModel *imgModel);

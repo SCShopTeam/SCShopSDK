@@ -1,5 +1,5 @@
 //
-//  SCNearShopActView.h
+//  SCRecommendStoreActView.h
 //  shopping
 //
 //  Created by gejunyu on 2020/8/20.
@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCNearShopActView : UIView
+@interface SCRecommendStoreActView : UIView
 @property (nonatomic, strong) SCHActModel *actModel;
 
 @property (nonatomic, strong) NSArray <SCHActModel *> *actList;

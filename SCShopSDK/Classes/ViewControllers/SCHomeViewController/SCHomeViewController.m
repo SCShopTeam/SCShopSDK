@@ -11,25 +11,25 @@
 #import "SCShopCollectionCell.h"
 #import "SCHomeBannerView.h"
 #import "SCHomeGridView.h"
-#import "SCHomeNearShopView.h"
+#import "SCHomeRecommendStoreView.h"
 #import "SCHomeAdView.h"
 #import "SCSearchViewController.h"
 #import "SCHomeViewModel.h"
-#import "SCGoodShopView.h"
+#import "SCGoodStoreView.h"
 #import "SCShoppingManager.h"
-#import "SCGoodShopViewController.h"
+#import "SCGoodStoreViewController.h"
 #import "SCURLSerialization.h"
 #import "SCTagView.h"
 #import "SCCollectionViewFlowLayout.h"
 #import "SCHomeEmptyView.h"
-//删
+
 //#import "SCWitStoreViewController.h"
-//#import "SCShopHomeViewController.h"
+//#import "SCStoreHomeViewController.h"
 
 typedef NS_ENUM(NSInteger, SCHomeSection) {
     SCHomeSectionBanner,      //轮播
     SCHomeSectionGrid,        //宫格
-    SCHomeSectionNear,        //附近门店
+    SCHomeSectionRecommend,   //推荐门店
     SCHomeSectionGood,        //发现好店
     SCHomeSectionAd,          //广告
     SCHomeSectionTagItems,    //标签和商品
@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 
 #define kBannerH     SCREEN_FIX(219.5) + STATUS_BAR_HEIGHT
 #define kGridH       SCREEN_FIX(201)
-#define kNearH       (self.viewModel.nearShopModel ? SCREEN_FIX(373) : 0)
+#define kRecommnedH  (self.viewModel.recommendStoreModel ? SCREEN_FIX(373) : 0)
 #define kAdH         (self.viewModel.adList.count ? SCREEN_FIX(117) : SCREEN_FIX(0))
 
 @interface SCHomeViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
@@ -57,7 +57,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     
     [self prepareUI];
     
-    [self showLoading];
+//    [self showLoading];
     [self requestTotalData:1];
     
 }
@@ -133,8 +133,8 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 //请求店铺
 - (void)requestStoreRecommand
 {
-    [self.viewModel requestStoreRecommend:^(id  _Nullable responseObject) {
-        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionNear]];
+    [self.viewModel requestStoreList:^(id  _Nullable responseObject) {
+        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionRecommend]];
         [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGood]];
     } failure:^(NSString * _Nullable errorMsg) {
     }];
@@ -145,7 +145,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 - (void)requestCommodityList:(NSInteger)page showCache:(BOOL)showCache
 {
     [self.viewModel getCommodityList:page showCache:showCache completion:^(NSString * _Nullable errorMsg) {
-        [self stopLoading];
+//        [self stopLoading];
         SCHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
         self.collectionView.page = cacheModel.page;
         [self.collectionView reloadDataShowFooter:cacheModel.hasMoreData];
@@ -170,11 +170,11 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     }else if (section == SCHomeSectionGrid) { //grid
         height = kGridH;
         
-    }else if (section == SCHomeSectionNear) { //near
-        height = kNearH;
+    }else if (section == SCHomeSectionRecommend) { //recommend
+        height = kRecommnedH;
         
     }else if (section == SCHomeSectionGood) { //goodshop
-        height = [SCGoodShopView sectionHeight:self.viewModel.goodShopList.count];
+        height = [SCGoodStoreView sectionHeight:self.viewModel.goodStoreList.count];
         
     }else if (section == SCHomeSectionAd) { //ad
         height = kAdH;
@@ -221,33 +221,33 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         return gridView;
     }
     
-    if (section == SCHomeSectionNear) { //store
-        SCHomeNearShopView *nearView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeNearShopView.class) forIndexPath:indexPath];
-        nearView.model = self.viewModel.nearShopModel;
+    if (section == SCHomeSectionRecommend) { //store
+        SCHomeRecommendStoreView *recommendView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeRecommendStoreView.class) forIndexPath:indexPath];
+        recommendView.model = self.viewModel.recommendStoreModel;
         @weakify(self)
-        nearView.enterShopBlock = ^(SCHShopInfoModel * _Nonnull shopInfoModel) {
+        recommendView.enterShopBlock = ^(SCHShopInfoModel * _Nonnull shopInfoModel) {
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_C01" url:shopInfoModel.link inPage:NSStringFromClass(self.class)];
             [self pushToWebView:shopInfoModel.link title:@"智慧门店"];
         };
-        nearView.bannerBlock = ^(NSInteger index, SCHBannerModel * _Nonnull bannerModel) {
+        recommendView.bannerBlock = ^(NSInteger index, SCHBannerModel * _Nonnull bannerModel) {
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_C0%li",index+2) url:bannerModel.bannerImageLink inPage:NSStringFromClass(self.class)];
             [self pushToWebView:bannerModel.bannerImageLink title:@"详情"];
         };
         
-        nearView.actBlock = ^(NSInteger index, SCHActImageModel * _Nonnull imgModel) {
+        recommendView.actBlock = ^(NSInteger index, SCHActImageModel * _Nonnull imgModel) {
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_C0%li",index+5) url:imgModel.actImageLink inPage:NSStringFromClass(self.class)];
             [self pushToWebView:imgModel.actImageLink title:@"商品详情"];
         };
         
-        return nearView;
+        return recommendView;
     }
     
     if (section == SCHomeSectionGood) { //goodshop
-        SCGoodShopView *goodView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCGoodShopView.class) forIndexPath:indexPath];
-        goodView.goodShopList = self.viewModel.goodShopList;
+        SCGoodStoreView *goodView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCGoodStoreView.class) forIndexPath:indexPath];
+        goodView.goodStoreList = self.viewModel.goodStoreList;
         @weakify(self)
         goodView.moreBlock = ^{
             @strongify(self)
@@ -417,7 +417,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 
 - (void)pushToGoodShops
 {
-    SCGoodShopViewController *vc = [SCGoodShopViewController new];
+    SCGoodStoreViewController *vc = [SCGoodStoreViewController new];
     vc.viewModel = self.viewModel;
     [self.navigationController pushViewController:vc animated:YES];
 }
@@ -431,7 +431,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     [self requestCommodityList:1 showCache:YES];
     
     //悬停高度
-    CGFloat hoverY = kBannerH - self.topView.height + kGridH + kNearH + [SCGoodShopView sectionHeight:self.viewModel.goodShopList.count] + kAdH;
+    CGFloat hoverY = kBannerH - self.topView.height + kGridH + kRecommnedH + [SCGoodStoreView sectionHeight:self.viewModel.goodStoreList.count] + kAdH;
     if (self.collectionView.contentOffset.y > hoverY) {
         [self.collectionView setContentOffset:CGPointMake(0, hoverY) animated:NO];
     }
@@ -456,11 +456,10 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         [backButton sc_addEventTouchUpInsideHandle:^(UIButton * _Nonnull sender) {
             [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_A01" url:@"" inPage:NSStringFromClass(self.class)];
             [SCShoppingManager dissmissMallPage];
-            //删
+            
 //            SCWitStoreViewController *vc = [SCWitStoreViewController new];
 //            [self.navigationController pushViewController:vc animated:YES];
-            
-//            SCShopHomeViewController *vc = [SCShopHomeViewController new];
+//            SCStoreHomeViewController *vc = [SCStoreHomeViewController new];
 //            vc.tenantNum = @"supp329910042810";
 //            [self.navigationController pushViewController:vc animated:YES];
         }];
@@ -473,10 +472,8 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         @weakify(self)
         [serviceBtn sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
             @strongify(self)
-            NSString *param = [NSString stringWithFormat:@"phoneNum=%@&tenantId=1&skillId=1&requestSource=2",[SCUserInfo currentUser].phoneNumber];
-            NSString *base64Param = [NSString base64StringFromText:param];
-            NSString *fullUrl = [NSString stringWithFormat:@"%@%@",SC_KEFU_URL,base64Param];
-            [self pushToWebView:fullUrl title:@"客服"];
+             
+            [self pushToWebView:SC_ONLINE_SERVICE_URL title:@"在线客服"];
         }];
         [_topView addSubview:serviceBtn];
         
@@ -534,10 +531,10 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         [_collectionView registerClass:SCShopCollectionCell.class forCellWithReuseIdentifier:NSStringFromClass(SCShopCollectionCell.class)];
         [_collectionView registerClass:SCHomeBannerView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeBannerView.class)];
         [_collectionView registerClass:SCHomeGridView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeGridView.class)];
-        [_collectionView registerClass:SCHomeNearShopView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeNearShopView.class)];
+        [_collectionView registerClass:SCHomeRecommendStoreView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeRecommendStoreView.class)];
         [_collectionView registerClass:SCHomeAdView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeAdView.class)];
         [_collectionView registerClass:SCTagView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCTagView.class)];
-        [_collectionView registerClass:SCGoodShopView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCGoodShopView.class)];
+        [_collectionView registerClass:SCGoodStoreView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCGoodStoreView.class)];
         [_collectionView registerClass:SCHomeEmptyView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeEmptyView.class)];
         //
         [_collectionView showsRefreshHeader];

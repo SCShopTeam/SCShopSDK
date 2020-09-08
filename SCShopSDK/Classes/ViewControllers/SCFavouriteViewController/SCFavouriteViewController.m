@@ -25,7 +25,6 @@
     [super viewDidLoad];
     
     self.title = @"商品收藏";
-    [self showLoading];
 }
 
 - (void)viewWillAppear:(BOOL)animated

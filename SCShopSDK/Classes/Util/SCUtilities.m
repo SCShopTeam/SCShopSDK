@@ -546,7 +546,7 @@ DEF_SINGLETON(SCUtilities)
     NSString *deviceID = [NSString stringWithUUID];//[Utility UUID];
     NSString *platform = @"iphone";
     NSString *channel = @"sd";
-    NSString *ch = @"03";
+    NSString *ch = @"02";
     NSString *version = [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"];
     NSDateFormatter *dateFormatter = [SCUtilities dateFormatterWithFormatString:@"yyyyMMddHHmmss"];
 //    dateFormatter.dateFormat = @"yyyyMMddHHmmss";

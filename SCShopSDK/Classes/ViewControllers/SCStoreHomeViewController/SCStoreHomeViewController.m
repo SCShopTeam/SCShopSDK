@@ -1,75 +1,69 @@
 //
-//  SCShopHomeViewController.m
+//  SCStoreHomeViewController.m
 //  shopping
 //
 //  Created by gejunyu on 2020/7/23.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCShopHomeViewController.h"
+#import "SCStoreHomeViewController.h"
 #import "SCCollectionView.h"
 #import "SCSiftView.h"
 #import "SCShopCollectionCell.h"
-#import "SCShopHomeHeaderView.h"
-#import "SCShopViewModel.h"
+#import "SCStoreHomeHeaderView.h"
+#import "SCStoreHomeViewModel.h"
 #import "SCCategoryViewModel.h"
 
 #define kTopH SCREEN_FIX(185)
 
-@interface SCShopHomeViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
+@interface SCStoreHomeViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) SCCollectionView *collectionView;
 @property (nonatomic, strong) SCSiftView *siftView;
-@property (nonatomic, strong) SCShopViewModel *viewModel;
+@property (nonatomic, strong) SCStoreHomeViewModel *viewModel;
 @property (nonatomic, strong) UILabel *emptyTipLabel;
 @end
 
-@implementation SCShopHomeViewController
+@implementation SCStoreHomeViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     self.title = @"移动好货";
     
-    [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSCSDDP_A01" url:@"" inPage:NSStringFromClass(self.class)];
+    [self requestData];
     
-    [self requestData:1 showHud:YES requestHeader:YES];
 }
 
-- (void)requestData:(NSInteger)pageNum showHud:(BOOL)showHud requestHeader:(BOOL)requestHeader
-{   
+- (void)requestData
+{
     if (!VALID_STRING(self.tenantNum)) {
         return;
     }
     
-    if (showHud) {
-        [self showLoading];
-    }
-    
-    dispatch_group_t group = dispatch_group_create();
-    
-    if (pageNum == 1 && requestHeader && !self.viewModel.tenantInfo) {
-        // 请求商铺信息
-        dispatch_group_enter(group);
-        [self.viewModel requestTenantInfo:_tenantNum completion:^(NSString * _Nullable errorMsg) {
-            dispatch_group_leave(group);
-        }];
-    }
+    [self requestTenantInfo];
+    [self requestCommodityList:1 showCache:YES];
+}
 
-    //请求商品列表
-    dispatch_group_enter(group);
+- (void)requestTenantInfo
+{
+    [self.viewModel requestTenantInfo:_tenantNum completion:^(NSString * _Nullable errorMsg) {
+        [self.collectionView reloadData];
+    }];
+}
+
+- (void)requestCommodityList:(NSInteger)page showCache:(BOOL)showCache
+{
     SCCategorySortKey sort      = self.siftView.currentSortKey;
     SCCategorySortType sortType = self.siftView.currentSortType;
-    [self.viewModel requestCommodityList:_tenantNum sort:sort sortType:sortType pageNum:pageNum completion:^(NSString * _Nullable errorMsg) {
-        dispatch_group_leave(group);
+    
+    [self.viewModel getCommodityList:_tenantNum sort:sort sortType:sortType pageNum:page showCache:showCache completion:^(NSString * _Nullable errorMsg) {
+        SCStoreHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
+        
+        self.collectionView.page = cacheModel.page;
+        [self.collectionView reloadDataShowFooter:cacheModel.hasMoreData];
+        self.emptyTipLabel.hidden = cacheModel.commodityList.count > 0;
     }];
 
-
-    // 当上述两个请求结束后，收到通知，在此做后续工作
-    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-        [self stopLoading];
-        [self.collectionView reloadDataShowFooter:self.viewModel.hasMoreData];
-        self.emptyTipLabel.hidden = self.viewModel.commodityList.count > 0;
-    });
 }
 
 
@@ -81,32 +75,44 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
-    SCShopHomeHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCShopHomeHeaderView.class) forIndexPath:indexPath];
-    
+    SCStoreHomeHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCStoreHomeHeaderView.class) forIndexPath:indexPath];
     header.tenantInfo = self.viewModel.tenantInfo;
+    
+    header.bannerBlock = ^(SCTenantInfoModel * _Nonnull tenantInfo) {
+        [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSCSDDP_A01" url:@"" inPage:NSStringFromClass(self.class)];
+    };
+    
+    
+    
     
     return header;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return self.viewModel.commodityList.count;
+    SCStoreHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
+    return cacheModel.commodityList.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     SCShopCollectionCell *cell = (SCShopCollectionCell *)[collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(SCShopCollectionCell.class) forIndexPath:indexPath];
     
-    SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
+    SCStoreHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
     
-    cell.model = model;
+    if (indexPath.row < cacheModel.commodityList.count) {
+        SCCommodityModel *model = cacheModel.commodityList[indexPath.row];
+        cell.model = model;
+    }
+
     
     return cell;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
+    SCStoreHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
+    SCCommodityModel *model = cacheModel.commodityList[indexPath.row];
     
     [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"商品详情" navigation:self.navigationController];
 }
@@ -141,7 +147,7 @@
         [self.view sendSubviewToBack:_collectionView];
         
         [_collectionView registerClass:SCShopCollectionCell.class forCellWithReuseIdentifier:NSStringFromClass(SCShopCollectionCell.class)];
-        [_collectionView registerClass:SCShopHomeHeaderView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCShopHomeHeaderView.class)];
+        [_collectionView registerClass:SCStoreHomeHeaderView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCStoreHomeHeaderView.class)];
         
         [_collectionView showsRefreshHeader];
 //        [_collectionView showsRefreshFooter];
@@ -149,7 +155,7 @@
         @weakify(self)
         _collectionView.refreshingBlock = ^(NSInteger page) {
             @strongify(self)
-            [self requestData:page showHud:NO requestHeader:YES];
+            [self requestCommodityList:page showCache:NO];
         };
     }
     return _collectionView;
@@ -165,17 +171,22 @@
         _siftView.selectBlock = ^{
           @strongify(self)
             self.collectionView.page = 1;
-            [self requestData:1 showHud:YES requestHeader:NO];
+            [self requestCommodityList:1 showCache:YES];
+            
+            //悬停高度
+            if (self.collectionView.contentOffset.y > kTopH) {
+                [self.collectionView setContentOffset:CGPointMake(0, kTopH) animated:NO];
+            }
         };
         
     }
     return _siftView;
 }
 
-- (SCShopViewModel *)viewModel
+- (SCStoreHomeViewModel *)viewModel
 {
     if (!_viewModel) {
-        _viewModel = [SCShopViewModel new];
+        _viewModel = [SCStoreHomeViewModel new];
     }
     return _viewModel;
 }

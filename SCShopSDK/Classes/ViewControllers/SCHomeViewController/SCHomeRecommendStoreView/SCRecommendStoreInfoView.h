@@ -1,5 +1,5 @@
 //
-//  SCNearShopInfoView.h
+//  SCRecommendStoreInfoView.h
 //  shopping
 //
 //  Created by gejunyu on 2020/8/20.
@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCNearShopInfoView : UIView
+@interface SCRecommendStoreInfoView : UIView
 @property (nonatomic, strong) SCHShopInfoModel *shopInfoModel;
 @property (nonatomic, strong) NSArray <NSString *> *couponList;
 

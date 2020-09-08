@@ -90,8 +90,8 @@
 //    __block typeof(currenttypeNum)wkcurrenttypeNum = currenttypeNum;
     commodityCtr.tableView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreCommodity)];
     
-    commodityCtr.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(reloadData)];
-    
+//    commodityCtr.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(reloadData)];
+//
     pageNum = 1;
     [self requestData];
 }
@@ -103,11 +103,11 @@
     [self requestCommodities:currenttypeNum];
 }
 
--(void)reloadData{
-    [commodityCtr.tableView.mj_header endRefreshing];
-     pageNum = 1;
-    [self requestData];
-}
+//-(void)reloadData{
+//    [commodityCtr.tableView.mj_header endRefreshing];
+//     pageNum = 1;
+//    [self requestData];
+//}
 
 #pragma mark   ----request----
 -(void)requestData{

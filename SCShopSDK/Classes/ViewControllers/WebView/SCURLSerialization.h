@@ -18,9 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)gotoController:(NSString *)url navigation:(UINavigationController *)nav;
 
-//- (void)gotoWebViewCustom:(NSString *)url
-//     title:(NSString *)t
-//navigation:(UINavigationController *)navigationController;
+
+/// 外部短地址跳转商城
+/// @param url 短地址
+/// @param nav navigationcontroller
+/// @param delegate 商城的代理
+-(void)ecmcJumpToShopWithUrl:(NSString *)url navigation:(UINavigationController *)nav delegate:(id)delegate;
 
 
 @end

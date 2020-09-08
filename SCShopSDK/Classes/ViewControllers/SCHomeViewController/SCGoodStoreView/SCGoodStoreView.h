@@ -1,5 +1,5 @@
 //
-//  SCGoodShopView.h
+//  SCGoodStoreView.h
 //  shopping
 //
 //  Created by gejunyu on 2020/8/17.
@@ -7,14 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SCHomeShopModel.h"
+#import "SCHomeStoreModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 
-@interface SCGoodShopView : UICollectionReusableView
+@interface SCGoodStoreView : UICollectionReusableView
 
-@property (nonatomic, strong) NSArray <SCHomeShopModel *> *goodShopList;
+@property (nonatomic, strong) NSArray <SCHomeStoreModel *> *goodStoreList;
 
 //查看更多
 @property (nonatomic, copy) void (^moreBlock)(void);

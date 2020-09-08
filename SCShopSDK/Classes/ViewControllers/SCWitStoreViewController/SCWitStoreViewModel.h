@@ -12,17 +12,19 @@
 #import "SCWitStoreGoodModel.h"
 #import "SCWitStoreHeader.h"
 @class SCWitRequestModel;
+@class SCWitStoreCacheModel;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCWitStoreViewModel : NSObject
 
 @property (nonatomic, strong, readonly) SCWitStoreModel *nearStoreModel;                //距离最近
-@property (nonatomic, strong, readonly) NSMutableArray <SCWitStoreModel *> *storeList;  //查询列表
+//@property (nonatomic, strong, readonly) NSMutableArray <SCWitStoreModel *> *storeList;  //查询列表
 @property (nonatomic, strong, readonly) NSArray <SCWitStoreModel *> *professionalList;  //猜你喜欢
 @property (nonatomic, strong, readonly) NSArray <SCAreaModel *> *areaList;              //地市列表
 @property (nonatomic, strong, readonly) NSArray <SCWitStoreGoodModel *> *goodsList;     //推荐商品
-@property (nonatomic, assign, readonly) BOOL hasMoreData;
+@property (nonatomic, weak, readonly) SCWitStoreCacheModel *currentCacheModel;
+//@property (nonatomic, assign, readonly) BOOL hasMoreData;
 
 @property (nonatomic, assign, readonly) BOOL showProfessionalList;
 
@@ -30,12 +32,14 @@ NS_ASSUME_NONNULL_BEGIN
 //请求模型
 @property (nonatomic, strong, readonly) SCWitRequestModel *requestModel;
 
+//清除缓存
+- (void)cleanCacheData;
 
 //地市列表
 - (void)requestAreaList:(void (^)(NSString *areaName))areaBlock;
 
 //门店
-- (void)requestAggregateStoreWithPage:(NSInteger)page completion:(SCHttpRequestCompletion)completion;
+- (void)getAggregateStore:(NSInteger)page showCache:(BOOL)showCache completion:(SCHttpRequestCompletion)completion;
 
 //推荐商品
 - (void)requestRecommendGoods:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
@@ -56,6 +60,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) SCWitSortType sortType;
 @property (nonatomic, copy, nullable) NSString *queryStr;
 @property (nonatomic, assign) NSInteger page;
+
+@end
+
+@interface SCWitStoreCacheModel : NSObject
+@property (nonatomic, strong) NSMutableArray <SCWitStoreModel *> *storeList;
+@property (nonatomic, assign) NSInteger page;
+@property (nonatomic, assign) BOOL hasMoreData;
 
 @end
 
