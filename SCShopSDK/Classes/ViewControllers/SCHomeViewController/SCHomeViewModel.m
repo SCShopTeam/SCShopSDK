@@ -31,14 +31,6 @@
 - (void)requestCategoryList:(SCHttpRequestCompletion)completion
 {
     [SCCategoryViewModel requestCategory:^(NSArray<SCCategoryModel *> * _Nonnull categoryList) {
-        if (categoryList.count == 0) {
-            self.categoryList = nil;
-            if (completion) {
-                completion(@"获取分类信息失败");
-            }
-            return;
-        }
-        
         categoryList.firstObject.selected = YES;  //默认第一个选中
         self.categoryList = categoryList;
         [self.commodityDict removeAllObjects];
@@ -60,7 +52,7 @@
         
     } failure:^(NSString * _Nullable errorMsg) {
         if (completion) {
-            completion(@"获取分类信息失败");
+            completion(errorMsg);
         }
     }];
 }

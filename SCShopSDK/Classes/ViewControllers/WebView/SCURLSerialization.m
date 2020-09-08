@@ -10,7 +10,7 @@
 #import "SCWebViewCustom.h"
 #import "SCShoppingManager.h"
 #import "SCShopHomeViewController.h"
-#import "SCTagShopsViewController.h"
+#import "SCLifeViewController.h"
 #import "SCCartViewController.h"
 #import "SCMainTabBarController.h"
 #import "SCWebViewController.h"
@@ -128,7 +128,7 @@ static SCURLSerialization *urlSerialization = nil;
         }else if ([cmd isEqualToString:@"M/6"]){  //配件
             if ([SCUtilities isValidDictionary:paramDic]) {
                
-                SCTagShopsViewController *tag = [[SCTagShopsViewController alloc]init];
+                SCLifeViewController *tag = [[SCLifeViewController alloc]init];
                 tag.paramDic = paramDic;
                 [nav pushViewController:tag animated:YES];
             }

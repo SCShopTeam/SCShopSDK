@@ -17,7 +17,7 @@
 #import "SCApolloOrderModel.h"
 #import "MJRefresh.h"
 #import "SCAlertViewController.h"
-#import "SCTagShopsViewController.h"
+#import "SCLifeViewController.h"
 @interface SCMyOrderViewController ()<UITableViewDelegate,UITableViewDataSource,scMyOrderTopItemDelegate>
 @property(nonatomic,strong)UITableView *listTable;
 @property(nonatomic,strong) SCMyOrderTopItemView *topItemView;
@@ -169,7 +169,7 @@
 }
 
 -(void)toGuangGuang{
-    SCTagShopsViewController *tag = [[SCTagShopsViewController alloc]init];
+    SCLifeViewController *tag = [[SCLifeViewController alloc]init];
     [self.navigationController pushViewController:tag animated:YES];
 }
 

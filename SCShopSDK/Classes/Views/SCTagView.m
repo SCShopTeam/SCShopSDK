@@ -56,6 +56,20 @@
     self.collectionView.backgroundColor = backgroundColor;
 }
 
+- (void)pushToIndex:(NSInteger)index
+{
+    [self.categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull model, NSUInteger idx, BOOL * _Nonnull stop) {
+        model.selected = idx == index;
+    }];
+    
+    [self.collectionView reloadData];
+    
+    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
+    
+    if (self.selectBlock) {
+        self.selectBlock(index);
+    }
+}
 
 #pragma mark -<UICollectionViewDelegate, UICollectionViewDataSource>
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section

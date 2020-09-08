@@ -1,5 +1,5 @@
 //
-//  SCTagShopsViewController.h
+//  SCLifeViewController.h
 //  shopping
 //
 //  Created by gejunyu on 2020/7/13.
@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCTagShopsViewController : SCBaseViewController
+@interface SCLifeViewController : SCBaseViewController
 
 /**
  paramDic：

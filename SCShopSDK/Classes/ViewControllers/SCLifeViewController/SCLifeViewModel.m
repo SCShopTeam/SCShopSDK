@@ -1,27 +1,38 @@
 //
-//  SCTagShopViewModel.m
+//  SCLifeViewModel.m
 //  shopping
 //
 //  Created by gejunyu on 2020/8/7.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCTagShopViewModel.h"
+#import "SCLifeViewModel.h"
 #import "SCCategoryViewModel.h"
+#import "SCLifeSubViewController.h"
 
-@interface SCTagShopViewModel ()
+@interface SCLifeViewModel ()
 @property (nonatomic, assign) BOOL hasMoreData;
 @property (nonatomic, strong) NSArray <SCCategoryModel *> *categoryList;
+@property (nonatomic, strong) NSArray <SCLifeSubViewController *> *subVcList;
 @property (nonatomic, strong) NSMutableArray <SCCommodityModel *> *commodityList;
 
 @end
 
-@implementation SCTagShopViewModel
+@implementation SCLifeViewModel
 
-- (void)requestCategoryList:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
+- (void)requestCategoryList:(NSDictionary *)paramDic success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
     [SCCategoryViewModel requestCategory:^(NSArray<SCCategoryModel *> * _Nonnull categoryList) {
         self.categoryList = categoryList;
+        [self setModelSelected:paramDic];
+        
+        NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:categoryList.count];
+        for (SCCategoryModel *model in categoryList) {
+            SCLifeSubViewController *vc = [SCLifeSubViewController new];
+            vc.typeNum = model.typeNum;
+            [mulArr addObject:vc];
+        }
+        self.subVcList = mulArr.copy;
         if (success) {
             success(nil);
         }
@@ -33,25 +44,12 @@
     }];
 }
 
-- (void)requestCommodityList:(NSInteger)page completion:(SCHttpRequestCompletion)completion
+
+
+- (void)requestCommodityList:(NSString *)typeNum page:(NSInteger)page completion:(SCHttpRequestCompletion)completion
 {
-    
-    if (self.categoryList.count == 0) {
-        if (completion) {
-            completion(@"param null");
-        }
-        return;
-    }
-    
     if (page == 1) {
         [self.commodityList removeAllObjects];
-    }
-    
-    NSString *typeNum = @"";
-    for (SCCategoryModel *model in self.categoryList) {
-        if (model.selected) {
-            typeNum = model.typeNum;
-        }
     }
     
     [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:page success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
@@ -74,10 +72,7 @@
 {
     //        指定类别 typeNum：分类编码[一级、二级编码都可以]
     //        指定品牌 brandNum：品牌编码
-    if (self.categoryList.count == 0) {
-        return;
-    }
-    
+
     if (!VALID_DICTIONARY(paramDic)) {
         self.categoryList.firstObject.selected = YES;
         return;

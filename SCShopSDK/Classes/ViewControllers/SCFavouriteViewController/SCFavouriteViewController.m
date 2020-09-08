@@ -11,7 +11,7 @@
 #import "SCFavouriteViewModel.h"
 #import "SCFavouriteListView.h"
 #import "SCCartEmptyView.h"
-#import "SCTagShopsViewController.h"
+#import "SCLifeViewController.h"
 
 @interface SCFavouriteViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) SCCollectionView *collectionView;
@@ -163,7 +163,7 @@
             @weakify(self)
             header.pushBlock = ^{
                 @strongify(self)
-                [self.navigationController pushViewController:[SCTagShopsViewController new] animated:YES];
+                [self.navigationController pushViewController:[SCLifeViewController new] animated:YES];
             };
             
             return header;

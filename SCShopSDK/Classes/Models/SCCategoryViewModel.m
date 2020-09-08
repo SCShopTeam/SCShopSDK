@@ -21,7 +21,7 @@
     [SCRequest scCategoryListBlock:^(BOOL success, NSArray * _Nullable objArr, NSString * _Nullable errMsg) {
         if (!success) {
             if (failureBlock) {
-                failureBlock(errMsg);
+                failureBlock(@"分类信息请求失败");
             }
             return;
         }
@@ -35,11 +35,20 @@
             SCCategoryModel *model = [SCCategoryModel yy_modelWithDictionary:dict];
             [mulArr addObject:model];
         }
+        
+        if (mulArr.count > 0) {
+            if (successBlock) {
+                successBlock(mulArr.copy);
+            }
+            
+        }else {
+            if (failureBlock) {
+                failureBlock(@"分类信息请求失败");
+            }
+        }
 
         
-        if (successBlock) {
-            successBlock(mulArr.copy);
-        }
+
         
     }];
 }

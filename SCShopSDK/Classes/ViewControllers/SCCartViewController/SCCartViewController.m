@@ -12,7 +12,7 @@
 #import "SCCartViewModel.h"
 #import "SCWebViewController.h"
 #import "SCCartEmptyView.h"
-#import "SCTagShopsViewController.h"
+#import "SCLifeViewController.h"
 
 #define kStoreSectionMargin SCREEN_FIX(11.5)
 
@@ -163,7 +163,7 @@
         @weakify(self)
         header.pushBlock = ^{
             @strongify(self)
-            [self.navigationController pushViewController:[SCTagShopsViewController new] animated:YES];
+            [self.navigationController pushViewController:[SCLifeViewController new] animated:YES];
         };
         
         return header;
@@ -242,12 +242,14 @@
 - (void)commitCart:(SCCartModel *)cart
 {   
     NSString *url = [self.viewModel getOrderUrl:cart];
+
+    [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"" navigation:self.navigationController];
     
-    SCWebViewCustom *vc = [SCWebViewCustom new];
-    vc.hideNavigationBar = YES;
-    vc.jsIsHiddenNav = YES;
-    vc.urlString = url;
-    [self.navigationController pushViewController:vc animated:YES];
+//    SCWebViewCustom *vc = [SCWebViewCustom new];
+//    vc.hideNavigationBar = YES;
+//    vc.jsIsHiddenNav = YES;
+//    vc.urlString = url;
+//    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)pushDetail:(NSString *)url

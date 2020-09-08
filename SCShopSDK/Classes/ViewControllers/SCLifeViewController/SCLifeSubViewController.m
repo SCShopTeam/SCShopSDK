@@ -1,55 +1,34 @@
 //
-//  SCTagShopsViewController.m
+//  SCLifeSubViewController.m
 //  shopping
 //
-//  Created by gejunyu on 2020/7/13.
+//  Created by gejunyu on 2020/9/7.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCTagShopsViewController.h"
-#import "SCTagView.h"
-#import "SCTagShopViewModel.h"
+#import "SCLifeSubViewController.h"
+#import "SCLifeViewModel.h"
 #import "SCShopTableCell.h"
 
-@interface SCTagShopsViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface SCLifeSubViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) SCTableView *tableView;
-@property (nonatomic, strong) SCTagView *tagView;
-@property (nonatomic, strong) SCTagShopViewModel *viewModel;
+@property (nonatomic, strong) SCLifeViewModel *viewModel;
 @property (nonatomic, strong) UILabel *emptyTipLabel;
+
 @end
 
-@implementation SCTagShopsViewController
+@implementation SCLifeSubViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = @"智能生活";
-    
-    [self requestCategoryList];
-    
-}
-
-- (void)requestCategoryList
-{
-    [self showLoading];
-    [self.viewModel requestCategoryList:^(id  _Nullable responseObject) {
-        [self.viewModel setModelSelected:self.paramDic];
-
-        self.tagView.categoryList = self.viewModel.categoryList;
-        [self requestCommodityList:1];
-        
-    } failure:^(NSString * _Nullable errorMsg) {
-        [self stopLoading];
-        [self showWithStatus:errorMsg];
-    }];
+    [self requestCommodityList:1];
 }
 
 
 - (void)requestCommodityList:(NSInteger)page
 {
-    [self showLoading];
-    [self.viewModel requestCommodityList:page completion:^(NSString * _Nullable errorMsg) {
-        [self stopLoading];
+    [self.viewModel requestCommodityList:_typeNum page:page completion:^(NSString * _Nullable errorMsg) {
         [self.tableView reloadDataShowFooter:self.viewModel.hasMoreData];
         
         if (errorMsg) {
@@ -59,7 +38,6 @@
             self.emptyTipLabel.hidden = self.viewModel.commodityList.count;
         }
     }];
-
 }
 
 #pragma mark -UITableViewDelegate, UITableViewDataSource
@@ -88,33 +66,15 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
-    
+    //改
     [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"商品详情" navigation:self.navigationController];
-}
-
-- (SCTagView *)tagView
-{
-    if (!_tagView) {
-        _tagView = [[SCTagView alloc] initWithFrame:CGRectMake(0, SCREEN_FIX(10), self.view.width, SCREEN_FIX(30))];
-        [self.view addSubview:_tagView];
-        
-        @weakify(self)
-        _tagView.selectBlock = ^(NSInteger index) {
-            @strongify(self)
-            self.tableView.page = 1;
-            [self requestCommodityList:1];
-        };
-
-    }
-    return _tagView;
 }
 
 
 - (SCTableView *)tableView
 {
     if (!_tableView) {
-        CGFloat y = self.tagView.bottom + SCREEN_FIX(5);
-        _tableView = [[SCTableView alloc] initWithFrame:CGRectMake(0, y, SCREEN_WIDTH, SCREEN_HEIGHT- NAV_BAR_HEIGHT - y)];
+        _tableView = [[SCTableView alloc] initWithFrame:self.view.bounds];
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         _tableView.delegate   = self;
         _tableView.dataSource = self;
@@ -131,10 +91,10 @@
     return _tableView;
 }
 
-- (SCTagShopViewModel *)viewModel
+- (SCLifeViewModel *)viewModel
 {
     if (!_viewModel) {
-        _viewModel = [SCTagShopViewModel new];
+        _viewModel = [SCLifeViewModel new];
     }
     return _viewModel;
 }
@@ -153,6 +113,5 @@
     }
     return _emptyTipLabel;
 }
-
 
 @end
