@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "SCHomeStoreModel.h"
 
-#define kGoodStoreRowH SCREEN_FIX(158)
+#define kGoodStoreRowH SCREEN_FIX(153)
 
 NS_ASSUME_NONNULL_BEGIN
 

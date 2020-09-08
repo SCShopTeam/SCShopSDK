@@ -157,8 +157,8 @@ static AFHTTPSessionManager *_sessionManager;
     NSString *appPwd    = [SCRequestParams shareInstance].appPwd ?: @"";
     NSString *cmtokenid = [SCRequestParams shareInstance].sessionId ?: @"";
     
-    if ([URL containsString:APOLLO_HOST]) {
-        NSString *userRegion = [SCRequestParams shareInstance].userRegion ?: ([SCLocationService sharedInstance].cityCode ?: @"");
+    if ([URL containsString:APOLLO_HOST] || [URL isEqualToString:SC_MYORDER_LIST_MD]) {
+        NSString *userRegion = [SCRequestParams shareInstance].userRegion ?: ([SCLocationService sharedInstance].cityCode ?: @"14");
         [_sessionManager.requestSerializer setValue:cmtokenid forHTTPHeaderField:@"B2C-Token"];
         [_sessionManager.requestSerializer setValue:userRegion forHTTPHeaderField:@"B2C-AreaNum"];
     }

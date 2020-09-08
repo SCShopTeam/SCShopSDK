@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 +(NSString *)mallPhone;
 +(NSString *)userAreaNum;
 
-//+(NSString *)getAuthtoken:(NSString *)name;
 
 @end
 

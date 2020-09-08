@@ -29,13 +29,7 @@ static SCRequestParams *params = nil;
 
 -(NSString *)sessionId{
     
-    _sessionId = [SCGetAuthToken cmtokenId];// [self getUnifyAuthToken];
-   
-//
-//     if (![SCUtilities isValidString:_sessionId]) {
-//         return @"nil";
-//     }
-    
+    _sessionId = [SCGetAuthToken cmtokenId];
     return _sessionId;
 }
 
