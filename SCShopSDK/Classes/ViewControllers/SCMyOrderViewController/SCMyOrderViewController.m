@@ -221,7 +221,12 @@
     
     SCMyOrderHeaderView *headerView = [[SCMyOrderHeaderView alloc]initWithFrame:CGRectMake(0, 0, _listTable.frame.size.width, 45)];
 //    headerView.dataDic = @{};
-    headerView.nameLab.text = _scOrders[section].tenantName;
+    if (self.isMDStyle) {
+        headerView.nameLab.text = _mdOrders[section].storeName;
+
+    }else{
+        headerView.nameLab.text = _scOrders[section].tenantName;
+    }
     __weak typeof(self)wkSelf = self;
     headerView.orderHeaderCallBack = ^(NSString * _Nonnull detailUrl) {
         NSLog(@"%@",detailUrl);
@@ -286,7 +291,7 @@
     }
     
     
-    cell.imageView.image = nil;
+    cell.imageView.image = [UIImage bundleImageNamed:@"home_witapollo_good_def"];
     cell.nameLab.text = @"";
     cell.desLab.text = @"";
     cell.priceLab.text = @"";
@@ -302,7 +307,7 @@
         
         ordOrderItemModel *model = _mdOrders[indexPath.section].ordOrderItemsAppVOList[indexPath.row];
         if ([SCUtilities isValidString:model.comGoodsPicturesUrl]) {
-            [cell.commodityImgV sd_setImageWithURL:[NSURL URLWithString:model.comGoodsPicturesUrl] placeholderImage:/*[UIImage bundleImageNamed:@"childCategory"]*/nil completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            [cell.commodityImgV sd_setImageWithURL:[NSURL URLWithString:model.comGoodsPicturesUrl] placeholderImage:[UIImage bundleImageNamed:@"home_witapollo_good_def"] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
                 CGSize size;
                 if (image.size.width>image.size.height) {
                     size = CGSizeMake(image.size.height, image.size.height);
@@ -320,8 +325,8 @@
             
         }
         cell.nameLab.text = [SCUtilities isValidString:model.skuName]?model.skuName:@"";
-        cell.desLab.text =  [SCUtilities isValidString:model.purchasePriceDesc]?model.purchasePriceDesc:@"";
-        cell.priceLab.text = [NSString stringWithFormat:@"%@",[NSNumber numberWithFloat: model.retailPrice]];
+        cell.desLab.text =  [SCUtilities isValidString:model.Attribution]?model.Attribution:@"";
+        cell.priceLab.text = model.purchasePriceDesc;
         cell.numLab.text = [NSString stringWithFormat:@"%ld",model.quantity];
     }else{
         
@@ -527,7 +532,7 @@
 
 -(void)md_requestOrderListWithStatus:(NSArray *)status{
     [self showLoading];
-    NSDictionary *dic = @{@"pageArg":@{@"pageNum":[NSNumber numberWithInt:_pageNum],@"pageSize":[NSNumber numberWithInt:10]},@"orderStatusList":@[@"0",@"01",@"17",@"20"]};
+    NSDictionary *dic = @{@"pageArg":@{@"pageNum":[NSNumber numberWithInt:_pageNum],@"pageSize":[NSNumber numberWithInt:10]},@"orderStatusList":status};
     
     __weak typeof(self)wkSelf = self;
     if(!self.mdOrders){
@@ -539,11 +544,14 @@
             NSArray *result = objDic[@"result"];
             if ([SCUtilities isValidArray:result]) {
                 for (NSDictionary *dic in result) {
-                    SCApolloOrderModel *model = [SCApolloOrderModel yy_modelWithDictionary:dic];
-                    if ([SCUtilities isValidDictionary:dic[@"ordOrderInfoVO"]] && [SCUtilities isValidString:dic[@"ordOrderInfoVO"][@"storeName"]]) {
-                        model.storeName = dic[@"ordOrderInfoVO"][@"storeName"];
-                        model.orderId = [NSString stringWithFormat:@"%@", dic[@"ordOrderInfoVO"][@"orderId"]];
-                    }
+                    
+                    SCApolloOrderModel *model = [[SCApolloOrderModel alloc]initWithDic:dic];
+                    
+//                    SCApolloOrderModel *model = [SCApolloOrderModel yy_modelWithDictionary:dic];
+//                    if ([SCUtilities isValidDictionary:dic[@"ordOrderInfoVO"]] && [SCUtilities isValidString:dic[@"ordOrderInfoVO"][@"storeName"]]) {
+//                        model.storeName = dic[@"ordOrderInfoVO"][@"storeName"];
+//                        model.orderId = [NSString stringWithFormat:@"%@", dic[@"ordOrderInfoVO"][@"orderId"]];
+//                    }
                     [wkSelf.mdOrders addObject:model];
                 }
             }

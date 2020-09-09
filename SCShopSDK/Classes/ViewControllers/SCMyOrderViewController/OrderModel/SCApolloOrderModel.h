@@ -13,7 +13,11 @@
 
 @property(nonatomic,strong)NSString *orderId;
 @property(nonatomic,strong)NSString *storeName;
-@property(nonatomic,strong)NSArray<ordOrderItemModel *> *ordOrderItemsAppVOList;
+@property(nonatomic,strong)NSMutableArray<ordOrderItemModel *> *ordOrderItemsAppVOList;
+
+//-(instancetype)
+
+-(instancetype)initWithDic:(NSDictionary *)dic;
 
 @end
 
@@ -30,4 +34,9 @@
 @property(nonatomic,assign)CGFloat retailPrice ;//= 10,
 @property(nonatomic,strong)NSString *skuId;// = "3000205001",
 @property(nonatomic,assign)CGFloat purchasePrice;// = <null>,
+
+@property(nonatomic,strong)NSString *Attribution;  //从数组goodsAttribution中遍历得到的字符串拼接
+
+-(instancetype)initWithDic:(NSDictionary *)dic;
+
 @end

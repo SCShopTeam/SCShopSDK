@@ -368,8 +368,8 @@
     
     [SCNetworkManager POST:SC_MYORDER_LIST_MD parameters:param success:^(id  _Nullable responseObject) {
            if ([SCUtilities isValidDictionary:responseObject]) {
-               NSString*resCode = responseObject[@"resCode"];
-               if ([SCUtilities isValidString:resCode] && [resCode isEqualToString:@"0"]) {
+               NSString*resCode = responseObject[@"resultCode"];
+               if ([SCUtilities isValidString:resCode] && [resCode isEqualToString:@"000000"]) {
                    NSDictionary *result = responseObject[@"result"];
                    if ([SCUtilities isValidDictionary:result]) {
                        callBack(YES,result,nil);
