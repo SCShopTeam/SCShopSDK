@@ -73,10 +73,9 @@
 
 - (void)requestCommodityListData:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum completion:(nonnull SCHttpRequestCompletion)completion
 {
-    self.currentCacheModel = nil;
+    NSString *key = [self getCacheKeyFromSort:sort sortType:sortType];
     
     [SCCategoryViewModel requestCommoditiesWithTypeNum:nil brandNum:nil tenantNum:tenantNum categoryName:nil cityNum:nil isPreSale:NO sort:sort sortType:sortType pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
-        NSString *key = [self getCacheKeyFromSort:sort sortType:sortType];
         
         SCStoreHomeCacheModel *cacheModel = self.commodityDict[key];
         
@@ -102,6 +101,10 @@
         }
         
     } failure:^(NSString * _Nullable errorMsg) {
+        if ([self.currentKey isEqualToString:key]) {
+            self.currentCacheModel = nil;
+        }
+        
         if (completion) {
             completion(errorMsg);
         }

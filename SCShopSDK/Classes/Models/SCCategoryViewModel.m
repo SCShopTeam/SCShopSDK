@@ -30,7 +30,7 @@
         
         for (NSDictionary *dict in objArr) {
             if (!VALID_DICTIONARY(dict)) {
-                return;
+                continue;
             }
             SCCategoryModel *model = [SCCategoryModel yy_modelWithDictionary:dict];
             [mulArr addObject:model];
@@ -103,7 +103,7 @@
         
         for (NSDictionary *dict in records) {
             if (!VALID_DICTIONARY(dict)) {
-                return;
+                continue;
             }
             SCCommodityModel *model = [SCCommodityModel yy_modelWithDictionary:dict];
             [mulArr addObject:model];

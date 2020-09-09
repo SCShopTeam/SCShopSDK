@@ -121,6 +121,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         if (errorMsg) {
             [self stopLoading];
             [self showWithStatus:errorMsg];
+            [self.collectionView reloadData];
             
         }else {
             self.collectionView.page = 1;

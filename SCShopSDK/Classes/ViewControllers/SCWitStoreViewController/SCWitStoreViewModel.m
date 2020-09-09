@@ -128,12 +128,19 @@
     self.requestModel.page = page;
     NSDictionary *param = [self.requestModel getParams];
     
-    self.currentCacheModel = nil;
+    NSString *cacheKey = [self getCacheKey];
 
     [SCNetworkManager POST:SC_AGGREGATE_STORE parameters:param success:^(id  _Nullable responseObject) {
         NSString *resultKey = @"result";
 
-        if (![SCNetworkTool checkResult:responseObject key:resultKey forClass:NSArray.class completion:completion]) {
+        if (![SCNetworkTool checkResult:responseObject key:resultKey forClass:NSArray.class completion:nil]) {
+            if ([self.currentKey isEqualToString:cacheKey]) {
+                self.currentCacheModel = nil;
+            }
+            if (completion) {
+                completion(@"获取失败");
+            }
+            
             return;
         }
         
@@ -148,8 +155,6 @@
         }
 
         //做缓存
-        NSString *cacheKey = [self getCacheKey];
-        
         SCWitStoreCacheModel *cacheModel = self.storeDict[cacheKey];
         
         if (!cacheModel) {
@@ -173,6 +178,10 @@
         }
 
     } failure:^(NSString * _Nullable errorMsg) {
+        if ([self.currentKey isEqualToString:cacheKey]) {
+            self.currentCacheModel = nil;
+        }
+        
         if (completion) {
             completion(errorMsg);
         }

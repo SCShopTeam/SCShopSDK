@@ -96,9 +96,7 @@
 
     SCCategoryModel *categoryModel = self.categoryList[index];
     NSString *typeNum = categoryModel.typeNum ?: @"";
-    
-    self.currentCacheModel = nil;
-    
+
     [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
         SCHomeCacheModel *cacheModel = self.commodityDict[@(index)];
         if (!cacheModel) {
@@ -123,6 +121,9 @@
 
 
     } failure:^(NSString * _Nullable errorMsg) {
+        if (categoryModel.selected) {
+            self.currentCacheModel = nil;
+        }
         
         if (completion) {
             completion(errorMsg);
