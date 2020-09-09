@@ -91,8 +91,9 @@ NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
         
         return url;
     }else {
-         NSMutableString *goodsNum = [NSMutableString string];
-         NSMutableString *num = [NSMutableString string];
+        NSMutableString *goodsNum = [NSMutableString string];
+        NSMutableString *num      = [NSMutableString string];
+        NSMutableString *objPrice = [NSMutableString string];
         
         for (SCCartItemModel *item in cart.cartItems) {
             if (!item.selected) {
@@ -103,9 +104,13 @@ NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
             
             NSString *addNum = num.length == 0 ? [NSString stringWithFormat:@"%li",item.itemQuantity] : [NSString stringWithFormat:@"|%li",item.itemQuantity];
             [num appendString:addNum];
+            
+            NSString *addPrice = objPrice.length == 0 ? [NSString stringWithFormat:@"%f",item.itemPrice] : [NSString stringWithFormat:@"|%f",item.itemPrice];
+            [objPrice appendString:addPrice];
+            
         }
         
-        NSString *url = NSStringFormat(@"http://wap.js.10086.cn/ex/%@mall/pages/order.html?goodsNum=%@&num=%@",(IS_RELEASE_ENVIRONMENT ? @"" : @"test/"),goodsNum,num);
+        NSString *url = NSStringFormat(@"http://wap.js.10086.cn/ex/%@mall/pages/order.html?goodsNum=%@&num=%@&objPrice=%@",(IS_RELEASE_ENVIRONMENT ? @"" : @"test/"),goodsNum,num,objPrice);
         return url;
     }
 }
