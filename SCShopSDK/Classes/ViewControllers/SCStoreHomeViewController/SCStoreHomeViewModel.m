@@ -14,8 +14,6 @@
 @property (nonatomic, weak) SCStoreHomeCacheModel *currentCacheModel;
 @property (nonatomic, copy) NSString *currentKey;
 
-@property (nonatomic, assign) BOOL hasCached;
-
 @end
 
 @implementation SCStoreHomeViewModel
@@ -70,18 +68,7 @@
     }else {
         [self requestCommodityListData:tenantNum sort:sort sortType:sortType pageNum:pageNum  completion:completion];
     }
-    
-    if (!_hasCached) { //未做过缓存，先做一次缓存
-        _hasCached = YES;
-        for (int i = SCCategorySortKeyRecommand; i<SCCategorySortKeySale+1; i++) {
-            for (int y = SCCategorySortTypeAsc; y < SCCategorySortTypeDesc+1; y++) {
-                NSString *k = [self getCacheKeyFromSort:i sortType:y];
-                if (![k isEqualToString:key]) {
-                    [self requestCommodityListData:tenantNum sort:i sortType:y pageNum:1 completion:completion];
-                }
-            }
-        }
-    }
+
 }
 
 - (void)requestCommodityListData:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum completion:(nonnull SCHttpRequestCompletion)completion
@@ -113,10 +100,6 @@
                 completion(nil);
             }
         }
-        
-
-
-           
         
     } failure:^(NSString * _Nullable errorMsg) {
         if (completion) {

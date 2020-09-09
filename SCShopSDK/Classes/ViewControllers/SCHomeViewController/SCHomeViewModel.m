@@ -35,21 +35,10 @@
         self.categoryList = categoryList;
         [self.commodityDict removeAllObjects];
         
-        //分类信息请求完，提前请求所有商品列表(除了第一个选中的,外部会请求)
-        [self.categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull cModel, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (idx > 0) {
-                [self requestCommodityListData:1 index:idx completion:nil];
-            }
-            
-        }];
-        
         if (completion) {
             completion(nil);
         }
-        
-
-        
-        
+  
     } failure:^(NSString * _Nullable errorMsg) {
         if (completion) {
             completion(errorMsg);
@@ -79,7 +68,27 @@
     }else {
         [self requestCommodityListData:pageNum index:index completion:completion];
     }
+    
+    //同时提前请求并缓存下一个和前一个index的数据
+    [self cacheDataLast:index-1 next:index+1 completion:completion];
 
+}
+
+- (void)cacheDataLast:(NSInteger)lastIndex next:(NSInteger)nextIndex completion:(SCHttpRequestCompletion)completion
+{
+    if (lastIndex >= 0) {
+        SCHomeCacheModel *lastModel = self.commodityDict[@(lastIndex)];
+        if (!lastModel) {
+            [self requestCommodityListData:1 index:lastIndex completion:completion];
+        }
+    }
+    
+    if (nextIndex < self.categoryList.count) {
+        SCHomeCacheModel *nextModel = self.commodityDict[@(nextIndex)];
+        if (!nextModel) {
+            [self requestCommodityListData:1 index:nextIndex completion:completion];
+        }
+    }
 }
 
 - (void)requestCommodityListData:(NSInteger)pageNum index:(NSInteger)index completion:(SCHttpRequestCompletion)completion
@@ -120,42 +129,6 @@
         }
     }];
     
-    //    if (pageNum == 1) {
-    //        if (!_commodityList) {
-    //            _commodityList = [NSMutableArray arrayWithCapacity:kCountCurPage];
-    //        }else {
-    //            [_commodityList removeAllObjects];
-    //        }
-    //    }
-    //
-    //
-    //
-    //    NSString *typeNum = @"";
-    //
-    //    for (SCCategoryModel *cModel in self.categoryList) {
-    //        if (cModel.selected) {
-    //            typeNum = cModel.typeNum;
-    //            break;
-    //        }
-    //    }
-    //
-    //    [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
-    //        self.commodityRequestFinish = YES;
-    //
-    //        [self.commodityList addObjectsFromArray:commodityList];
-    //        self.hasMoreData = commodityList.count >= kCountCurPage;
-    //
-    //        if (completion) {
-    //            completion(nil);
-    //        }
-    //
-    //    } failure:^(NSString * _Nullable errorMsg) {
-    //        self.commodityRequestFinish = YES;
-    //
-    //        if (completion) {
-    //            completion(errorMsg);
-    //        }
-    //    }];
 }
 
 - (void)requestTouchData:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
