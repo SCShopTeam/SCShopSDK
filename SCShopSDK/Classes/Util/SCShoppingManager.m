@@ -34,6 +34,8 @@
     self = [super init];
     if (self) {
         [self setupConfig];
+        
+        [self testFakeData];
     }
     return self;
 }
@@ -54,6 +56,13 @@
             }
         }
     }];
+    
+}
+
+//测试用假数据,模拟赋值
+- (void)testFakeData
+{
+
     
 }
 

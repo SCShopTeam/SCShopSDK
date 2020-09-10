@@ -55,7 +55,7 @@
 //商城订单详情
 #define SC_SC_ORDER_DETAIL(orderId) [NSString stringWithFormat:@"%@/mall/pages/orderDetail.html?orderNum=%@",BASE_WEB_URL,orderId]
 //门店订单详情
-#define SC_APOLLO_ORDER_DETAIL(orderId) [NSString stringWithFormat:@"https://cnr.asiainfo.com/cnr-web/orderDetail?orderId=%@&terminal=1",orderId]
+//#define SC_APOLLO_ORDER_DETAIL(orderId) [NSString stringWithFormat:@"https://cnr.asiainfo.com/cnr-web/orderDetail?orderId=%@&terminal=1",orderId] //废弃
 /*-----------------------------请求地址都写在下方----------------------------*/
 //登录
 #define SC_LOGIN   NSStringFormat(@"%@/user/user/login",BASE_HOST)

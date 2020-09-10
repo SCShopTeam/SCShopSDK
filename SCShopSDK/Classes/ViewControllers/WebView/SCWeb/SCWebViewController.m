@@ -208,7 +208,6 @@
         
         NSURL *url = [NSURL URLWithString:s];
         
-        //    >>>>>删  打包删除
 //        NSString *cmtokenid = [SCGetAuthToken cmtokenId];
 //        NSDictionary *properties = [[NSMutableDictionary alloc] init];
 //        [properties setValue:cmtokenid forKey:NSHTTPCookieValue];
@@ -231,7 +230,6 @@
 //        [properties1 setValue:@"/"forKey:NSHTTPCookiePath];
 //        NSHTTPCookie *cookie1 = [NSHTTPCookie cookieWithProperties:properties1];
 //
-        //        <<<<<<  打包删除  删到此处
         //        ==========
         
         
@@ -244,10 +242,8 @@
         NSHTTPCookie *cookie2 = [NSHTTPCookie cookieWithProperties:properties2];
         
         
-        //>>>>>删  打包删除
 //        NSArray *arrCookies = [NSArray arrayWithObjects:cookie,cookie1, cookie2, nil];
-        ////>>>>>删  打包删除  >> 打包替换
-                NSArray *arrCookies = [NSArray arrayWithObjects:cookie2, nil];
+        NSArray *arrCookies = [NSArray arrayWithObjects:cookie2, nil];
         
         self.cookieArray = arrCookies;//////
         NSDictionary *dictCookies = [NSHTTPCookie requestHeaderFieldsWithCookies:arrCookies];//将cookie设置到头中

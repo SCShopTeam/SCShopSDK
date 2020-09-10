@@ -106,7 +106,7 @@
         _emptyTipLabel.textAlignment = NSTextAlignmentCenter;
         _emptyTipLabel.font = SCFONT_SIZED(15);
         _emptyTipLabel.textColor = HEX_RGB(@"#999999");
-        _emptyTipLabel.text = @"抱歉，暂无商品，看看其他品类吧~";
+        _emptyTipLabel.text = @"抱歉，暂无商品，看看其他商品吧~";
         [_emptyTipLabel sizeToFit];
         _emptyTipLabel.center = self.tableView.center;
         [self.view addSubview:_emptyTipLabel];

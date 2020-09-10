@@ -41,10 +41,6 @@ DEF_SINGLETON(SCLocationService)
 {
     self.locationBlock = callBack;
 
-    //测试用
-//    self.longitude = @"118.7776612494253";
-//    self.latitude  = @"32.082742171903";
-//
     if (VALID_STRING(self.longitude) && VALID_STRING(self.latitude)) {
         [self callBack];
         return;
