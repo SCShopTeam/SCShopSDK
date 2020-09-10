@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, SCEnvitonmentKey) {
     SCEnvitonmentKeyRelease
 };
 
-static NSString *kSCEnvironmentChangeKey = @"SCEnvironmentChangeKey";
+static NSString *kSCEnvironmentChangeKey = @"SCEnvironmentChangeKey1.1.5";
 
 @interface SCNetworkTool ()
 AS_SINGLETON(SCNetworkTool)
@@ -42,7 +42,7 @@ DEF_SINGLETON(SCNetworkTool)
             self.isRelease = YES;
             
         }else { //首次加载，默认情况下的环境
-            self.isRelease = NO;
+            self.isRelease = YES;
         }
         
     }

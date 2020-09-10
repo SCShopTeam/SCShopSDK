@@ -210,7 +210,7 @@ static NSString *kReduce = @"-";
 - (UILabel *)tipLabel
 {
     if (!_tipLabel) {
-        _tipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.titleLabel.left, SCREEN_FIX(59.5), SCREEN_FIX(140), SCREEN_FIX(11))];
+        _tipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.titleLabel.left, SCREEN_FIX(55), SCREEN_FIX(160), SCREEN_FIX(11))];
         _tipLabel.font = SCFONT_SIZED(11);
         _tipLabel.textColor = HEX_RGB(@"#888888");
         [self.contentView addSubview:_tipLabel];
@@ -221,7 +221,7 @@ static NSString *kReduce = @"-";
 - (UILabel *)currentPriceLabel
 {
     if (!_currentPriceLabel) {
-        _currentPriceLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.titleLabel.left, self.tipLabel.bottom + SCREEN_FIX(10), 40, SCREEN_FIX(13))];
+        _currentPriceLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.titleLabel.left, self.tipLabel.bottom + SCREEN_FIX(5), 40, SCREEN_FIX(13))];
         [self.contentView addSubview:_currentPriceLabel];
     }
     return _currentPriceLabel;
@@ -254,7 +254,7 @@ static NSString *kReduce = @"-";
         CGFloat h = SCREEN_FIX(20);
         
         _countView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
-        _countView.bottom = kCartStoreRowH - SCREEN_FIX(20);
+        _countView.bottom = kCartStoreRowH - SCREEN_FIX(11.5);
         _countView.layer.borderWidth   = 1;
         _countView.layer.borderColor   = HEX_RGB(@"#EDEDED").CGColor;
         _countView.layer.cornerRadius  = 5;
