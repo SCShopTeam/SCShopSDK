@@ -97,7 +97,7 @@
         if ([mark isEqualToString:@"1"]) {
             mark = @"自营";
         }else if ([mark isEqualToString:@"2"]){
-            mark = @"他营";
+            mark = @"";// mark = @"他营";  //他营不显示标签
         }else if ([mark isEqualToString:@"3"]){
             mark = @"门店";
         }else{

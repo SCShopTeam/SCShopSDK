@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) NSString *cartItemNum;        //购物车记录编码
 @property (nonatomic, copy) NSString *itemNum;            //商品编码
-@property (nonatomic, assign) CGFloat itemPrice;         //商品价格
+@property (nonatomic, assign) CGFloat itemPrice;          //商品价格
 @property (nonatomic, copy) NSString *itemTitle;          //商品标题
 @property (nonatomic, copy) NSString *skuNum;             //商品SKU编码
 @property (nonatomic, copy) NSString *skuName;            //商品SKU名称

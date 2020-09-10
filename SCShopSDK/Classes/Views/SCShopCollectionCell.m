@@ -57,8 +57,9 @@
     //图片
     [self.icon sd_setImageWithURL:[NSURL URLWithString:model.picUrl] placeholderImage:IMG_PLACE_HOLDER];
     
-    //是否是自营
-    BOOL showTag = [model.tenantType isEqualToString:@"1"]; ;
+    //是否显示标签
+    BOOL showTag = VALID_STRING(model.tenantTypeStr);
+    self.tagLabel.text = model.tenantTypeStr;
     self.tagLabel.hidden = !showTag;
     
     //内容
@@ -122,7 +123,6 @@
         _tagLabel.textAlignment = NSTextAlignmentCenter;
         _tagLabel.layer.cornerRadius = 2.5;
         _tagLabel.layer.masksToBounds = YES;
-        _tagLabel.text = @"自营";
         [self.contentView addSubview:_tagLabel];
     }
     return _tagLabel;

@@ -253,7 +253,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         goodView.moreBlock = ^{
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_C09" url:@"" inPage:NSStringFromClass(self.class)];
-            [self pushToGoodShops];
+            [self pushToGoodStore];
         };
         goodView.enterShopBlock = ^(NSInteger row, SCHShopInfoModel * _Nonnull shopModel) {
             @strongify(self)
@@ -416,7 +416,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     
 }
 
-- (void)pushToGoodShops
+- (void)pushToGoodStore
 {
     SCGoodStoreViewController *vc = [SCGoodStoreViewController new];
     vc.viewModel = self.viewModel;

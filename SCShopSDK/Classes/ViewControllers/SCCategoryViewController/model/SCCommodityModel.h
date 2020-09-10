@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCCommodityModel : NSObject
 
 @property(nonatomic,strong)NSString *categoryName;
-@property(nonatomic,strong)NSString *tenantType;  //1:自营  2旗舰  3：
+@property(nonatomic,strong)NSString *tenantType;  //1:自营  2他营  3：门店
 @property(nonatomic,strong)NSString *categoryTitle;
 @property(nonatomic,strong)NSString *tenantNum;
 @property(nonatomic,strong)NSString *picUrl;
@@ -29,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,assign)CGFloat maxSuggPrice;  //划线价格
 
 @property(nonatomic,strong)NSString *detailUrl;
+
+//自定义
+@property (nonatomic, copy) NSString *tenantTypeStr;
 
 @end
 

@@ -24,11 +24,15 @@
             if ([SCUtilities isValidDictionary:ordOrderInfoVO]) {
                 NSString *orderId = [NSString stringWithFormat:@"%@",ordOrderInfoVO[@"orderId"]];
                 NSString *storeName = ordOrderInfoVO[@"storeName"];
+                NSString *orderDetailUrl = ordOrderInfoVO[@"orderDetailUrl"];
                 if ([SCUtilities isValidString:orderId]) {
                     self.orderId = orderId;
                 }
                 if ([SCUtilities isValidString:storeName]) {
                     self.storeName = storeName;
+                }
+                if ([SCUtilities isValidString:orderDetailUrl]) {
+                    self.orderDetailUrl = orderDetailUrl;
                 }
             }
             self.ordOrderItemsAppVOList = [NSMutableArray arrayWithCapacity:0];

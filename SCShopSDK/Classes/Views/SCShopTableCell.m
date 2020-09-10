@@ -104,8 +104,8 @@
     }];
     
     //是否有标签
-    BOOL showTag = [model.tenantType isEqualToString:@"1"];
-    self.titleTagLabel.text = @"自营";
+    BOOL showTag = VALID_STRING(model.tenantTypeStr);
+    self.titleTagLabel.text = model.tenantTypeStr;
     self.titleTagLabel.hidden = !showTag;
     
     //标题

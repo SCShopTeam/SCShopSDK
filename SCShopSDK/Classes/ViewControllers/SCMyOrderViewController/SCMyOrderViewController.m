@@ -232,7 +232,7 @@
         NSLog(@"%@",detailUrl);
         NSString *url;
         if (wkSelf.isMDStyle) {
-            url = SC_APOLLO_ORDER_DETAIL(wkSelf.mdOrders[section].orderId);
+            url = wkSelf.mdOrders[section].orderDetailUrl;//SC_APOLLO_ORDER_DETAIL(wkSelf.mdOrders[section].orderId);
         }else{
            url =  SC_SC_ORDER_DETAIL(wkSelf.scOrders[section].orderNum);
         }
@@ -365,7 +365,9 @@
     NSInteger section = indexPath.section;
     NSString *url = @"";
     if (self.isMDStyle) {
-        url = SC_APOLLO_ORDER_DETAIL(self.mdOrders[section].orderId);
+        NSString *orderDetailUrl = self.mdOrders[section].orderDetailUrl;
+        url = orderDetailUrl;
+//        url = SC_APOLLO_ORDER_DETAIL(self.mdOrders[section].orderId);
     }else{
         url =  SC_SC_ORDER_DETAIL(self.scOrders[section].orderNum);
     }

@@ -13,6 +13,7 @@
 
 @property(nonatomic,strong)NSString *orderId;
 @property(nonatomic,strong)NSString *storeName;
+@property(nonatomic,strong)NSString *orderDetailUrl;
 @property(nonatomic,strong)NSMutableArray<ordOrderItemModel *> *ordOrderItemsAppVOList;
 
 //-(instancetype)
