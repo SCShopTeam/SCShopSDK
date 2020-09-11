@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) SCHomeStoreModel *recommendStoreModel;               //推荐门店
 @property (nonatomic, strong, readonly) NSArray <SCHomeStoreModel *> *goodStoreList;         //发现好店
 
+@property (nonatomic, assign, readonly) BOOL isCategoryRequesting; //是否正在请求分类信息和商品
+
 
 - (void)requestCategoryList:(SCHttpRequestCompletion)completion;
 

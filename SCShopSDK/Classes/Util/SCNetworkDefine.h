@@ -54,6 +54,9 @@
 #define SC_ONLINE_SERVICE_URL @"https://wap.js.10086.cn/OnLine.thtml?&ent=5b95a47f84f94b718c36d1818b1feaac"
 //商城订单详情
 #define SC_SC_ORDER_DETAIL(orderId) [NSString stringWithFormat:@"%@/mall/pages/orderDetail.html?orderNum=%@",BASE_WEB_URL,orderId]
+//一小时达公告
+#define SC_ONE_HOUR_URL  @"http://wap.js.10086.cn/ex/test/mall/pages/notice.html"
+
 //门店订单详情
 //#define SC_APOLLO_ORDER_DETAIL(orderId) [NSString stringWithFormat:@"https://cnr.asiainfo.com/cnr-web/orderDetail?orderId=%@&terminal=1",orderId] //废弃
 /*-----------------------------请求地址都写在下方----------------------------*/

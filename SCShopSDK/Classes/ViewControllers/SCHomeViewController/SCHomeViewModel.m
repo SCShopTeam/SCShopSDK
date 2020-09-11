@@ -24,12 +24,15 @@
 @property (nonatomic, weak) SCHomeCacheModel *currentCacheModel;                   //商品列表缓存
 @property (nonatomic, strong) NSMutableDictionary <NSNumber *, SCHomeCacheModel *> *commodityDict;
 
+@property (nonatomic, assign) BOOL isCategoryRequesting; //是否正在请求商品
+
 @end
 
 @implementation SCHomeViewModel
 
 - (void)requestCategoryList:(SCHttpRequestCompletion)completion
 {
+    self.isCategoryRequesting = YES;
     [SCCategoryViewModel requestCategory:^(NSArray<SCCategoryModel *> * _Nonnull categoryList) {
         categoryList.firstObject.selected = YES;  //默认第一个选中
         self.categoryList = categoryList;
@@ -40,6 +43,7 @@
         }
   
     } failure:^(NSString * _Nullable errorMsg) {
+        self.isCategoryRequesting = NO;
         if (completion) {
             completion(errorMsg);
         }
@@ -64,6 +68,7 @@
         if (completion) {
             completion(nil);
         }
+        self.isCategoryRequesting = NO;
         
     }else {
         [self requestCommodityListData:pageNum index:index completion:completion];
@@ -118,7 +123,7 @@
                 completion(nil);
             }
         }
-
+        self.isCategoryRequesting = NO;
 
     } failure:^(NSString * _Nullable errorMsg) {
         if (categoryModel.selected) {
@@ -128,6 +133,7 @@
         if (completion) {
             completion(errorMsg);
         }
+        self.isCategoryRequesting = NO;
     }];
     
 }

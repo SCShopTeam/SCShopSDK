@@ -23,6 +23,7 @@
 @interface SCWitStoreViewController () <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UIView *topView;
 @property (nonatomic, strong) SCAreaButton *areaBtn;
+@property (nonatomic, strong) UIControl *notificationView;
 @property (nonatomic, strong) UIImageView *backImgView;
 @property (nonatomic, strong) UITextField *searchField;
 @property (nonatomic, strong) UIButton *deleteSearchButton;
@@ -363,10 +364,43 @@
 }
 
 #pragma mark -UI
+- (UIControl *)notificationView
+{
+    if (!_notificationView) {
+        _notificationView = [[UIControl alloc] initWithFrame:CGRectMake(0, 0, self.view.width, SCREEN_FIX(32))];
+        _notificationView.backgroundColor = HEX_RGB(@"#FFF2CE");
+        [self.view addSubview:_notificationView];
+        
+        CGFloat iconH = SCREEN_FIX(15);
+        UIImageView *icon = [[UIImageView alloc] initWithFrame:CGRectMake(SCREEN_FIX(14), (_notificationView.height-iconH)/2, SCREEN_FIX(17), iconH)];
+        icon.image = SCIMAGE(@"sc_wit_noti");
+        [_notificationView addSubview:icon];
+        
+        //label
+        CGFloat labelH = SCREEN_FIX(13);
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(icon.right + SCREEN_FIX(8), (_notificationView.height-labelH)/2, SCREEN_FIX(280), labelH)];
+        label.textColor = HEX_RGB(@"#FF9C3A");
+        label.textAlignment = NSTextAlignmentLeft;
+        label.font = SCFONT_SIZED(labelH);
+        label.text = @"关于线上商城提供1小时送达服务的公告>";
+        [_notificationView addSubview:label];
+        
+        //跳转
+        @weakify(self)
+        [_notificationView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+            @strongify(self)
+            [[SCURLSerialization shareSerialization] gotoWebcustom:SC_ONE_HOUR_URL title:@"公告" navigation:self.navigationController];
+        }];
+        
+    }
+    return _notificationView;
+}
+
+
 - (UIView *)topView
 {
     if (!_topView) {
-        _topView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, SCREEN_FIX(50.5))];
+        _topView = [[UIView alloc] initWithFrame:CGRectMake(0, self.notificationView.bottom, self.view.width, SCREEN_FIX(50.5))];
         [self.view addSubview:_topView];
         
         //地址按钮
@@ -417,7 +451,7 @@
     if (!_backImgView) {
         CGFloat w = self.view.width;
         CGFloat h = w/750*422;
-        _backImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
+        _backImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, self.topView.top, w, h)];
         _backImgView.image = SCIMAGE(@"sc_wit_top");
         [self.view addSubview:_backImgView];
         [self.view sendSubviewToBack:_backImgView];

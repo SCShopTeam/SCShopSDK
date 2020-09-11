@@ -32,6 +32,7 @@
 #import "NSString+SCExtension.h"
 #import "NSError+SCExtension.h"
 #import "NSObject+SCHUD.h"
+#import "UIControl+SCExtension.h"
 
 //View
 #import "SCTableView.h"

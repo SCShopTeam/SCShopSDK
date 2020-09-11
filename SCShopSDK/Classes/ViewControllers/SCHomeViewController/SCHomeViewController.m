@@ -106,12 +106,28 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 - (void)requestTouchData
 {
     [self.viewModel requestTouchData:^(id  _Nullable responseObject) {
-        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionBanner]];
-        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGrid]];
-        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionAd]];
+        if (!self.viewModel.isCategoryRequesting) {//分类商品接口请求完会刷新整个collectionview
+            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionBanner]];
+            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGrid]];
+            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionAd]];
+        }
         
     } failure:^(NSString * _Nullable errorMsg) {
     }];
+}
+
+//请求店铺
+- (void)requestStoreRecommand
+{
+    [self.viewModel requestStoreList:^(id  _Nullable responseObject) {
+        if (!self.viewModel.isCategoryRequesting) {
+            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionRecommend]];
+            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGood]];
+        }
+        
+    } failure:^(NSString * _Nullable errorMsg) {
+    }];
+    
 }
 
 //请求分类
@@ -124,22 +140,10 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
             [self.collectionView reloadData];
             
         }else {
-            self.collectionView.page = 1;
             [self requestCommodityList:1 showCache:NO];
         }
         
     }];
-}
-
-//请求店铺
-- (void)requestStoreRecommand
-{
-    [self.viewModel requestStoreList:^(id  _Nullable responseObject) {
-        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionRecommend]];
-        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGood]];
-    } failure:^(NSString * _Nullable errorMsg) {
-    }];
-    
 }
 
 //请求商品
