@@ -68,7 +68,7 @@
 
 - (void)pushToWebView:(NSString *)url title:(NSString *)title
 {
-    [[SCURLSerialization shareSerialization] gotoWebcustom:url title:title navigation:self.navigationController];
+    [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"" navigation:self.navigationController];
 }
 
 #pragma mark -ui

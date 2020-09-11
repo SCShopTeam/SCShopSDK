@@ -90,7 +90,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     SCSearchItemModel *item = self.viewModel.itemList[indexPath.row];
-    [[SCURLSerialization shareSerialization] gotoWebcustom:item.url title:item.title navigation:self.navigationController];
+    [[SCURLSerialization shareSerialization] gotoWebcustom:item.url title:/*item.title*/@"" navigation:self.navigationController];
 }
 
 

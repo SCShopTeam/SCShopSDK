@@ -239,7 +239,7 @@
         
         if ([SCUtilities isValidString:url]) {
 
-            [[SCURLSerialization shareSerialization]gotoWebcustom:url title:@"订单详情" navigation:self.navigationController];
+            [[SCURLSerialization shareSerialization]gotoWebcustom:url title:@"" navigation:self.navigationController];
         }
         
        
@@ -374,7 +374,7 @@
     
     if ([SCUtilities isValidString:url]) {
         
-        [[SCURLSerialization shareSerialization]gotoWebcustom:url title:@"订单详情" navigation:self.navigationController];
+        [[SCURLSerialization shareSerialization]gotoWebcustom:url title:@"" navigation:self.navigationController];
     }
 }
 
@@ -400,7 +400,7 @@
         case itemCouponType:
         {
             NSString *URL = SC_MYCOUPON_URL;
-            [[SCURLSerialization shareSerialization]gotoWebcustom:URL title:@"优惠券" navigation:self.navigationController];
+            [[SCURLSerialization shareSerialization]gotoWebcustom:URL title:@"" navigation:self.navigationController];
                   
 //            SCWebViewCustom *web = [[SCWebViewCustom alloc]init];
 //            web.urlString = URL;
@@ -422,7 +422,7 @@
             NSString *param = [NSString stringWithFormat:@"phoneNum=%@&tenantId=1&skillId=1&requestSource=2",userInfo.phoneNumber];
             NSString *base64Param = [NSString base64StringFromText:param];
             NSString *fullUrl = [NSString stringWithFormat:@"%@%@",SC_KEFU_URL,base64Param];
-            [[SCURLSerialization shareSerialization]gotoWebcustom:fullUrl title:@"客服" navigation:self.navigationController];
+            [[SCURLSerialization shareSerialization]gotoWebcustom:fullUrl title:@"" navigation:self.navigationController];
                   
 //            SCWebViewCustom *web = [[SCWebViewCustom alloc]init];
 //            web.urlString = fullUrl;

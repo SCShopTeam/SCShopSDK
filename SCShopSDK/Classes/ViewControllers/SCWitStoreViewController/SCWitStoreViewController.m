@@ -342,7 +342,7 @@
 - (void)pushToWebView:(NSString *)url title:(NSString *)title
 {
     [self hideNoNeedUI];
-    [[SCURLSerialization shareSerialization] gotoWebcustom:url title:title navigation:self.navigationController];
+    [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"" navigation:self.navigationController];
 }
 
 
@@ -389,7 +389,7 @@
         @weakify(self)
         [_notificationView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
             @strongify(self)
-            [[SCURLSerialization shareSerialization] gotoWebcustom:SC_ONE_HOUR_URL title:@"公告" navigation:self.navigationController];
+            [[SCURLSerialization shareSerialization] gotoWebcustom:SC_ONE_HOUR_URL title:@"" navigation:self.navigationController];
         }];
         
     }

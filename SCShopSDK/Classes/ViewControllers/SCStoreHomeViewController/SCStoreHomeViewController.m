@@ -114,7 +114,7 @@
     SCStoreHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
     SCCommodityModel *model = cacheModel.commodityList[indexPath.row];
     
-    [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"商品详情" navigation:self.navigationController];
+    [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"" navigation:self.navigationController];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

@@ -84,7 +84,7 @@ typedef void(^SC_WebBlock)(void);
 - (void)scSearch:(NSString *)text backData:(SC_SearchBlock)callBack;
 
 //web
--(void)scWebWithUrl:(NSString *)urlStr nav:(UINavigationController *)nav back:(SC_WebBlock)callBack;
+-(void)scWebWithUrl:(NSString *)urlStr title:(NSString *)title nav:(UINavigationController *)nav back:(SC_WebBlock)callBack;
 
 @end
 

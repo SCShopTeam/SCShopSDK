@@ -364,7 +364,7 @@
     
     if ([SCUtilities isValidString:model.detailUrl]) {
         
-        [[SCURLSerialization shareSerialization]gotoWebcustom:model.detailUrl title:@"商品详情" navigation:self.navigationController];
+        [[SCURLSerialization shareSerialization]gotoWebcustom:model.detailUrl title:@"" navigation:self.navigationController];
        
 //        SCWebViewCustom *web = [[SCWebViewCustom alloc]init];
 //        web.urlString = model.detailUrl;

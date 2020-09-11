@@ -229,7 +229,7 @@
 {
     if (indexPath.section != 0) { //为你推荐
         SCCommodityModel *model = self.viewModel.recommendList[indexPath.row];
-        [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"商品详情" navigation:self.navigationController];
+        [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"" navigation:self.navigationController];
         
     }
 }
@@ -244,7 +244,7 @@
 
 - (void)pushDetail:(NSString *)url
 {
-    [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"商品详情" navigation:self.navigationController];
+    [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"" navigation:self.navigationController];
 }
 
 - (void)deleteCartItem:(SCCartItemModel *)item needConfirm:(BOOL)needConfirm

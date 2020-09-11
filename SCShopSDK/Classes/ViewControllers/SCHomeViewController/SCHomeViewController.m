@@ -360,7 +360,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     
     SCCommodityModel *model = cacheModel.commodityList[indexPath.row];
     
-    [self pushToWebView:model.detailUrl title:@"商品详情"];
+    [self pushToWebView:model.detailUrl title:@""];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

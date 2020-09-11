@@ -67,7 +67,7 @@
 {
     SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
     //改
-    [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"商品详情" navigation:self.navigationController];
+    [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"" navigation:self.navigationController];
 }
 
 

@@ -32,8 +32,8 @@ static SCURLSerialization *urlSerialization = nil;
     if ([SCUtilities isValidString:url] && ([url containsString:@"http"] || [url containsString:@"https"]) && nav != nil) {
         
         SCShoppingManager *manager = [SCShoppingManager sharedInstance];
-        if (manager.delegate && [manager.delegate respondsToSelector:@selector(scWebWithUrl:nav:back:)]) {
-            [manager.delegate scWebWithUrl:url nav:nav back:^{
+        if (manager.delegate && [manager.delegate respondsToSelector:@selector(scWebWithUrl:title:nav:back:)]) {
+            [manager.delegate scWebWithUrl:url title:title nav:nav back:^{
                 
             }];
         }else{

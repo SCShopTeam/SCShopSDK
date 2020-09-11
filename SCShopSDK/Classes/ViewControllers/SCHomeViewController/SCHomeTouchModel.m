@@ -44,6 +44,8 @@
 {
     NSMutableDictionary *modelDict = ((NSDictionary *)[self yy_modelToJSONObject]).mutableCopy;
     
+    [modelDict removeObjectForKey:@"extraParam"];
+    
     for (NSString *key in self.extraParam.allKeys) {
         modelDict[key] = self.extraParam[key];
     }

@@ -167,8 +167,6 @@ static AFHTTPSessionManager *_sessionManager;
     }
     [_sessionManager.requestSerializer setValue:appPwd forHTTPHeaderField:@"appPwd"];
     
-
-    
     
     NSURLSessionTask *sessionTask = [_sessionManager POST:URL parameters:param progress:^(NSProgress * _Nonnull uploadProgress) {
         
