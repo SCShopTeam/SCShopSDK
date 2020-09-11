@@ -209,7 +209,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         bannerView.selectBlock = ^(NSInteger index, SCHomeTouchModel * _Nonnull model) {
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_A0%li",index+3) url:model.linkUrl inPage:NSStringFromClass(self.class)];
-            [self pushToWebView:model.linkUrl title:model.linkUrl];
+            [self pushToWebView:model.linkUrl title:model.contentName];
         };
         return bannerView;
     }
@@ -234,18 +234,18 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         recommendView.enterShopBlock = ^(SCHShopInfoModel * _Nonnull shopInfoModel) {
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_C01" url:shopInfoModel.link inPage:NSStringFromClass(self.class)];
-            [self pushToWebView:shopInfoModel.link title:@"智慧门店"];
+            [self pushToWebView:shopInfoModel.link title:@""]; //智慧门店
         };
         recommendView.bannerBlock = ^(NSInteger index, SCHBannerModel * _Nonnull bannerModel) {
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_C0%li",index+2) url:bannerModel.bannerImageLink inPage:NSStringFromClass(self.class)];
-            [self pushToWebView:bannerModel.bannerImageLink title:@"详情"];
+            [self pushToWebView:bannerModel.bannerImageLink title:@""];
         };
         
         recommendView.actBlock = ^(NSInteger index, SCHActImageModel * _Nonnull imgModel) {
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_C0%li",index+5) url:imgModel.actImageLink inPage:NSStringFromClass(self.class)];
-            [self pushToWebView:imgModel.actImageLink title:@"商品详情"];
+            [self pushToWebView:imgModel.actImageLink title:@""];
         };
         
         return recommendView;
@@ -263,14 +263,14 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         goodView.enterShopBlock = ^(NSInteger row, SCHShopInfoModel * _Nonnull shopModel) {
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_C%li",row*4+10) url:shopModel.link inPage:NSStringFromClass(self.class)];
-            [self pushToWebView:shopModel.link title:@"智慧门店"];
+            [self pushToWebView:shopModel.link title:@""]; //智慧门店
         };
         
         goodView.imgBlock = ^(NSInteger row, NSInteger index, SCHActImageModel * _Nonnull imgModel) {
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_C%li",row*4+11+index) url:imgModel.actImageLink inPage:NSStringFromClass(self.class)];
             
-            [self pushToWebView:imgModel.actImageLink title:@"商品详情"];
+            [self pushToWebView:imgModel.actImageLink title:@""];
         };
         
         return goodView;
@@ -283,7 +283,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         adView.selectBlock = ^(NSInteger index, SCHomeTouchModel * _Nonnull touchModel) {
             @strongify(self)
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_D0%li",index+1) url:touchModel.linkUrl inPage:NSStringFromClass(self.class)];
-            [self pushToWebView:touchModel.linkUrl title:touchModel.txt];
+            [self pushToWebView:touchModel.linkUrl title:touchModel.contentName];
         };
         return adView;
     }
@@ -400,12 +400,12 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     if (model.isLogin.integerValue > 0 && ![SCUserInfo currentUser].isLogin) {
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
             [manager.delegate scLoginWithNav:self.navigationController back:^(UIViewController * _Nonnull controller) {
-                [self pushToWebView:model.linkUrl title:model.txt];
+                [self pushToWebView:model.linkUrl title:model.contentName];
             }];
         }
         
     }else { //直接跳转
-        [self pushToWebView:model.linkUrl title:model.txt];
+        [self pushToWebView:model.linkUrl title:model.contentName];
     }
     
     
