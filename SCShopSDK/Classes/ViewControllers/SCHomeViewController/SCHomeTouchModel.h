@@ -67,16 +67,12 @@ NS_ASSUME_NONNULL_BEGIN
 //
 
 //父类属性
-@property (nonatomic, copy) NSString *contactName;
-@property (nonatomic, copy) NSString *isLoop;
-@property (nonatomic, copy) NSString *cpmType;
-@property (nonatomic, assign) NSInteger periodCount;
-@property (nonatomic, copy) NSString *recallType;
-@property (nonatomic, copy) NSString *contactNum;
-@property (nonatomic, copy) NSString *periodType;
+@property (nonatomic, strong) NSDictionary *extraParam;
 
 
 + (nullable NSMutableArray <SCHomeTouchModel *> *)createModelsWithDict:(NSDictionary *)dict;
+
+- (NSDictionary *)getParams;
 
 @end
 

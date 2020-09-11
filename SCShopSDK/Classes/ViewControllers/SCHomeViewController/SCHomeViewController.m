@@ -412,7 +412,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     
     //回调
     if ([manager.delegate respondsToSelector:@selector(scADTouchClick:back:)]) {
-        NSDictionary *dict = [model yy_modelToJSONObject] ?: @{};
+        NSDictionary *dict = [model getParams];
         [manager.delegate scADTouchClick:dict back:^{}];
         
     }

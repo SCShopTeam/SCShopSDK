@@ -24,16 +24,13 @@
     
     NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:content.count];
     
+    NSMutableDictionary *mulDict = dict.mutableCopy;
+    [mulDict removeObjectForKey:@"content"];
+    
     for (NSDictionary *dict in content) {
         if (VALID_DICTIONARY(dict)) {
             SCHomeTouchModel *model = [SCHomeTouchModel yy_modelWithDictionary:dict];
-            model.contentName = dict[@"contactName"];
-            model.isLoop      = dict[@"isLoop"];
-            model.cpmType     = dict[@"cpmType"];
-            model.periodCount = [NSString stringWithFormat:@"%@", dict[@"periodCount"]].integerValue;
-            model.recallType  = dict[@"recallType"];
-            model.contactNum  = dict[@"contactNum"];
-            model.periodType  = dict[@"periodType"];
+            model.extraParam = mulDict;
             
             [mulArr addObject:model];
         }
@@ -42,13 +39,17 @@
     return mulArr;
     
 }
-//@property (nonatomic, copy) NSString *contactName;
-//@property (nonatomic, copy) NSString *isLoop;
-//@property (nonatomic, copy) NSString *cpmType;
-//@property (nonatomic, assign) NSInteger periodCount;
-//@property (nonatomic, copy) NSString *recallType;
-//@property (nonatomic, copy) NSString *contactNum;
-//@property (nonatomic, copy) NSString *periodType;
+
+- (NSDictionary *)getParams
+{
+    NSMutableDictionary *modelDict = ((NSDictionary *)[self yy_modelToJSONObject]).mutableCopy;
+    
+    for (NSString *key in self.extraParam.allKeys) {
+        modelDict[key] = self.extraParam[key];
+    }
+    
+    return modelDict ?: @{};
+}
 
 @end
 
