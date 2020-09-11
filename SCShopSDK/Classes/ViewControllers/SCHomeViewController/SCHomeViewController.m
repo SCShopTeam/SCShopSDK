@@ -42,6 +42,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 #define kGridH       SCREEN_FIX(201)
 #define kRecommnedH  (self.viewModel.recommendStoreModel ? SCREEN_FIX(373) : 0)
 #define kAdH         (self.viewModel.adList.count ? SCREEN_FIX(117) : SCREEN_FIX(0))
+#define kTagH        SCREEN_FIX(55)
 
 @interface SCHomeViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) UIView *topView; //搜索框
@@ -185,11 +186,11 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         height = kAdH;
         
     }else if (section == SCHomeSectionTagItems) { //tag
-        height = SCREEN_FIX(55);
+        height = kTagH;
         
     }else {  //空数据
         SCHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
-        height = (cacheModel && cacheModel.commodityList.count == 0) ? SCREEN_FIX(220) : 0;
+        height = (cacheModel && cacheModel.commodityList.count > 0) ? 0 : self.collectionView.height - kTagH;
     }
     
     return CGSizeMake(width, height);
@@ -305,6 +306,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     
     //无数据提示
     SCHomeEmptyView *emptyView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeEmptyView.class) forIndexPath:indexPath];
+    emptyView.status = self.viewModel.currentCacheModel ? SCHomeEmptyStatusNull : SCHomeEmptyStatusLoading;
     return emptyView;
     
     
@@ -433,6 +435,12 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_E%@%@", (code.length == 1 ? @"0" : @""), code) url:@"" inPage:NSStringFromClass(self.class)];
     
     self.collectionView.page = 1;
+    SCHomeCacheModel *cacheModel = [self.viewModel getCacheModel:index];
+    if (!cacheModel) { //显示加载中提示
+        self.viewModel.currentCacheModel = nil;
+        [self.collectionView reloadData];
+    }
+    
     [self requestCommodityList:1 showCache:YES];
     
     //悬停高度

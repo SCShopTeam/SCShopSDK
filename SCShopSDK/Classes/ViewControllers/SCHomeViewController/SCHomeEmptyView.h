@@ -8,9 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, SCHomeEmptyStatus) {
+    SCHomeEmptyStatusLoading,
+    SCHomeEmptyStatusNull
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCHomeEmptyView : UICollectionReusableView
+
+@property (nonatomic, assign) SCHomeEmptyStatus status;
 
 @end
 

@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) void (^numBlock)(void);
 @property (nonatomic, copy) void (^selectBlock)(void);
 
+@property (nonatomic, copy) void (^deleteBlock)(SCCartItemModel *item);
+
 @end
 
 NS_ASSUME_NONNULL_END

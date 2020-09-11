@@ -35,9 +35,9 @@ UserAgent回掉接口
 typedef void(^SC_userAgentBlock)(NSString* userAgent);
 
 /**
- 获取authtoken
+ 赋值给商城scshoppingmanager的userInfo，主要用于掌厅短地址跳转商城,success返回为true才跳转
 */
-typedef void(^SC_getAuthToken)(NSString* token);
+typedef void(^SC_getUserInfo)(BOOL success);
 /**
  外部设置 cookie
  */
@@ -69,7 +69,7 @@ typedef void(^SC_WebBlock)(void);
 -(void)scLoginWithNav:(UINavigationController *)nav back:(SC_loginWithBlock)callBack;
 -(void)scUserAgentWithUrl:(NSString *)url back:(SC_userAgentBlock)callBack;
 -(void)scConfigCookiesWithUrl:(NSMutableURLRequest *)request wkweb:(WKWebView *)web back:(SC_configCookies)callBack;
--(void)scGetAuthName:(NSString *)name back:(SC_getAuthToken)callBack;
+-(void)scGetUserInfo:(SC_getUserInfo)callBack;
 //大数据插码回调
 -(void)scXWMobStatMgrStr:(NSString *)coding url:(NSString *)url inPage:(NSString *)className;
 

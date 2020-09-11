@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCHomeViewModel : NSObject
 @property (nonatomic, strong, readonly) NSArray <SCCategoryModel *> *categoryList;           //分类
-@property (nonatomic, weak, readonly) SCHomeCacheModel *currentCacheModel;                   //商品列表缓存
+@property (nonatomic, weak) SCHomeCacheModel *currentCacheModel;                   //商品列表缓存
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *bannerList;            //banner
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *touchList;             //触点
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *adList;                //广告
@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)requestTouchData:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
 
 - (void)requestStoreList:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
+
+- (SCHomeCacheModel *)getCacheModel:(NSInteger)index;
 
 @end
 

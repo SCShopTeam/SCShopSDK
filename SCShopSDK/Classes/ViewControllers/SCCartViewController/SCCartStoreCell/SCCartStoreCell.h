@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) SCCartModel *model;
 
-@property (nonatomic, copy) void (^deleteBlock)(SCCartItemModel *item);
+@property (nonatomic, copy) void (^deleteBlock)(SCCartItemModel *item, BOOL needConfirm);
 @property (nonatomic, copy) void (^commitBlock)(void);
 @property (nonatomic, copy) void (^rowClickBlock)(NSString *url);
 

@@ -15,24 +15,31 @@
 
 @implementation SCHomeEmptyView
 
-- (instancetype)initWithFrame:(CGRect)frame
+- (void)setStatus:(SCHomeEmptyStatus)status
 {
-    self = [super initWithFrame:frame];
-    if (self) {
-        self.tipLabel.center = CGPointMake(self.width/2, self.height/2);
+    _status = status;
+    
+    switch (status) {
+        case SCHomeEmptyStatusLoading:
+            self.tipLabel.text = @"加载中...";
+            break;
+            
+        case SCHomeEmptyStatusNull:
+            self.tipLabel.text = @"抱歉，暂无商品，看看其他商品吧~";
+            break;
+            
+        default:
+            break;
     }
-    return self;
 }
 
 - (UILabel *)tipLabel
 {
     if (!_tipLabel) {
-        _tipLabel = [UILabel new];
+        _tipLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 50, self.width, SCREEN_FIX(20))];
         _tipLabel.textAlignment = NSTextAlignmentCenter;
         _tipLabel.font = SCFONT_SIZED(15);
         _tipLabel.textColor = HEX_RGB(@"#999999");
-        _tipLabel.text = @"抱歉，暂无商品，看看其他商品吧~";
-        [_tipLabel sizeToFit];
         [self addSubview:_tipLabel];
     }
     return _tipLabel;

@@ -77,8 +77,6 @@
         [self.collectionView reloadData];
     });
     
-
-    
 }
 
 #pragma mark -UICollectionViewDelegate, UICollectionViewDataSource
@@ -201,9 +199,9 @@
         cell.model = model;
         
         @weakify(self)
-        cell.deleteBlock = ^(SCCartItemModel * _Nonnull item) {
+        cell.deleteBlock = ^(SCCartItemModel * _Nonnull item, BOOL needConfirm) {
             @strongify(self)
-            [self deleteCartItem:item];
+            [self deleteCartItem:item needConfirm:needConfirm];
         };
         
         cell.commitBlock = ^{
@@ -242,12 +240,6 @@
     NSString *url = [self.viewModel getOrderUrl:cart];
 
     [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"" navigation:self.navigationController];
-    
-//    SCWebViewCustom *vc = [SCWebViewCustom new];
-//    vc.hideNavigationBar = YES;
-//    vc.jsIsHiddenNav = YES;
-//    vc.urlString = url;
-//    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)pushDetail:(NSString *)url
@@ -255,22 +247,32 @@
     [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"商品详情" navigation:self.navigationController];
 }
 
-- (void)deleteCartItem:(SCCartItemModel *)item
+- (void)deleteCartItem:(SCCartItemModel *)item needConfirm:(BOOL)needConfirm
 {
+    if (!needConfirm) { //不需要确认
+        [self requestDelete:item];
+        return;
+    }
+    
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"确定要删除该商品吗" message:nil preferredStyle:UIAlertControllerStyleAlert];
-    [ac addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self showLoading];
-        [SCRequest requestCartDelete:item.cartItemNum itemNum:item.itemNum success:^(id  _Nullable responseObject) {
-            [self requestData];
-            
-        } failure:^(NSString * _Nullable errorMsg) {
-            [self stopLoading];
-            [self showWithStatus:errorMsg];
-        }];
+    [ac addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        [self requestDelete:item];
         
     }]];
     [ac addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:ac animated:YES completion:nil];
+}
+
+- (void)requestDelete:(SCCartItemModel *)item
+{
+    [self showLoading];
+    [SCRequest requestCartDelete:item.cartItemNum itemNum:item.itemNum success:^(id  _Nullable responseObject) {
+        [self requestData];
+        
+    } failure:^(NSString * _Nullable errorMsg) {
+        [self stopLoading];
+        [self showWithStatus:errorMsg];
+    }];
 }
 
 

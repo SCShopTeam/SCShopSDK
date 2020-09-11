@@ -99,14 +99,20 @@ static SCURLSerialization *urlSerialization = nil;
             [cmd isEqualToString:@"M/4"]) {  //底部导航
             
             
-            
             NSString *strNum = [cmd componentsSeparatedByString:@"/"].lastObject;
             NSInteger num = [strNum integerValue];
             
             UITabBarController *tabBar = [SCUtilities currentTabBarController];
             
             if (!tabBar) {
-                [SCShoppingManager showMallPageFrom:nav pageType:num-1];
+                
+                if ( [SCShoppingManager sharedInstance].delegate && [[SCShoppingManager sharedInstance].delegate respondsToSelector:@selector(scGetUserInfo:)]) {
+                    [[SCShoppingManager sharedInstance].delegate scGetUserInfo:^(BOOL success) {
+                        if (success) {
+                            [SCShoppingManager showMallPageFrom:nav pageType:num-1];
+                        }
+                    }];
+                }
             }else{
                 for (int i=0; i<tabBar.viewControllers.count; i++)
                 {
@@ -151,6 +157,7 @@ static SCURLSerialization *urlSerialization = nil;
             SCShoppingManager *manager = [SCShoppingManager sharedInstance];
             if (manager.delegate && [manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
                 [manager.delegate scLoginWithNav:nav back:^(UIViewController * _Nonnull controller) {
+                 //商城内部webView的通知H5登陆成功刷新页面，如果
                     [[NSNotificationCenter defaultCenter]postNotificationName:@"ocCallBackJsFunction" object:@{@"name":@"ztLoginCallBack"}];
                     
                 }];
@@ -163,14 +170,14 @@ static SCURLSerialization *urlSerialization = nil;
 
 -(void)ecmcJumpToShopWithUrl:(NSString *)url navigation:(UINavigationController *)nav delegate:(id)delegate{
     
-    if (delegate) {
+    if (delegate && nav && [SCUtilities isValidString:url]) {
+        
         [SCShoppingManager sharedInstance].delegate = delegate;
+        
+        if ([SCUtilities isValidString:url] && nav) {
+            [self gotoController:url navigation:nav];
+        }
     }
-    
-    if ([SCUtilities isValidString:url] && nav) {
-        [self gotoController:url navigation:nav];
-    }
-    
 }
 
 @end

@@ -88,6 +88,13 @@
         [self updateHeaderAndFooter];
     };
     
+    cell.deleteBlock = ^(SCCartItemModel * _Nonnull item) {
+        @strongify(self)
+        if (self.deleteBlock) {
+            self.deleteBlock(item, NO);
+        }
+    };
+    
     return cell;
 }
 
@@ -97,7 +104,7 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         if (self.deleteBlock) {
             SCCartItemModel *item = self.model.cartItems[indexPath.row];
-            self.deleteBlock(item);
+            self.deleteBlock(item, YES);
         }
     }
 }

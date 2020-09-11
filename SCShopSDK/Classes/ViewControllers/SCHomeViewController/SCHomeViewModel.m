@@ -21,7 +21,7 @@
 @property (nonatomic, strong) NSArray <SCHomeStoreModel *> *goodStoreList;         //发现好店
 
 @property (nonatomic, assign) BOOL isStoreRequesting;
-@property (nonatomic, weak) SCHomeCacheModel *currentCacheModel;                   //商品列表缓存
+//@property (nonatomic, weak) SCHomeCacheModel *currentCacheModel;                   //商品列表缓存
 @property (nonatomic, strong) NSMutableDictionary <NSNumber *, SCHomeCacheModel *> *commodityDict;
 
 @property (nonatomic, assign) BOOL isCategoryRequesting; //是否正在请求商品
@@ -75,7 +75,7 @@
     }
     
     //同时提前请求并缓存下一个和前一个index的数据
-    [self cacheDataLast:index-1 next:index+1 completion:completion];
+    [self cacheDataLast:index-1 next:index+1 completion:nil];
 
 }
 
@@ -136,6 +136,12 @@
         self.isCategoryRequesting = NO;
     }];
     
+}
+
+- (SCHomeCacheModel *)getCacheModel:(NSInteger)index
+{
+    SCHomeCacheModel *model = self.commodityDict[@(index)];
+    return model;
 }
 
 - (void)requestTouchData:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure

@@ -148,6 +148,21 @@ static NSString *kReduce = @"-";
 
 - (void)selectClicked
 {
+    //过期商品不能点击
+    if (!self.item.selected && !self.item.itemValid) {
+        UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"该商品已下架" message:@"是否移出购物车？" preferredStyle:UIAlertControllerStyleAlert];
+        [ac addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+            if (self.deleteBlock) {
+                self.deleteBlock(self.item);
+            }
+        }]];
+        [ac addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+        [[SCUtilities currentViewController] presentViewController:ac animated:YES completion:nil];
+        
+        return;
+    }
+    
+    
     self.item.selected ^=1;
     self.userSelected = self.item.selected;
     
