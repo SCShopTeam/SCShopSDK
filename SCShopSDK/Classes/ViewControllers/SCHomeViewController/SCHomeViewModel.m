@@ -179,18 +179,17 @@
     NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:touchIds.count];
     
     for (NSString *touchId in touchIds) {
-        NSArray *contentArray = [self getContent:touchId fromResult:result];
-        if (!contentArray) {
-            continue;
+        NSMutableArray *models = [SCHomeTouchModel createModelsWithDict:result[touchId]];
+        if (models.count > 0) {
+            [mulArr addObject:models.firstObject];
         }
-        SCHomeTouchModel *model = contentArray.firstObject;
-        [mulArr addObject:model];
+
     }
     
     self.touchList = mulArr.copy;
     
     //banner
-    NSMutableArray *bannerModels = [self getContent:@"SCDBBANNER_I" fromResult:result];
+    NSMutableArray *bannerModels = [SCHomeTouchModel createModelsWithDict:result[@"SCDBBANNER_I"]];
     //剔除空数据
     [bannerModels enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(SCHomeTouchModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (!VALID_STRING(obj.picUrl)) {
@@ -203,45 +202,13 @@
     NSArray *adIds = @[@"SCSYHDWY_I", @"SCSYHDWE_I"];
     NSMutableArray *tempAds = [NSMutableArray arrayWithCapacity:adIds.count];
     for (NSString *adId in adIds) {
-        NSArray *contentArray = [self getContent:adId fromResult:result];
-        if (!contentArray) {
-            continue;
+        NSMutableArray *models = [SCHomeTouchModel createModelsWithDict:result[adId]];
+        if (models.count > 0) {
+            [tempAds addObject:models.firstObject];
         }
-        SCHomeTouchModel *model = contentArray.firstObject;
-        [tempAds addObject:model];
     }
     self.adList = tempAds.copy;
 
-}
-
-- (nullable NSMutableArray <SCHomeTouchModel *>*)getContent:(NSString *)touchId fromResult:(NSDictionary *)result
-{
-    if (![result.allKeys containsObject:touchId]) {
-        return nil;
-    }
-    NSDictionary *touchDict = result[touchId];
-    if (!VALID_DICTIONARY(touchDict)) {
-        return nil;
-    }
-    
-    if (![touchDict.allKeys containsObject:@"content"]) {
-        return nil;
-    }
-    
-    NSArray *content = touchDict[@"content"];
-    if (!VALID_ARRAY(content)) {
-        return nil;
-    }
-    
-    NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:content.count];
-    for (NSDictionary *dict in content) {
-        if (VALID_DICTIONARY(dict)) {
-            SCHomeTouchModel *model = [SCHomeTouchModel yy_modelWithDictionary:dict];
-            [mulArr addObject:model];
-        }
-    }
-
-    return mulArr;
 }
 
 

@@ -166,6 +166,7 @@ static AFHTTPSessionManager *_sessionManager;
         cmtokenid = [NSString stringWithFormat:@"cmtokenid=%@",cmtokenid];
     }
     [_sessionManager.requestSerializer setValue:appPwd forHTTPHeaderField:@"appPwd"];
+
     
     
     

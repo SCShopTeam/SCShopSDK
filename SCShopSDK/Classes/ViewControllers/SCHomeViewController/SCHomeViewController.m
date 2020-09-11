@@ -394,11 +394,23 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     
     [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_B0%li",index+1) url:model.linkUrl inPage:NSStringFromClass(self.class)];
     
-    //跳转web
-    [self pushToWebView:model.linkUrl title:model.txt];
+    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
+    
+    //判断是否登录
+    if (model.isLogin.integerValue > 0 && ![SCUserInfo currentUser].isLogin) {
+        if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
+            [manager.delegate scLoginWithNav:self.navigationController back:^(UIViewController * _Nonnull controller) {
+                [self pushToWebView:model.linkUrl title:model.txt];
+            }];
+        }
+        
+    }else { //直接跳转
+        [self pushToWebView:model.linkUrl title:model.txt];
+    }
+    
+    
     
     //回调
-    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     if ([manager.delegate respondsToSelector:@selector(scADTouchClick:back:)]) {
         NSDictionary *dict = [model yy_modelToJSONObject] ?: @{};
         [manager.delegate scADTouchClick:dict back:^{}];
