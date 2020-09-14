@@ -369,12 +369,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     CGFloat offsetY = scrollView.contentOffset.y;
     
     //坐标
-    if (offsetY < 0) {
-        self.topView.top = -offsetY;
-        
-    }else {
-        self.topView.top = 0;
-    }
+    self.topView.top = MAX(-offsetY, 0);
     
     //颜色
     CGFloat alpha;
@@ -449,7 +444,6 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     NSString *code = [NSString stringWithFormat:@"%li",index+1];
     [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_E%@%@", (code.length == 1 ? @"0" : @""), code) url:@"" inPage:NSStringFromClass(self.class)];
     
-    self.collectionView.page = 1;
     SCHomeCacheModel *cacheModel = [self.viewModel getCacheModel:index];
     if (!cacheModel) { //显示加载中提示
         self.viewModel.currentCacheModel = nil;

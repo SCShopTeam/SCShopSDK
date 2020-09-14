@@ -7,7 +7,7 @@
 //
 
 /***
- version : 1.2.8
+ version : 1.2.9
  */
 
 #ifndef SCShopSDK_h
