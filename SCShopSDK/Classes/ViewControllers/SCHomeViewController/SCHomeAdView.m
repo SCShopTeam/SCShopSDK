@@ -18,6 +18,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.layer.masksToBounds = YES;
+        [self btnList];
     }
     return self;
 }
@@ -42,14 +43,13 @@
     
     [self.btnList enumerateObjectsUsingBlock:^(UIButton * _Nonnull btn, NSUInteger idx, BOOL * _Nonnull stop) {
         if (idx >= adList.count) {
-//            [btn setImage:IMG_PLACE_HOLDER forState:UIControlStateNormal];
-            btn.hidden = YES;
+//            btn.hidden = YES;
             
         }else {
-            btn.hidden = NO;
+//            btn.hidden = NO;
             SCHomeTouchModel *model = adList[idx];
             
-            [btn sd_setImageWithURL:[NSURL URLWithString:model.picUrl] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
+            [btn sd_setBackgroundImageWithURL:[NSURL URLWithString:model.picUrl] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
         }
         
     }];
@@ -63,6 +63,8 @@
         CGFloat margin = SCREEN_FIX(10);
         CGFloat x      = (self.width - w*2 - margin)/2;
         
+        NSArray *imgs = @[@"sc_phb",@"sc_ttdj"];
+        
         NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:2];
         for (int i=0; i<2; i++) {
             UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(x + (w+margin)*i,self.height-h-SCREEN_FIX(7), w, h)];
@@ -70,6 +72,7 @@
             btn.layer.masksToBounds = YES;
             btn.adjustsImageWhenHighlighted = NO;
             btn.imageView.contentMode = UIViewContentModeScaleAspectFill;
+            [btn setBackgroundImage:SCIMAGE(imgs[i]) forState:UIControlStateNormal];
             [self addSubview:btn];
             [mulArr addObject:btn];
             

@@ -115,9 +115,8 @@
 //    [self showLoading];
     [SCRequest scAddressList:^(BOOL success, NSArray * _Nullable objArr, NSString * _Nullable errMsg) {
 //        [self stopLoading];
-        if (success) {
+
             [weakSelf handleAddressData:objArr];
-        }
     }];
 }
 
@@ -137,12 +136,21 @@
 
 -(void)handleAddressData:(NSArray *)objArr{
     addressList = [NSMutableArray arrayWithCapacity:0];
+    
+    if ([SCUtilities isValidArray:objArr]) {
+        
         for (NSDictionary *dic in objArr) {
-//            SCAddressModel *model = [[SCAddressModel alloc]init];
-//            [model setValuesForKeysWithDictionary:dic];
             SCAddressModel *model = [SCAddressModel yy_modelWithDictionary:dic];
             [addressList addObject:model];
         }
+    }
+    
+    if (addressList.count>0) {
+        noOrderView.hidden = YES;
+    }else{
+        noOrderView.hidden = NO;
+    }
+    
     [table reloadData];
 }
 
@@ -155,11 +163,11 @@
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if (addressList.count>0) {
-        noOrderView.hidden = YES;
-    }else{
-        noOrderView.hidden = NO;
-    }
+//    if (addressList.count>0) {
+//        noOrderView.hidden = YES;
+//    }else{
+//        noOrderView.hidden = NO;
+//    }
     return addressList.count;
 }
 

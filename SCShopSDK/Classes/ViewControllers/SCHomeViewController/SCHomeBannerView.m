@@ -21,10 +21,19 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor whiteColor];
-        [self gradientLayer];
+        [self prepareUI];
     }
     return self;
+}
+
+- (void)prepareUI
+{
+    self.backgroundColor = [UIColor whiteColor];
+    
+    [self gradientLayer];
+    
+    self.cycleView.localizationImageNamesGroup = @[SCIMAGE(@"sc_home_banner")];
+    
 }
 
 - (void)setBannerList:(NSArray<SCHomeTouchModel *> *)bannerList
@@ -123,7 +132,7 @@
         _gradientLayer.startPoint = CGPointMake(0, 0);
         _gradientLayer.endPoint = CGPointMake(0, 0.8);
         _gradientLayer.locations = @[@(0.0),@(1.0)];
-        
+        _gradientLayer.colors = @[(__bridge id)HEX_RGB(@"#F2270C").CGColor,(__bridge id)[UIColor whiteColor].CGColor];
         [self.layer addSublayer:_gradientLayer];
     }
     return _gradientLayer;

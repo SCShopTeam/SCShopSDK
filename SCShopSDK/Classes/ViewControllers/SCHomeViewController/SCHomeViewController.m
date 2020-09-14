@@ -17,13 +17,12 @@
 #import "SCHomeViewModel.h"
 #import "SCGoodStoreView.h"
 #import "SCShoppingManager.h"
-#import "SCGoodStoreViewController.h"
+//#import "SCGoodStoreViewController.h"
 #import "SCURLSerialization.h"
 #import "SCTagView.h"
 #import "SCCollectionViewFlowLayout.h"
 #import "SCHomeEmptyView.h"
-
-//#import "SCWitStoreViewController.h"
+#import "SCWitStoreViewController.h"
 //#import "SCStoreHomeViewController.h"
 
 typedef NS_ENUM(NSInteger, SCHomeSection) {
@@ -41,7 +40,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 #define kBannerH     SCREEN_FIX(219.5) + STATUS_BAR_HEIGHT
 #define kGridH       SCREEN_FIX(201)
 #define kRecommnedH  (self.viewModel.recommendStoreModel ? SCREEN_FIX(373) : 0)
-#define kAdH         (self.viewModel.adList.count ? SCREEN_FIX(117) : SCREEN_FIX(0))
+#define kAdH         SCREEN_FIX(117)
 #define kTagH        SCREEN_FIX(55)
 
 @interface SCHomeViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
@@ -107,11 +106,12 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 - (void)requestTouchData
 {
     [self.viewModel requestTouchData:^(id  _Nullable responseObject) {
-        if (!self.viewModel.isCategoryRequesting) {//分类商品接口请求完会刷新整个collectionview
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionBanner]];
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGrid]];
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionAd]];
-        }
+//        if (!self.viewModel.isCategoryRequesting) {//分类商品接口请求完会刷新整个collectionview
+//            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionBanner]];
+//            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGrid]];
+//            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionAd]];
+//        }
+        [self.collectionView reloadData];
         
     } failure:^(NSString * _Nullable errorMsg) {
     }];
@@ -121,10 +121,11 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 - (void)requestStoreRecommand
 {
     [self.viewModel requestStoreList:^(id  _Nullable responseObject) {
-        if (!self.viewModel.isCategoryRequesting) {
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionRecommend]];
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGood]];
-        }
+//        if (!self.viewModel.isCategoryRequesting) {
+//            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionRecommend]];
+//            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGood]];
+//        }
+        [self.collectionView reloadData];
         
     } failure:^(NSString * _Nullable errorMsg) {
     }];
@@ -436,8 +437,10 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 
 - (void)pushToGoodStore
 {
-    SCGoodStoreViewController *vc = [SCGoodStoreViewController new];
-    vc.viewModel = self.viewModel;
+//    SCGoodStoreViewController *vc = [SCGoodStoreViewController new];
+//    vc.viewModel = self.viewModel;
+//    [self.navigationController pushViewController:vc animated:YES];
+    SCWitStoreViewController *vc = [SCWitStoreViewController new];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
