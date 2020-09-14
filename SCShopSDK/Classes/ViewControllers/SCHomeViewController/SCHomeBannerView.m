@@ -14,6 +14,7 @@
 @property (nonatomic, strong) SDCycleScrollView *cycleView;
 @property (nonatomic, strong) CAGradientLayer *gradientLayer; //渐变色
 @property (nonatomic, strong) NSMutableDictionary *colorDict;
+@property (nonatomic, strong) UIImageView *defaultImageView;
 @end
 
 @implementation SCHomeBannerView
@@ -32,8 +33,8 @@
     
     [self gradientLayer];
     
-    self.cycleView.localizationImageNamesGroup = @[SCIMAGE(@"sc_home_banner")];
-    
+    [self defaultImageView];
+   
 }
 
 - (void)setBannerList:(NSArray<SCHomeTouchModel *> *)bannerList
@@ -55,6 +56,7 @@
     self.cycleView.imageURLStringsGroup = mulArr;
     
     [self cycleScrollView:self.cycleView didScrollToIndex:0];
+    self.defaultImageView.hidden = YES;
 }
 
 #pragma mark -SDCycleScrollViewDelegate
@@ -123,6 +125,18 @@
     return _cycleView;
 }
 
+- (UIImageView *)defaultImageView
+{
+    if (!_defaultImageView) {
+        _defaultImageView = [[UIImageView alloc] initWithFrame:self.cycleView.frame];
+        _defaultImageView.layer.cornerRadius = 5;
+        _defaultImageView.layer.masksToBounds = YES;
+        _defaultImageView.image = SCIMAGE(@"sc_home_banner");
+        [self addSubview:_defaultImageView];
+    }
+    return _defaultImageView;
+}
+
 
 - (CAGradientLayer *)gradientLayer
 {
@@ -132,7 +146,7 @@
         _gradientLayer.startPoint = CGPointMake(0, 0);
         _gradientLayer.endPoint = CGPointMake(0, 0.8);
         _gradientLayer.locations = @[@(0.0),@(1.0)];
-        _gradientLayer.colors = @[(__bridge id)HEX_RGB(@"#F2270C").CGColor,(__bridge id)[UIColor whiteColor].CGColor];
+        _gradientLayer.colors = @[(__bridge id)HEX_RGB(@"#c51018").CGColor,(__bridge id)[UIColor whiteColor].CGColor];
         [self.layer addSublayer:_gradientLayer];
     }
     return _gradientLayer;
