@@ -235,8 +235,10 @@
         cell.style = SCWitCornerStyleNone;
     }
     
-  
-    cell.model = dataList[row];
+    if (idx < dataList.count) {
+        cell.model = dataList[row];
+    }
+    
     
     @weakify(self)
     cell.phoneBlock = ^(NSString * _Nonnull phone) {

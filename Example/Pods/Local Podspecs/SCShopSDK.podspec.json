@@ -27,7 +27,8 @@
   "public_header_files": [
     "SCShopSDK/Classes/Util/SCShoppingManager.h",
     "SCShopSDK/Classes/ViewControllers/WebView/SCURLSerialization.h",
-    "SCShopSDK/Classes/Util/SCShopSDK.h"
+    "SCShopSDK/Classes/Util/SCShopSDK.h",
+    "SCShopSDK/Classes/Views/SCCustomAlertController.h"
   ],
   "prefix_header_file": "SCShopSDK/Classes/Util/SCCommonPrefix.pch",
   "user_target_xcconfig": {

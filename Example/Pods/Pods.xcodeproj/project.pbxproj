@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		00396DBC4C358534F5064003663C067E /* TADotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 69821E5C162153C4D9652A3DF77345C2 /* TADotView.m */; };
-		004BDAA2BAE9598DEDA5ACDB5A6D03BE /* SCCustomAlertController.h in Headers */ = {isa = PBXBuildFile; fileRef = 41FB5E4D75A93F70FB218EF3133ABB5E /* SCCustomAlertController.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		00AE4E89CDE39F9BE49801DB8BCA299F /* SCStoreHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6C91EB0635AD97B0F02223E6FB81259 /* SCStoreHomeViewController.m */; };
 		01233896892106E75F42192FF0EE647F /* NSError+SCExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C39C8439AD1DE731A41B90A6D7C6CE1 /* NSError+SCExtension.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		01C9B45BA65A8AAEBA625D0CDE7D5FA0 /* UIImage+SCPalette.m in Sources */ = {isa = PBXBuildFile; fileRef = C204582FB91E2D7908D48C233C00CE39 /* UIImage+SCPalette.m */; };
@@ -290,6 +289,7 @@
 		77876997CA63145CC72A2D6FB5758513 /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 008018D1C6463D64DDD4CC7CA1C520A4 /* AFHTTPSessionManager.m */; };
 		77DC9B0D9F61D7B107AD1AF0D0FB15A7 /* SCAddressSelectView.h in Headers */ = {isa = PBXBuildFile; fileRef = 29C7A0C55970768C54CD895A91832C58 /* SCAddressSelectView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		78B2727EE5D693F58D019DB098005101 /* MASConstraintMaker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FECF7BA857AFA66946E8465F1769CC7 /* MASConstraintMaker.m */; };
+		78BCE5A9266AB72753DF8AE82BCE115D /* SCCustomAlertController.h in Headers */ = {isa = PBXBuildFile; fileRef = 41FB5E4D75A93F70FB218EF3133ABB5E /* SCCustomAlertController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		78DF678CC28103A4E653317DB446E17E /* SCCategoryViewModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 135A443EF944DC6B8914ADFF934D8B15 /* SCCategoryViewModel.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		7931BB58D5624EA2D3095E58026366B6 /* SCWitProfessionalHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C09D6A4EF92808EDD09CB9063AD3391C /* SCWitProfessionalHeaderView.m */; };
 		7935EB5E94C9970DD650294DB4DB731E /* SCPaletteColorModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 97802E71D1F180F2E33D2D2975B60397 /* SCPaletteColorModel.m */; };
@@ -3132,7 +3132,7 @@
 				423C83E6F13E27E0F48B18EA216339A3 /* SCCollectionView.h in Headers */,
 				7279BF9BA83CA791EC6F00429A36E6D0 /* SCCollectionViewFlowLayout.h in Headers */,
 				E192FB00BB353A35FDA346F95C839385 /* SCCommodityModel.h in Headers */,
-				004BDAA2BAE9598DEDA5ACDB5A6D03BE /* SCCustomAlertController.h in Headers */,
+				78BCE5A9266AB72753DF8AE82BCE115D /* SCCustomAlertController.h in Headers */,
 				B185CC15BE5E85EC94FF1D18D45784E6 /* SCFavouriteCell.h in Headers */,
 				19CD0FEA3157564FC7857BDEB873F0B3 /* SCFavouriteListView.h in Headers */,
 				8B6D914FDE87D3305A19918E01D0E4EE /* SCFavouriteModel.h in Headers */,
