@@ -10,7 +10,6 @@
 #import "SCShopCollectionCell.h"
 #import "SCCartStoreCell.h"
 #import "SCCartViewModel.h"
-#import "SCWebViewController.h"
 #import "SCCartEmptyView.h"
 #import "SCLifeViewController.h"
 

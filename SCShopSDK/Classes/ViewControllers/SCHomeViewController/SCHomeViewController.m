@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 #define kSectionNum (SCHomeSectionEmptyData + 1)
 
 #define kBannerH     SCREEN_FIX(219.5) + STATUS_BAR_HEIGHT
-#define kGridH       SCREEN_FIX(201)
+#define kGridH       (self.viewModel.touchList ? SCREEN_FIX(201) : 0)
 #define kRecommnedH  (self.viewModel.recommendStoreModel ? SCREEN_FIX(373) : 0)
 #define kAdH         SCREEN_FIX(117)
 #define kTagH        SCREEN_FIX(55)
@@ -550,7 +550,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         layout.naviHeight              = self.topView.height;
         
         _collectionView = [[SCCollectionView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - TAB_BAR_HEIGHT) collectionViewLayout:layout];
-        _collectionView.backgroundColor = HEX_RGB(@"#F5F5F5");
+        _collectionView.backgroundColor = [UIColor whiteColor];
         _collectionView.delegate        = self;
         _collectionView.dataSource      = self;
         [self.view addSubview:_collectionView];

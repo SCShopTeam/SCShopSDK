@@ -15,7 +15,6 @@
 //#import "SCCategoryModel.h"
 #import "MJRefresh.h"
 #import "SCShoppingManager.h"
-#import "SCWebViewController.h"
 @interface SCCategoryViewController ()<MainCategoryDelegate,CagegoryCommodityDelegte,UIScrollViewDelegate>
 
 @end

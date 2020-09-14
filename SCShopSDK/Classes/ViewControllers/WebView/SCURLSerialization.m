@@ -13,7 +13,6 @@
 #import "SCLifeViewController.h"
 #import "SCCartViewController.h"
 #import "SCMainTabBarController.h"
-#import "SCWebViewController.h"
 #import "SCWitStoreViewController.h"
 
 @implementation SCURLSerialization

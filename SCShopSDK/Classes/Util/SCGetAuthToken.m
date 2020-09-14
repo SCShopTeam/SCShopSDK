@@ -12,7 +12,6 @@
 
 
 +(NSString *)cmtokenId{
-    
     NSString *s = [SCUserInfo currentUser].cmtokenid;
     if ([SCUtilities isValidString:s]) {
         return s;
@@ -29,7 +28,6 @@
 }
 
 +(NSString *)userAreaNum{
-        
     NSString *s = [SCUserInfo currentUser].uan;
     if ([SCUtilities isValidString:s]) {
         return s;
