@@ -235,7 +235,7 @@
         cell.style = SCWitCornerStyleNone;
     }
     
-    if (idx < dataList.count) {
+    if (row < dataList.count) {
         cell.model = dataList[row];
     }
     
