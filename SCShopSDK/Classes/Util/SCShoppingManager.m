@@ -15,7 +15,7 @@
 #import "SCProgressHUD.h"
 #import "SCURLSerialization.h"
 #import "SCLocationService.h"
-
+#import "SCCustomAlertController.h"
 @implementation SCShoppingManager
 
 #pragma mark -SETUP
@@ -62,9 +62,20 @@
 //测试用假数据,模拟赋值
 - (void)testFakeData
 {
-
+ 
 }
 
++(void)showDiffNetAlert:(UINavigationController *)nav{
+    SCCustomAlertController *alert = [[SCCustomAlertController alloc]init];
+    [alert difNetAlertChangeNum:^{
+        [[SCURLSerialization shareSerialization]gotoController:@"phonestore://jumpToLogin" navigation:nav];
+    } difNet:^{
+        [SCShoppingManager dissmissMallPage];
+    }];
+    
+//    [nav presentViewController:alert animated:NO completion:nil];
+    [nav pushViewController:alert animated:NO];
+}
 
 #pragma mark -Public
 + (void)showMallPageFrom:(UIViewController *)vc

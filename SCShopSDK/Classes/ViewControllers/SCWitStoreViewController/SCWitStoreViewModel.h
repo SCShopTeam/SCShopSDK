@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)requestAreaList:(void (^)(NSString *areaName))areaBlock;
 
 //门店
-- (void)getAggregateStore:(NSInteger)page showCache:(BOOL)showCache completion:(SCHttpRequestCompletion)completion;
+- (void)getAggregateStore:(NSInteger)page showCache:(BOOL)showCache showHud:(BOOL)showHud completion:(SCHttpRequestCompletion)completion;
 
 //推荐商品
 - (void)requestRecommendGoods:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;

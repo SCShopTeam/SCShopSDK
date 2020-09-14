@@ -53,7 +53,7 @@
     return key;
 }
 
-- (void)getCommodityList:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum showCache:(BOOL)showCache completion:(SCHttpRequestCompletion)completion
+- (void)getCommodityList:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum showCache:(BOOL)showCache showHud:(BOOL)showHud completion:(SCHttpRequestCompletion)completion
 {
     NSString *key = [self getCacheKeyFromSort:sort sortType:sortType];
     self.currentKey = key;
@@ -66,18 +66,21 @@
             completion(nil);
         }
     }else {
-        [self requestCommodityListData:tenantNum sort:sort sortType:sortType pageNum:pageNum  completion:completion];
+        [self requestCommodityListData:tenantNum sort:sort sortType:sortType pageNum:pageNum showHud:showHud  completion:completion];
     }
 
 }
 
-- (void)requestCommodityListData:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum completion:(nonnull SCHttpRequestCompletion)completion
+- (void)requestCommodityListData:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum showHud:(BOOL)showHud completion:(nonnull SCHttpRequestCompletion)completion
 {
     NSString *key = [self getCacheKeyFromSort:sort sortType:sortType];
     
-    [self showLoading];
+    if (showHud) {
+        UIViewController *vc = [SCUtilities currentViewController];
+        [vc showLoading];
+    }
+    
     [SCCategoryViewModel requestCommoditiesWithTypeNum:nil brandNum:nil tenantNum:tenantNum categoryName:nil cityNum:nil isPreSale:NO sort:sort sortType:sortType pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
-        [self stopLoading];
         SCStoreHomeCacheModel *cacheModel = self.commodityDict[key];
         
         if (!cacheModel) {
@@ -102,7 +105,6 @@
         }
         
     } failure:^(NSString * _Nullable errorMsg) {
-        [self stopLoading];
         if ([self.currentKey isEqualToString:key]) {
             self.currentCacheModel = nil;
         }

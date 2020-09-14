@@ -59,18 +59,20 @@
 
 - (void)requestAreaList
 {
+    [self showLoading];
     //请求地市
     [self.viewModel requestAreaList:^(NSString * _Nonnull areaName) {
         [self.areaBtn setTitle:areaName forState:UIControlStateNormal];
-        [self requestStoreList:1 showCache:NO];
+        [self requestStoreList:1 showCache:NO showHud:NO];
     }];
 
 }
 
-- (void)requestStoreList:(NSInteger)page showCache:(BOOL)showCache
+- (void)requestStoreList:(NSInteger)page showCache:(BOOL)showCache showHud:(BOOL)showHud
 {
-    [self.viewModel getAggregateStore:page showCache:showCache completion:^(NSString * _Nullable errorMsg) {
+    [self.viewModel getAggregateStore:page showCache:showCache showHud:showHud completion:^(NSString * _Nullable errorMsg) {
         [self stopLoading];
+        
         SCWitStoreCacheModel *cacheModel = self.viewModel.currentCacheModel;
         
         self.tableView.page = cacheModel.page;
@@ -287,7 +289,7 @@
         requestModel.queryStr  = textField.text;
         requestModel.queryType = SCWitQueryTypeSearch;
         _deleteSearchButton.hidden = NO;
-        [self requestStoreList:1 showCache:YES];
+        [self requestStoreList:1 showCache:YES showHud:YES];
         
     }else {
         [self textFieldClear];
@@ -302,7 +304,7 @@
     _deleteSearchButton.hidden = YES;
     self.searchField.text = nil;
     self.viewModel.requestModel.queryType = SCWitQueryTypeNear;
-    [self requestStoreList:1 showCache:YES];
+    [self requestStoreList:1 showCache:YES showHud:YES];
     [self.queryView clear];
 }
 
@@ -328,8 +330,7 @@
         //清除缓存
         [self.viewModel cleanCacheData];
         
-        [self showLoading];
-        [self requestStoreList:1 showCache:NO];
+        [self requestStoreList:1 showCache:NO showHud:YES];
     }];
 }
 
@@ -474,13 +475,13 @@
         [_tableView registerClass:SCWitProfessionalHeaderView.class forHeaderFooterViewReuseIdentifier:NSStringFromClass(SCWitProfessionalHeaderView.class)];
         [_tableView registerClass:SCWitNoStoreHeaderView.class forHeaderFooterViewReuseIdentifier:NSStringFromClass(SCWitNoStoreHeaderView.class)];
         
-        [_tableView showsRefreshFooter];
+//        [_tableView showsRefreshFooter];
         
         @weakify(self)
         _tableView.refreshingBlock = ^(NSInteger page) {
             @strongify(self)
             [self hideNoNeedUI];
-            [self requestStoreList:page showCache:NO];
+            [self requestStoreList:page showCache:NO showHud:NO];
         };
     }
     return _tableView;
@@ -554,7 +555,7 @@
             @strongify(self)
             [self hideNoNeedUI];
             self.viewModel.requestModel.queryType = queryType;
-            [self requestStoreList:1 showCache:YES];
+            [self requestStoreList:1 showCache:YES showHud:YES];
         };
         
         [self.view addSubview:_queryView];
@@ -577,7 +578,7 @@
             @strongify(self)
             [self hideNoNeedUI];
             self.viewModel.requestModel.sortType = sortType;
-            [self requestStoreList:1 showCache:YES];
+            [self requestStoreList:1 showCache:YES showHud:YES];
         };
     }
     return _sortView;

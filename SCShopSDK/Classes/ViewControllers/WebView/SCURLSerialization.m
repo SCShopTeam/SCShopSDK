@@ -14,7 +14,7 @@
 #import "SCCartViewController.h"
 #import "SCMainTabBarController.h"
 #import "SCWitStoreViewController.h"
-
+#import "SCCustomAlertController.h"
 @implementation SCURLSerialization
 static SCURLSerialization *urlSerialization = nil;
 +(instancetype)shareSerialization{
@@ -156,8 +156,15 @@ static SCURLSerialization *urlSerialization = nil;
             SCShoppingManager *manager = [SCShoppingManager sharedInstance];
             if (manager.delegate && [manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
                 [manager.delegate scLoginWithNav:nav back:^(UIViewController * _Nonnull controller) {
-                 //商城内部webView的通知H5登陆成功刷新页面，如果
-                    [[NSNotificationCenter defaultCenter]postNotificationName:@"ocCallBackJsFunction" object:@{@"name":@"ztLoginCallBack"}];
+                    SCUserInfo *userInfo = [SCUserInfo currentUser];
+                    if (!userInfo.isJSMobile && userInfo.isLogin) {
+                        [SCShoppingManager showDiffNetAlert:nav];
+                        
+                    }else{
+                           //商城内部webView的通知H5登陆成功刷新页面，如果
+                              [[NSNotificationCenter defaultCenter]postNotificationName:@"ocCallBackJsFunction" object:@{@"name":@"ztLoginCallBack"}];
+                    }
+      
                     
                 }];
                 

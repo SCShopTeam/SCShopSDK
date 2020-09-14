@@ -41,7 +41,7 @@
     }
     
     [self requestTenantInfo];
-    [self requestCommodityList:1 showCache:YES];
+    [self requestCommodityList:1 showCache:YES showHud:NO];
 }
 
 - (void)requestTenantInfo
@@ -51,17 +51,22 @@
     }];
 }
 
-- (void)requestCommodityList:(NSInteger)page showCache:(BOOL)showCache
+- (void)requestCommodityList:(NSInteger)page showCache:(BOOL)showCache showHud:(BOOL)showHud
 {
     SCCategorySortKey sort      = self.siftView.currentSortKey;
     SCCategorySortType sortType = self.siftView.currentSortType;
     
-    [self.viewModel getCommodityList:_tenantNum sort:sort sortType:sortType pageNum:page showCache:showCache completion:^(NSString * _Nullable errorMsg) {
+    [self.viewModel getCommodityList:_tenantNum sort:sort sortType:sortType pageNum:page showCache:showCache showHud:showHud completion:^(NSString * _Nullable errorMsg) {
+        [self stopLoading];
         SCStoreHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
         
         self.collectionView.page = cacheModel.page;
         [self.collectionView reloadDataShowFooter:cacheModel.hasMoreData];
         self.emptyTipLabel.hidden = cacheModel.commodityList.count > 0;
+        
+        if (errorMsg) {
+            [self showWithStatus:errorMsg];
+        }
     }];
 
 }
@@ -155,7 +160,7 @@
         @weakify(self)
         _collectionView.refreshingBlock = ^(NSInteger page) {
             @strongify(self)
-            [self requestCommodityList:page showCache:NO];
+            [self requestCommodityList:page showCache:NO showHud:NO];
         };
     }
     return _collectionView;
@@ -170,8 +175,7 @@
         @weakify(self)
         _siftView.selectBlock = ^{
           @strongify(self)
-            self.collectionView.page = 1;
-            [self requestCommodityList:1 showCache:YES];
+            [self requestCommodityList:1 showCache:YES showHud:YES];
             
             //悬停高度
             if (self.collectionView.contentOffset.y > kTopH) {

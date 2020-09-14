@@ -37,10 +37,30 @@
 
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
 {
+    if ([viewController isKindOfClass:[SCBaseNavigationController class]]) {
+           NSString *className = NSStringFromClass([((SCBaseNavigationController *)viewController).viewControllers.firstObject class]);
+
+        if (([className isEqualToString:@"SCCartViewController"] ||
+            [className isEqualToString:@"SCMyOrderViewController"]) && ![SCUserInfo currentUser].isLogin){
+           SCBaseNavigationController *nav = (SCBaseNavigationController *)viewController;
+           SCShoppingManager *manager =  [SCShoppingManager sharedInstance];
+            if (manager.delegate && [manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
+                [manager.delegate scLoginWithNav:nav back:^(UIViewController * _Nonnull controller) {
+                    SCUserInfo *info = [SCUserInfo currentUser];
+                    if (info.isLogin && !info.isJSMobile) {
+                        [SCShoppingManager showDiffNetAlert:nav];
+                    }else{
+                        [self tabBarController:tabBarController shouldSelectViewController:viewController];
+                    }
+                }];
+            }
+            return NO;
+        }
+    }
     UIViewController *vc = [SCUtilities currentViewController];
     [vc stopLoading];
     
-    return YES;
+    return NO;
 }
 
 -(void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController{

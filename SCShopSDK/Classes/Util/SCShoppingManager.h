@@ -104,6 +104,8 @@ typedef void(^SC_WebBlock)(void);
 + (void)showMallPageFrom:(UIViewController *)vc;
 + (void)showMallPageFrom:(UIViewController *)vc pageType:(SCShopPageType)pageType;
 
+//登录之后判断是异网，弹框
++(void)showDiffNetAlert:(UINavigationController *)nav;
 //退出商城
 + (void)dissmissMallPage;
 

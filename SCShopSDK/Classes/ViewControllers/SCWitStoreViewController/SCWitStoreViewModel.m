@@ -103,7 +103,7 @@
     return key;
 }
 
-- (void)getAggregateStore:(NSInteger)page showCache:(BOOL)showCache completion:(SCHttpRequestCompletion)completion
+- (void)getAggregateStore:(NSInteger)page showCache:(BOOL)showCache showHud:(BOOL)showHud completion:(SCHttpRequestCompletion)completion
 {
     NSString *key = [self getCacheKey];
     self.currentKey = key;
@@ -117,23 +117,25 @@
         }
         
     }else {
-        [self requestAggregateStoreData:page completion:completion];
+        [self requestAggregateStoreData:page showHud:showHud completion:completion];
     }
 
 }
 
 //门店
-- (void)requestAggregateStoreData:(NSInteger)page completion:(SCHttpRequestCompletion)completion
+- (void)requestAggregateStoreData:(NSInteger)page showHud:(BOOL)showHud completion:(SCHttpRequestCompletion)completion
 {
     self.requestModel.page = page;
     NSDictionary *param = [self.requestModel getParams];
     
     NSString *cacheKey = [self getCacheKey];
     
-    [self showLoading];
+    if (showHud) {
+        UIViewController *vc = [SCUtilities currentViewController];
+        [vc showLoading];
+    }
 
     [SCNetworkManager POST:SC_AGGREGATE_STORE parameters:param success:^(id  _Nullable responseObject) {
-        [self stopLoading];
         
         NSString *resultKey = @"result";
 
@@ -182,8 +184,6 @@
         }
 
     } failure:^(NSString * _Nullable errorMsg) {
-        [self stopLoading];
-        
         if ([self.currentKey isEqualToString:cacheKey]) {
             self.currentCacheModel = nil;
         }

@@ -32,9 +32,7 @@
 #pragma mark -requset
 - (void)requestCategoryList
 {
-    [self showLoading];
     [self.viewModel requestCategoryList:self.paramDic success:^(id  _Nullable responseObject) {
-        [self stopLoading];
         NSArray *categoryList = self.viewModel.categoryList;
         self.tagView.categoryList = categoryList;
         
@@ -49,7 +47,6 @@
         
         
     } failure:^(NSString * _Nullable errorMsg) {
-        [self stopLoading];
         [self showWithStatus:errorMsg];
     }];
 
