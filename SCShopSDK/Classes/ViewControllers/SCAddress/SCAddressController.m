@@ -84,6 +84,8 @@
         make.centerX.equalTo(noOrderView.mas_centerX);
     }];
     
+    noOrderView.hidden = YES;
+    
     UIButton *addBtn = [[UIButton alloc]init];
     [self.view addSubview:addBtn];
     addBtn.layer.cornerRadius = 17;

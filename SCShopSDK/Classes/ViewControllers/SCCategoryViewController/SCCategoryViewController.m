@@ -197,12 +197,14 @@
 -(void)configChildCategory:(NSArray <SecondCategoryModel *>*)models{
     
     childCategorys = [models copy];
-    if ([SCUtilities isValidArray:childCategorys]) {
-        SecondCategoryModel *model = childCategorys.firstObject;
-        if ([SCUtilities isValidString:model.secondNum]) {
-            [self requestCommodities:model.secondNum];
-        }
-    }
+    
+    //默认选中请求第一个
+//    if ([SCUtilities isValidArray:childCategorys]) {
+//        SecondCategoryModel *model = childCategorys.firstObject;
+//        if ([SCUtilities isValidString:model.secondNum]) {
+//            [self requestCommodities:model.secondNum];
+//        }
+//    }
     scroll.contentOffset = CGPointZero;
     CGFloat total_width = 0;//btn_space;
     NSInteger page = 0;
@@ -214,15 +216,6 @@
     
     for (int i = 0; i<childCategorys.count; i++) {
         SecondCategoryModel *model = childCategorys[i];
-//        if (i%3 == 0) {
-//            leftX = page*scroll.frame.size.width;
-//            ++page;
-//        }
-//        if (i%6 > 2) {
-//            currentY = btn_height;
-//        }else{
-//            currentY = 0;
-//        }
         
         leftX = i%3*btn_width;
         currentY = i/3*btn_height;
@@ -350,6 +343,8 @@
     NSString *firstCategoryNum = mainCategorys.firstObject.typeNum;
     if (categoryModel && [SCUtilities isValidArray:categoryModel.secondList] && [categoryModel.typeNum isEqualToString:firstCategoryNum]) {
         [self configChildCategory:categoryModel.secondList];
+        
+        [self requestCommodities:categoryModel.typeNum];
     }else{
         NSString *typeNum = categoryModel.typeNum;
         if ([SCUtilities isValidString:typeNum]) {
