@@ -129,8 +129,12 @@
     NSDictionary *param = [self.requestModel getParams];
     
     NSString *cacheKey = [self getCacheKey];
+    
+    [self showLoading];
 
     [SCNetworkManager POST:SC_AGGREGATE_STORE parameters:param success:^(id  _Nullable responseObject) {
+        [self stopLoading];
+        
         NSString *resultKey = @"result";
 
         if (![SCNetworkTool checkResult:responseObject key:resultKey forClass:NSArray.class completion:nil]) {
@@ -178,6 +182,8 @@
         }
 
     } failure:^(NSString * _Nullable errorMsg) {
+        [self stopLoading];
+        
         if ([self.currentKey isEqualToString:cacheKey]) {
             self.currentCacheModel = nil;
         }

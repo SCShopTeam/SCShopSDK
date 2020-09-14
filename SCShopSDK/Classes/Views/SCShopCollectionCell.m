@@ -64,7 +64,7 @@
     
     //内容
     self.contentLabel.width = self.width - self.contentLabel.left*2;
-    NSString *str = model.categoryName;
+    NSString *str = model.categoryTitle;
     if (showTag) {
         str = [NSString stringWithFormat:@"           %@",str];
     }

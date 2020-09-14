@@ -125,10 +125,18 @@
     }else{
         _commodityImgV.image = [UIImage bundleImageNamed:@"home_witapollo_good_def"];
     }
-    _commodityNameLab.text = model.categoryName;
+    if ([SCUtilities isValidString:model.categoryTitle]) {
+        _commodityNameLab.text = model.categoryTitle;
+    }
     
     NSString *currentPrice = [NSString stringWithFormat:@"%@",[NSNumber numberWithFloat: model.minSalePrice]];
-    NSString *nPrice = [@"¥" stringByAppendingString:currentPrice];
+    
+    NSString *nPrice = @"";
+    if ([SCUtilities isValidString:currentPrice]) {
+        nPrice = [@"¥" stringByAppendingString:currentPrice];
+    }else{
+        nPrice = @"¥";
+    }
     NSMutableAttributedString *currentStr = [[NSMutableAttributedString alloc]initWithString:nPrice];
     [currentStr addAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:9]} range:NSMakeRange(0, 1)];
     _currentPriceLab.attributedText = currentStr;

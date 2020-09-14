@@ -163,7 +163,7 @@
     NSDictionary *param = @{@"typeNum":currenttypeNum,
                             @"isPreSale":@"0",
                             @"sort":@"SALE",
-                            @"sortType":@"DESC",
+                            @"sortType":@"ASC",
                             @"pageNum":[NSNumber numberWithInteger:pageNum],
                             @"pageSize":@"20"};
     

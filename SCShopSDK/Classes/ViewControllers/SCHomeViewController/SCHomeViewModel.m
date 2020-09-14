@@ -102,7 +102,7 @@
     SCCategoryModel *categoryModel = self.categoryList[index];
     NSString *typeNum = categoryModel.typeNum ?: @"";
 
-    [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
+    [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeAsc pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
         SCHomeCacheModel *cacheModel = self.commodityDict[@(index)];
         if (!cacheModel) {
             cacheModel = [SCHomeCacheModel new];

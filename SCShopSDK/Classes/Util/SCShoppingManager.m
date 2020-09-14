@@ -119,8 +119,8 @@
     info.phoneNumber = userInfo[@"phoneNumber"];
     info.uan = userInfo[@"uan"];
     info.name = userInfo[@"name"];
-    info.isJSMobile = userInfo[@"isJSMobile"];
-    info.isLogin = userInfo[@"isLogin"];
+    info.isJSMobile =  [userInfo[@"isJSMobile"] integerValue];
+    info.isLogin = [userInfo[@"isLogin"] integerValue];
     
     info.cmtokenid = userInfo[@"cmtokenid"];
     

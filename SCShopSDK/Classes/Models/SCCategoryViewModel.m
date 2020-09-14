@@ -122,7 +122,7 @@
 //为你推荐
 + (void)requestRecommend:(SCCommodityBlock)successBlock failure:(SCHttpRequestFailed)failureBlock
 {
-    [self requestCommoditiesWithTypeNum:nil brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:1 success:successBlock failure:failureBlock];
+    [self requestCommoditiesWithTypeNum:nil brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeAsc pageNum:1 success:successBlock failure:failureBlock];
 }
 
 

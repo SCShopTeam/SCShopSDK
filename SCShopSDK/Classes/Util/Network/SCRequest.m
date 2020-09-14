@@ -309,11 +309,13 @@
     if ([SCUtilities isValidDictionary:param]) {
         [dic addEntriesFromDictionary:param];
     }
+    NSString *userCityNum = [SCUtilities isValidString:[SCUserInfo currentUser].uan]?[SCUserInfo currentUser].uan:@"";
+    dic[@"tenantType"] = @"collect";
+    dic[@"userCityNum"] = userCityNum;
     
-    if (!VALID_STRING(param[@"tenantNum"])) {
-        dic[@"longitude"] = [SCLocationService sharedInstance].longitude ?: @"";
-        dic[@"latitude"]  = [SCLocationService sharedInstance].latitude ?: @"";   
-    }
+    dic[@"longitude"] = [SCLocationService sharedInstance].longitude ?: @"";
+    dic[@"latitude"]  = [SCLocationService sharedInstance].latitude ?: @"";
+    
     
     [SCNetworkManager POST:SC_COMMODITY_LIST parameters:dic success:^(id  _Nullable responseObject) {
         

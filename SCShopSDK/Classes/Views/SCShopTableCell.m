@@ -109,7 +109,7 @@
     self.titleTagLabel.hidden = !showTag;
     
     //标题
-    NSString *str = model.categoryName;
+    NSString *str = model.categoryTitle;
     if (showTag) {
         str = [NSString stringWithFormat:@"          %@",str];
     }
