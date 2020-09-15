@@ -97,7 +97,7 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     NSString *text = VALID_STRING(textField.text) ? textField.text : textField.placeholder;
-    [self requestSearchText:textField.text];
+    [self requestSearchText:text];
     return YES;
 }
 

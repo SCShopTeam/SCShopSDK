@@ -130,4 +130,8 @@
 #endif
 
 
+//通知
+#define SC_LOGINED_NOTIFICATION @"SC_LOGINED_NOTIFICATION"
+
+
 #endif /* SCPublicDefine_h */

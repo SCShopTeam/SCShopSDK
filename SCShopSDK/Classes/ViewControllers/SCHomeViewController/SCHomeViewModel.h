@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SCHomeCacheModel *)getCacheModel:(NSInteger)index;
 
+- (void)clear;
+
 @end
 
 

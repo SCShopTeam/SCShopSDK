@@ -30,6 +30,13 @@
 
 @implementation SCHomeViewModel
 
+- (void)clear
+{
+    self.recommendStoreModel = nil;
+    self.goodStoreList = nil;
+    [self.commodityDict removeAllObjects];
+}
+
 - (void)requestCategoryList:(SCHttpRequestCompletion)completion
 {
     self.isCategoryRequesting = YES;

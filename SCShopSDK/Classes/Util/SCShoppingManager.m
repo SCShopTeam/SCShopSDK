@@ -62,7 +62,7 @@
 //测试用假数据,模拟赋值
 - (void)testFakeData
 {
-    
+
 }
 
 +(void)showDiffNetAlert:(UINavigationController *)nav{
@@ -75,6 +75,7 @@
     
 //    [nav presentViewController:alert animated:NO completion:nil];
     [nav pushViewController:alert animated:NO];
+    alert.navigationController.navigationBar.hidden = NO;
 }
 
 #pragma mark -Public

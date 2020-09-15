@@ -57,9 +57,18 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     
     [self prepareUI];
     
-//    [self showLoading];
     [self requestTotalData:1];
     
+    [self addNotification];
+    
+}
+
+- (void)addNotification
+{
+    [[NSNotificationCenter defaultCenter] addObserverForName:SC_LOGINED_NOTIFICATION object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+        [self.viewModel clear];
+        [self requestTotalData:1];
+    }];
 }
 
 
@@ -396,6 +405,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     if (model.isLogin.integerValue > 0 && ![SCUserInfo currentUser].isLogin) {
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
             [manager.delegate scLoginWithNav:self.navigationController back:^(UIViewController * _Nonnull controller) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:SC_LOGINED_NOTIFICATION object:nil];
                 [self pushToWebView:model.linkUrl title:model.contentName];
             }];
         }

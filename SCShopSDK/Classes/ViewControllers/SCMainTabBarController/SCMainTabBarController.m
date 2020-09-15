@@ -53,11 +53,12 @@
            SCShoppingManager *manager =  [SCShoppingManager sharedInstance];
             if (manager.delegate && [manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
                 [manager.delegate scLoginWithNav:currentNav back:^(UIViewController * _Nonnull controller) {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:SC_LOGINED_NOTIFICATION object:nil];
                     SCUserInfo *info = [SCUserInfo currentUser];
                     if (info.isLogin && !info.isJSMobile) {
                         [SCShoppingManager showDiffNetAlert:currentNav];
                     }else{
-                        [self tabBarController:tabBarController shouldSelectViewController:currentNav];
+                        [self tabBarController:tabBarController shouldSelectViewController:viewController];
                     }
                 }];
             }

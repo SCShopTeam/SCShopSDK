@@ -156,6 +156,7 @@ static SCURLSerialization *urlSerialization = nil;
             SCShoppingManager *manager = [SCShoppingManager sharedInstance];
             if (manager.delegate && [manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
                 [manager.delegate scLoginWithNav:nav back:^(UIViewController * _Nonnull controller) {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:SC_LOGINED_NOTIFICATION object:nil];
                     SCUserInfo *userInfo = [SCUserInfo currentUser];
                     if (!userInfo.isJSMobile && userInfo.isLogin) {
                         [SCShoppingManager showDiffNetAlert:nav];
