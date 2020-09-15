@@ -52,7 +52,7 @@
         if ( ![SCUserInfo currentUser].isLogin){
            SCShoppingManager *manager =  [SCShoppingManager sharedInstance];
             if (manager.delegate && [manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
-                [manager.delegate scLoginWithNav:nav back:^(UIViewController * _Nonnull controller) {
+                [manager.delegate scLoginWithNav:currentNav back:^(UIViewController * _Nonnull controller) {
                     SCUserInfo *info = [SCUserInfo currentUser];
                     if (info.isLogin && !info.isJSMobile) {
                         [SCShoppingManager showDiffNetAlert:currentNav];
