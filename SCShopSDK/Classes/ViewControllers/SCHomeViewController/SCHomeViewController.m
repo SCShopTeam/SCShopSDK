@@ -405,6 +405,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     if (model.isLogin.integerValue > 0 && ![SCUserInfo currentUser].isLogin) {
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
             [manager.delegate scLoginWithNav:self.navigationController back:^(UIViewController * _Nonnull controller) {
+                [self.navigationController setNavigationBarHidden:NO animated:NO];
                 [[NSNotificationCenter defaultCenter] postNotificationName:SC_LOGINED_NOTIFICATION object:nil];
                 [self pushToWebView:model.linkUrl title:model.contentName];
             }];

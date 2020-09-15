@@ -205,8 +205,7 @@
 //        }
 //    }
     scroll.contentOffset = CGPointZero;
-    CGFloat total_width = 0;//btn_space;
-    NSInteger page = 0;
+
     CGFloat leftX = 0;
     CGFloat currentY = 0;
     
@@ -230,26 +229,36 @@
         UIButton *btn = [[UIButton alloc]initWithFrame:CGRectMake((btn_width-tureW)/2,0,tureW,tureH)];
         [btn setTag:1000+i];
         
+   
+        
         [btn addTarget:self action:@selector(childCategoryClick:) forControlEvents:UIControlEventTouchUpInside];
         btn.titleLabel.font = [UIFont systemFontOfSize:12];
         btn.titleLabel.textAlignment = NSTextAlignmentCenter;
         [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-               [btn setTitle:model.secondName forState:UIControlStateNormal];
+        
+        UILabel *lb = [[UILabel alloc]initWithFrame:CGRectMake(0, btn.frame.size.width, btn.frame.size.width, btn.frame.size.height-btn.frame.size.width)];
+            lb.font = [UIFont systemFontOfSize:12];
+              lb.textAlignment = NSTextAlignmentCenter;
+        [btn addSubview:lb];
+        if ([SCUtilities isValidString:model.secondName]) {
+            lb.text = model.secondName;
+        }else{
+            lb.text = @"";
+        }
         
         if (![SCUtilities isValidString:model.secondPic]) {
             [btn setImage:[UIImage bundleImageNamed:@"childCategory"] forState:UIControlStateNormal];
-            [btn.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-                              make.width.height.mas_equalTo(btn.mas_width);
-                          }];
+
         }else{
             [btn sd_setImageWithURL:[NSURL URLWithString:model.secondPic] forState:UIControlStateNormal completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-                [btn.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-                    make.width.height.mas_equalTo(btn.mas_width);
-                }];
+
             }];
         }
-        [btn setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
-        [btn setTitleEdgeInsets:UIEdgeInsetsMake(SCREEN_FIX(54), -SCREEN_FIX(54) ,0, 0)];
+       
+        btn.contentVerticalAlignment = UIControlContentVerticalAlignmentTop;
+        btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+                 
+        [btn setImageEdgeInsets:UIEdgeInsetsMake(0, 0, btn.frame.size.height-btn.frame.size.width, 0)];
 
         [bgView addSubview:btn];
     }

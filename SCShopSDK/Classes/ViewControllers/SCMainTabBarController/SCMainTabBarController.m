@@ -39,6 +39,12 @@
 {
     NSInteger index = tabBarController.selectedIndex;
     SCBaseNavigationController *currentNav = tabBarController.viewControllers[index];
+    
+    //取消hud
+    UIViewController *vc = [SCUtilities currentViewController];
+    [vc stopLoading];
+
+    
     if ([viewController isKindOfClass:[SCBaseNavigationController class]]) {
         
         SCBaseNavigationController *nav = (SCBaseNavigationController *)viewController;
@@ -72,8 +78,10 @@
             return YES;
         }
     }
-    UIViewController *vc = [SCUtilities currentViewController];
-    [vc stopLoading];
+    
+    
+
+    
     
     return YES;
 }
@@ -93,10 +101,15 @@
             code = @"IOS_T_NZDSC_Z04";
         }
     }
+    
+    
+    
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     if (manager.delegate && [manager.delegate respondsToSelector:@selector(scXWMobStatMgrStr:url:inPage:)]) {
         [manager.delegate scXWMobStatMgrStr:code url:@"" inPage:/*className*/@"SCHomeViewController"];
     }
+    
+    
 }
 
 - (void)createTabs

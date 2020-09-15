@@ -310,9 +310,11 @@
         [dic addEntriesFromDictionary:param];
     }
     NSString *userCityNum = [SCUtilities isValidString:[SCUserInfo currentUser].uan]?[SCUserInfo currentUser].uan:@"";
-    dic[@"tenantType"] = @"collect";
+    if (!VALID_STRING(dic[@"tenantNum"])) {
+        dic[@"tenantType"] = @"collect";
+    }
+
     dic[@"userCityNum"] = userCityNum;
-    
     dic[@"longitude"] = [SCLocationService sharedInstance].longitude ?: @"";
     dic[@"latitude"]  = [SCLocationService sharedInstance].latitude ?: @"";
     

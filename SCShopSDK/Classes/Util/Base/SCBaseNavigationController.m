@@ -18,6 +18,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.view.backgroundColor = [UIColor whiteColor];
     self.navigationBar.translucent = NO;
     self.navigationBar.barTintColor = [UIColor whiteColor];
     
