@@ -56,7 +56,7 @@ static SCRequestParams *params = nil;
 
 -(NSString *)userAppVer{
     if (!_userAppVer) {
-        _userAppVer = @"8.0.0";
+        _userAppVer = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     }
     return _userAppVer;
 }

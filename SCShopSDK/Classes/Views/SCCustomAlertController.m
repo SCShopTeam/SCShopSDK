@@ -16,6 +16,10 @@
 
 @implementation SCCustomAlertController
 
+-(void)viewWillAppear:(BOOL)animated{
+    self.navigationController.navigationBar.hidden = NO;
+}
+
 -(void)backBarButtonPressend{
     [self.navigationController popViewControllerAnimated:NO];
 }

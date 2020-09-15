@@ -62,7 +62,7 @@
 //测试用假数据,模拟赋值
 - (void)testFakeData
 {
-
+    NSString *app_Version = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
 }
 
 +(void)showDiffNetAlert:(UINavigationController *)nav{
