@@ -52,7 +52,7 @@
         [self.commodityList removeAllObjects];
     }
     
-    [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeAsc pageNum:page success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
+    [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:page success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
         [self.commodityList addObjectsFromArray:commodityList];
         self.hasMoreData = commodityList.count >= kCountCurPage;
         

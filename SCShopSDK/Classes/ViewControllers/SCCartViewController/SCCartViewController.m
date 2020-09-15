@@ -36,9 +36,11 @@
     self.title = @"购物车";
     
     //环境切换
-    UITapGestureRecognizer *mutiTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mutiTapAction)];
-    mutiTap.numberOfTapsRequired = 5;
-    [self.navigationController.navigationBar addGestureRecognizer:mutiTap];
+    if (SC_CAN_CHANGE_ENVIRONMENT) {
+        UITapGestureRecognizer *mutiTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mutiTapAction)];
+        mutiTap.numberOfTapsRequired = 5;
+        [self.navigationController.navigationBar addGestureRecognizer:mutiTap];
+    }
 }
 
 - (void)mutiTapAction

@@ -15,13 +15,8 @@ typedef NS_ENUM(NSInteger, SCNetApiType) {
     SCNetApiTypeApollo
 };
 
-typedef NS_ENUM(NSInteger, SCEnvitonmentKey) {
-    SCEnvitonmentKeyNone,
-    SCEnvitonmentKeyTest,
-    SCEnvitonmentKeyRelease
-};
 
-static NSString *kSCEnvironmentChangeKey = @"SCEnvironmentChangeKey1.1.5";
+static NSString *kSCEnvironmentChangeKey = @"SCEnvironmentChangeKey";
 
 @interface SCNetworkTool ()
 AS_SINGLETON(SCNetworkTool)
@@ -34,16 +29,23 @@ DEF_SINGLETON(SCNetworkTool)
 {
     self = [super init];
     if (self) {
-        NSInteger key = [[NSUserDefaults standardUserDefaults] integerForKey:kSCEnvironmentChangeKey];
-        if (key == SCEnvitonmentKeyTest) {
-            self.isRelease = NO;
+        if (SC_CAN_CHANGE_ENVIRONMENT) { //可以切换环境
+            NSInteger key = [[NSUserDefaults standardUserDefaults] integerForKey:kSCEnvironmentChangeKey];
+            if (key == SCEnvitonmentKeyTest) {
+                self.isRelease = NO;
+                
+            }else if (key == SCEnvitonmentKeyRelease) {
+                self.isRelease = YES;
+                
+            }else { //首次加载，默认情况下的环境
+                self.isRelease = kDefaultEnvironmentKey;
+            }
             
-        }else if (key == SCEnvitonmentKeyRelease) {
-            self.isRelease = YES;
-            
-        }else { //首次加载，默认情况下的环境
-            self.isRelease = YES;
+        }else { //无法切换，直接使用默认环境
+            self.isRelease = kDefaultEnvironmentKey;
         }
+        
+
         
     }
     return self;
