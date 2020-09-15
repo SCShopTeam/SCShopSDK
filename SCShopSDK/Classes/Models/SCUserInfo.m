@@ -42,6 +42,7 @@
 
 - (void)clear
 {
+    self.isJSMobile = NO;
     self.phoneNumber = nil;
     self.password = nil;
     self.isLogin = NO;

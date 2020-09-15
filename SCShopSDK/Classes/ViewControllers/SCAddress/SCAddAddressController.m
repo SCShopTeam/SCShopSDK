@@ -46,6 +46,7 @@
     }];
     
     _table.userInteractionEnabled = YES;
+    _table.bounces = NO;
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tableTap)];
     [_table addGestureRecognizer:tap];
     
@@ -185,8 +186,8 @@
             [cell addSubview:phonetf];
             if (_editModel) {
                 phonetf.text = _editModel.mobile;
-                phonetf.keyboardType = UIKeyboardTypeNumberPad;
             }
+            phonetf.keyboardType = UIKeyboardTypeNumberPad;
         break;
         case 2:
             areatf = [self createTF:@"请选择所在省市区"];

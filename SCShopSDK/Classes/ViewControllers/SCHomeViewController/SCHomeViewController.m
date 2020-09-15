@@ -405,9 +405,11 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     if (model.isLogin.integerValue > 0 && ![SCUserInfo currentUser].isLogin) {
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
             [manager.delegate scLoginWithNav:self.navigationController back:^(UIViewController * _Nonnull controller) {
-                [self.navigationController setNavigationBarHidden:NO animated:NO];
                 [[NSNotificationCenter defaultCenter] postNotificationName:SC_LOGINED_NOTIFICATION object:nil];
-                [self pushToWebView:model.linkUrl title:model.contentName];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self pushToWebView:model.linkUrl title:model.contentName];
+                });
+
             }];
         }
         
@@ -505,7 +507,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         @weakify(self)
         [serviceBtn sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
             @strongify(self)
-             
+
             [self pushToWebView:SC_ONLINE_SERVICE_URL title:@"在线客服"];
         }];
         [_topView addSubview:serviceBtn];
