@@ -16,9 +16,15 @@
 
 @implementation SCCustomAlertController
 
+-(void)backBarButtonPressend{
+    [self.navigationController popViewControllerAnimated:NO];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = HEX_RGB(@"#EDEBED");
+    self.title = @"提示";
+    self.navigationItem.leftBarButtonItem = [SCUtilities makeBarButtonWithIcon:SCIMAGE(@"newnavbar_back") target:self action:@selector(backBarButtonPressend) isLeft:YES];
 }
 
 

@@ -37,8 +37,8 @@
 
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
 {
-
-    
+    NSInteger index = tabBarController.selectedIndex;
+    SCBaseNavigationController *currentNav = tabBarController.viewControllers[index];
     if ([viewController isKindOfClass:[SCBaseNavigationController class]]) {
         
         SCBaseNavigationController *nav = (SCBaseNavigationController *)viewController;
@@ -55,16 +55,16 @@
                 [manager.delegate scLoginWithNav:nav back:^(UIViewController * _Nonnull controller) {
                     SCUserInfo *info = [SCUserInfo currentUser];
                     if (info.isLogin && !info.isJSMobile) {
-                        [SCShoppingManager showDiffNetAlert:nav];
+                        [SCShoppingManager showDiffNetAlert:currentNav];
                     }else{
-                        [self tabBarController:tabBarController shouldSelectViewController:viewController];
+                        [self tabBarController:tabBarController shouldSelectViewController:currentNav];
                     }
                 }];
             }
             return NO;
             
         }else if (![SCUserInfo currentUser].isJSMobile){
-            [SCShoppingManager showDiffNetAlert:nav];
+            [SCShoppingManager showDiffNetAlert:currentNav];
             return NO;
             
         }else{
@@ -78,7 +78,6 @@
 }
 
 -(void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController{
-    
     NSString *className = NSStringFromClass([((SCBaseNavigationController *)viewController).viewControllers.firstObject class]);
     NSString *code = @"";
     

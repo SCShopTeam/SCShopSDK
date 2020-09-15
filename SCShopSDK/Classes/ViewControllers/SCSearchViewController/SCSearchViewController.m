@@ -45,7 +45,6 @@
     if (!VALID_STRING(text)) {
         self.emptyDataView.hidden = YES;
         self.historyView.hidden = NO;
-        [self showWithStatus:@"请输入搜索内容"];
         return;
     }
     
@@ -97,6 +96,7 @@
 #pragma mark -UITextFieldDelegate
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
+    NSString *text = VALID_STRING(textField.text) ? textField.text : textField.placeholder;
     [self requestSearchText:textField.text];
     return YES;
 }

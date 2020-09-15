@@ -168,6 +168,7 @@
     //                }
 }
 
+#pragma mark --去逛逛
 -(void)toGuangGuang{
     SCLifeViewController *tag = [[SCLifeViewController alloc]init];
     [self.navigationController pushViewController:tag animated:YES];
