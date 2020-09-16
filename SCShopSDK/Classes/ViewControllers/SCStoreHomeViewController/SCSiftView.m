@@ -128,7 +128,6 @@
         recommend.sortKey  = SCCategorySortKeyRecommand;
         
         SiftItem *new = [SiftItem new];
-        new.sort    = YES;
         new.name    = @"上新";
         new.sortKey = SCCategorySortKeyTime;
         
@@ -139,7 +138,6 @@
         price.sortKey  = SCCategorySortKeyPrice;
         
         SiftItem *sale = [SiftItem new];
-        sale.sort    = YES;
         sale.name    = @"销量";
         sale.sortKey = SCCategorySortKeySale;
         

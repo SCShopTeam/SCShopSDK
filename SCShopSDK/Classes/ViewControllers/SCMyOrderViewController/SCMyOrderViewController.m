@@ -42,19 +42,17 @@
     }else{
          currentType = itemWaitPayType_SC;
     }
-    
-    
 }
 
-//-(void)viewDidDisappear:(BOOL)animated{
-//    [super viewDidDisappear:animated];
-//    self.navigationController.navigationBar.hidden = NO;
-//}
+//白色状态栏
+-(UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    
-    
 }
 
 - (void)viewDidLoad {
@@ -66,8 +64,7 @@
     
     [self sc_requestOrderListWithStatus:@"XSDD_DZF"];
    
-    NSString *userPhone = [SCUserInfo currentUser].phoneNumber;
-    DDLOG(@"---- 商城的用户手机号码     :::  %@ :::",userPhone);
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)prepareUI
