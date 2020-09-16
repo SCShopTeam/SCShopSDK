@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSArray <SCCategoryModel *> *categoryList;
 
-- (void)pushToIndex:(NSInteger)index;
+- (void)pushToIndex:(NSInteger)index needCallBack:(BOOL)needCallBack;
 
 @property (nonatomic, copy) void (^selectBlock)(NSInteger index);
 

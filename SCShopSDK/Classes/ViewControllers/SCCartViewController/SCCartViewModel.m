@@ -76,7 +76,7 @@ NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
             }
             
             NSDictionary *dict = @{@"amount": @(item.itemQuantity),
-                                   @"skuId": item.skuNum,
+                                   @"skuId": item.itemNum,
                                    @"wholesalePrice": [NSString stringWithFormat:@"%02f",item.itemPrice]};
             [paramGoodsList addObject:dict];
             

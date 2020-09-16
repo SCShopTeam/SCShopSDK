@@ -1,40 +1,52 @@
 //
-//  SCLifeSubViewController.m
+//  SCLifeCell.m
 //  shopping
 //
-//  Created by gejunyu on 2020/9/7.
+//  Created by gejunyu on 2020/9/16.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCLifeSubViewController.h"
+#import "SCLifeCell.h"
 #import "SCLifeViewModel.h"
 #import "SCShopTableCell.h"
 
-@interface SCLifeSubViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface SCLifeCell () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) SCTableView *tableView;
 @property (nonatomic, strong) SCLifeViewModel *viewModel;
 @property (nonatomic, strong) UILabel *emptyTipLabel;
 
 @end
 
-@implementation SCLifeSubViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    [self requestCommodityList:1];
+@implementation SCLifeCell
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self emptyTipLabel];
+    }
+    return self;
 }
 
-
-- (void)requestCommodityList:(NSInteger)page
+- (void)setTypeNum:(NSString *)typeNum
 {
-    [self.viewModel requestCommodityList:_typeNum page:page completion:^(NSString * _Nullable errorMsg) {
+    _typeNum = typeNum ?: @"";
+    
+    if (!self.viewModel.commodityList) {
+        [self requestData:1];
+    }
+
+}
+
+- (void)requestData:(NSInteger)page
+{
+    [self.viewModel requestCommodityList:self.typeNum page:page completion:^(NSString * _Nullable errorMsg) {
         [self.tableView reloadDataShowFooter:self.viewModel.hasMoreData];
         
         if (errorMsg) {
-            [self showError:errorMsg];
+            self.emptyTipLabel.text = errorMsg;
             
         }else {
+            self.emptyTipLabel.text = @"抱歉，暂无商品，看看其他商品吧~";
             self.emptyTipLabel.hidden = self.viewModel.commodityList.count;
         }
     }];
@@ -56,9 +68,12 @@
 {
     SCShopTableCell *cell = (SCShopTableCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCShopTableCell.class) forIndexPath:indexPath];
     
-    SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
-    
-    cell.model = model;
+    if (indexPath.row < self.viewModel.commodityList.count) {
+        SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
+        
+        cell.model = model;
+    }
+
     
     return cell;
 }
@@ -67,28 +82,41 @@
 {
     SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
     //改
-    [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"" navigation:self.navigationController];
+    [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"" navigation:[SCUtilities currentNavigationController]];
 }
 
-
+#pragma mark -ui
 - (SCTableView *)tableView
 {
     if (!_tableView) {
-        _tableView = [[SCTableView alloc] initWithFrame:self.view.bounds];
-        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        _tableView.delegate   = self;
+        _tableView = [[SCTableView alloc] initWithFrame:self.bounds];
+        _tableView.delegate = self;
         _tableView.dataSource = self;
-        [_tableView registerClass:SCShopTableCell.class forCellReuseIdentifier:NSStringFromClass(SCShopTableCell.class)];
         [_tableView showsRefreshHeader];
-//        [_tableView showsRefreshFooter];
+        [self addSubview:_tableView];
+        [_tableView registerClass:SCShopTableCell.class forCellReuseIdentifier:NSStringFromClass(SCShopTableCell.class)];
+        
         @weakify(self)
         _tableView.refreshingBlock = ^(NSInteger page) {
             @strongify(self)
-            [self requestCommodityList:page];
+            [self requestData:page];
         };
-        [self.view addSubview:_tableView];
     }
     return _tableView;
+}
+
+- (UILabel *)emptyTipLabel
+{
+    if (!_emptyTipLabel) {
+        _emptyTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.width, 20)];
+        _emptyTipLabel.textAlignment = NSTextAlignmentCenter;
+        _emptyTipLabel.font = SCFONT_SIZED(15);
+        _emptyTipLabel.textColor = HEX_RGB(@"#999999");
+        _emptyTipLabel.text = @"加载中...";
+        _emptyTipLabel.centerY = self.tableView.height/2;
+        [self addSubview:_emptyTipLabel];
+    }
+    return _emptyTipLabel;
 }
 
 - (SCLifeViewModel *)viewModel
@@ -97,21 +125,6 @@
         _viewModel = [SCLifeViewModel new];
     }
     return _viewModel;
-}
-
-- (UILabel *)emptyTipLabel
-{
-    if (!_emptyTipLabel) {
-        _emptyTipLabel = [UILabel new];
-        _emptyTipLabel.textAlignment = NSTextAlignmentCenter;
-        _emptyTipLabel.font = SCFONT_SIZED(15);
-        _emptyTipLabel.textColor = HEX_RGB(@"#999999");
-        _emptyTipLabel.text = @"抱歉，暂无商品，看看其他商品吧~";
-        [_emptyTipLabel sizeToFit];
-        _emptyTipLabel.center = self.tableView.center;
-        [self.view addSubview:_emptyTipLabel];
-    }
-    return _emptyTipLabel;
 }
 
 @end

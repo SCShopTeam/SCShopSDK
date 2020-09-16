@@ -99,9 +99,7 @@
 {
     _model = model;
     //图片
-    [self.icon sd_setImageWithURL:[NSURL URLWithString:model.picUrl] placeholderImage:IMG_PLACE_HOLDER completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-        NSLog(@"%@",NSStringFromCGSize(image.size));
-    }];
+    [self.icon sd_setImageWithURL:[NSURL URLWithString:model.picUrl] placeholderImage:IMG_PLACE_HOLDER];
     
     //是否有标签
     BOOL showTag = VALID_STRING(model.tenantTypeStr);

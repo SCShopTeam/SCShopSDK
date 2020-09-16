@@ -63,7 +63,6 @@
 - (void)testFakeData
 {
 
-    
 }
 
 +(void)showDiffNetAlert:(UINavigationController *)nav{

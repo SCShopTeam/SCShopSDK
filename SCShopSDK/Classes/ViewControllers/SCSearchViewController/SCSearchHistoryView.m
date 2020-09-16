@@ -63,7 +63,7 @@ static CGFloat kFontSize = 13;
             
             NSString *text = records[idx];
             CGFloat textW = [text calculateWidthWithFont:SCFONT_SIZED(kFontSize) height:kFontSize];
-            CGFloat w = textW + SCREEN_FIX(25);
+            CGFloat w = MIN(textW + SCREEN_FIX(25), self.width-margin*2) ;
             
             //如果超过右边界，就换下一行显示
             if (x + w > self.width - margin) {

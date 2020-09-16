@@ -1,16 +1,17 @@
 //
-//  SCLifeSubViewController.h
+//  SCLifeCell.h
 //  shopping
 //
-//  Created by gejunyu on 2020/9/7.
+//  Created by gejunyu on 2020/9/16.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCBaseViewController.h"
+#import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCLifeSubViewController : SCBaseViewController
+@interface SCLifeCell : UICollectionViewCell
+
 @property (nonatomic, copy) NSString *typeNum;
 
 @end

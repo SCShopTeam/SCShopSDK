@@ -111,6 +111,7 @@
         CGFloat w = self.width - x*2;
         CGFloat h = self.height - y;
         _cycleView = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(x, y, w, h) delegate:self placeholderImage:nil];
+        _cycleView.backgroundColor = [UIColor clearColor];
         _cycleView.showPageControl = YES;
         _cycleView.pageControlAliment = SDCycleScrollViewPageContolAlimentRight;
         _cycleView.currentPageDotColor = [UIColor whiteColor];

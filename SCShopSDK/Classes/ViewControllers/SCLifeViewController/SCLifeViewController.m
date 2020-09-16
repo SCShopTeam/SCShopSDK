@@ -9,13 +9,13 @@
 #import "SCLifeViewController.h"
 #import "SCTagView.h"
 #import "SCLifeViewModel.h"
-#import "SCLifeSubViewController.h"
+#import "SCLifeCell.h"
 
-@interface SCLifeViewController () <UIPageViewControllerDelegate, UIPageViewControllerDataSource>
+@interface SCLifeViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) SCLifeViewModel *viewModel;
 @property (nonatomic, strong) SCTagView *tagView;
-@property (nonatomic, strong) UIPageViewController *pageViewController;
-@property (nonatomic, assign) NSInteger targetIndex;
+@property (nonatomic, strong) UICollectionView *collectionView;
+@property (nonatomic, strong) NSMutableArray <NSString *> *idList;
 @end
 
 @implementation SCLifeViewController
@@ -26,25 +26,19 @@
     self.title = @"智能生活";
     
     [self requestCategoryList];
-    
+
 }
 
 #pragma mark -requset
 - (void)requestCategoryList
 {
     [self.viewModel requestCategoryList:self.paramDic success:^(id  _Nullable responseObject) {
-        NSArray *categoryList = self.viewModel.categoryList;
-        self.tagView.categoryList = categoryList;
+        //标签
+        self.tagView.categoryList = self.viewModel.categoryList;
+        //scrollview
+        [self configCollectionView];
         
-        [categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull model, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (!model.selected) {
-                return;
-            }
-            
-            SCLifeSubViewController *vc = self.viewModel.subVcList[idx];
-            [self.pageViewController setViewControllers:@[vc] direction:UIPageViewControllerNavigationDirectionForward animated:YES completion:nil];
-        }];
-        
+
         
     } failure:^(NSString * _Nullable errorMsg) {
         [self showWithStatus:errorMsg];
@@ -52,92 +46,92 @@
 
 }
 
-#pragma mark -UIPageViewControllerDelegate, UIPageViewControllerDataSource
-- (nullable UIViewController *)pageViewController:(UIPageViewController *)pageViewController
-               viewControllerBeforeViewController:(UIViewController *)viewController
+- (void)configCollectionView
 {
-    SCLifeSubViewController *subVc = (SCLifeSubViewController *)viewController;
+    __block NSInteger selectedIndex = 0;
+    [self.viewModel.categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull model, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (model.selected) {
+            selectedIndex = idx;
+            *stop = YES;
+        }
+    }];
+    [self.collectionView reloadData];
     
-    NSArray *vcList = self.viewModel.subVcList;
+    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:selectedIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+}
+
+#pragma mark -UICollectionViewDelegate, UICollectionViewDataSource
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    return self.viewModel.categoryList.count;
+}
+
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *ri = [NSString stringWithFormat:@"lifecellid:%li",indexPath.row];
     
-    NSInteger index = [vcList indexOfObject:subVc] - 1;
-    
-    if (index < 0) {
-        return nil;
-        
-    }else {
-        SCLifeSubViewController *vc = vcList[index];
-        return vc;
+    if (![self.idList containsObject:ri]) { //这里是为了不让cell复用
+        [collectionView registerClass:SCLifeCell.class forCellWithReuseIdentifier:ri];
+        [self.idList addObject:ri];
     }
-}
-
-- (nullable UIViewController *)pageViewController:(UIPageViewController *)pageViewController
-                viewControllerAfterViewController:(UIViewController *)viewController
-{
-    SCLifeSubViewController *subVc = (SCLifeSubViewController *)viewController;
     
-    NSArray *vcList = self.viewModel.subVcList;
+    SCLifeCell *cell = (SCLifeCell *)[collectionView dequeueReusableCellWithReuseIdentifier:ri forIndexPath:indexPath];
     
-    NSInteger index = [vcList indexOfObject:subVc] + 1;
-    
-    if (index >= vcList.count) {
-        return nil;
-        
-    }else {
-        SCLifeSubViewController *vc = vcList[index];
-        return vc;
+    if (indexPath.row < self.viewModel.categoryList.count) {
+        SCCategoryModel *model = self.viewModel.categoryList[indexPath.row];
+        cell.typeNum = model.typeNum;
     }
+    
+    return cell;
 }
 
-- (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray<UIViewController *> *)pendingViewControllers
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    SCLifeSubViewController *vc = (SCLifeSubViewController *)pendingViewControllers.firstObject;
-    _targetIndex = [self.viewModel.subVcList indexOfObject:vc];
+    NSInteger index = scrollView.contentOffset.x/scrollView.width;
+    
+    [self.tagView pushToIndex:index needCallBack:NO];
 }
 
-
-- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers transitionCompleted:(BOOL)completed
-{
-
-    [self.tagView pushToIndex:_targetIndex];
-}
 
 #pragma mark -ui
 - (SCTagView *)tagView
 {
     if (!_tagView) {
-        _tagView = [[SCTagView alloc] initWithFrame:CGRectMake(0, SCREEN_FIX(0), self.view.width,SCREEN_FIX(40))];
+        _tagView = [[SCTagView alloc] initWithFrame:CGRectMake(0, SCREEN_FIX(0), self.view.width,SCREEN_FIX(43))];
         _tagView.contentEdgeInsets = UIEdgeInsetsMake(0, 0, SCREEN_FIX(5), 0);
         [self.view addSubview:_tagView];
         
         @weakify(self)
         _tagView.selectBlock = ^(NSInteger index) {
             @strongify(self)
-            
-            SCLifeSubViewController *subVc = self.viewModel.subVcList[index];
-            if (subVc != self.pageViewController.parentViewController) {
-                [self.pageViewController setViewControllers:@[subVc] direction:UIPageViewControllerNavigationDirectionForward animated:YES completion:nil];
-            }
-            
+            [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
             
         };
-
+        
     }
     return _tagView;
 }
 
-- (UIPageViewController *)pageViewController
+- (UICollectionView *)collectionView
 {
-    if (!_pageViewController) {
-        _pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
-        _pageViewController.delegate = self;
-        _pageViewController.dataSource = self;
-        CGFloat y = self.tagView.bottom - STATUS_BAR_HEIGHT;
-        _pageViewController.view.bounds = CGRectMake(0, y, self.view.width, self.view.height - y);
-        [self addChildViewController:_pageViewController];
-        [self.view addSubview:_pageViewController.view];
+    if (!_collectionView) {
+        CGFloat y = self.tagView.bottom;
+        CGFloat h = SCREEN_HEIGHT - NAV_BAR_HEIGHT - y;
+        UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
+        layout.itemSize                = CGSizeMake(self.view.width, h);
+        layout.scrollDirection         = UICollectionViewScrollDirectionHorizontal;
+        
+        _collectionView = [[SCCollectionView alloc] initWithFrame:CGRectMake(0, y, SCREEN_WIDTH, h) collectionViewLayout:layout];
+        _collectionView.backgroundColor = [UIColor whiteColor];
+        _collectionView.delegate        = self;
+        _collectionView.dataSource      = self;
+        _collectionView.pagingEnabled   = YES;
+        _collectionView.bounces         = NO;
+        _collectionView.showsHorizontalScrollIndicator = NO;
+        [self.view addSubview:_collectionView];
+        
     }
-    return _pageViewController;
+    return _collectionView;
 }
 
 
@@ -149,5 +143,12 @@
     return _viewModel;
 }
 
+- (NSMutableArray<NSString *> *)idList
+{
+    if (!_idList) {
+        _idList = [NSMutableArray array];
+    }
+    return _idList;
+}
 
 @end

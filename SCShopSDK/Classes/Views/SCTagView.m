@@ -53,7 +53,7 @@
     self.collectionView.backgroundColor = backgroundColor;
 }
 
-- (void)pushToIndex:(NSInteger)index
+- (void)pushToIndex:(NSInteger)index needCallBack:(BOOL)needCallBack
 {
     [self.categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull model, NSUInteger idx, BOOL * _Nonnull stop) {
         model.selected = idx == index;
@@ -63,7 +63,7 @@
     
     [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:YES];
     
-    if (self.selectBlock) {
+    if (needCallBack && self.selectBlock) {
         self.selectBlock(index);
     }
 }

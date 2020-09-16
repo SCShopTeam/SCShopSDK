@@ -30,9 +30,7 @@
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
     self.navigationController.interactivePopGestureRecognizer.delegate = (id)self;
 
-    if (self.hideNavigationBar) {
-        [self.navigationController setNavigationBarHidden:YES animated:YES];
-    }
+    [self.navigationController setNavigationBarHidden:self.hideNavigationBar animated:YES];
     
 }
 
@@ -41,7 +39,12 @@
     [super viewWillDisappear:animated];
     
     if (self.hideNavigationBar) {
-        [self.navigationController setNavigationBarHidden:NO animated:YES];
+        if (_isChangingTab) {
+            _isChangingTab = NO;
+        }else {
+            [self.navigationController setNavigationBarHidden:NO animated:YES];
+        }
+        
     }
     
 }

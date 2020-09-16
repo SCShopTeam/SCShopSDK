@@ -8,13 +8,12 @@
 
 #import "SCLifeViewModel.h"
 #import "SCCategoryViewModel.h"
-#import "SCLifeSubViewController.h"
 
 @interface SCLifeViewModel ()
 @property (nonatomic, assign) BOOL hasMoreData;
 @property (nonatomic, strong) NSArray <SCCategoryModel *> *categoryList;
-@property (nonatomic, strong) NSArray <SCLifeSubViewController *> *subVcList;
 @property (nonatomic, strong) NSMutableArray <SCCommodityModel *> *commodityList;
+@property (nonatomic, assign) BOOL isRequesting;
 
 @end
 
@@ -26,13 +25,6 @@
         self.categoryList = categoryList;
         [self setModelSelected:paramDic];
         
-        NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:categoryList.count];
-        for (SCCategoryModel *model in categoryList) {
-            SCLifeSubViewController *vc = [SCLifeSubViewController new];
-            vc.typeNum = model.typeNum;
-            [mulArr addObject:vc];
-        }
-        self.subVcList = mulArr.copy;
         if (success) {
             success(nil);
         }
@@ -48,7 +40,16 @@
 
 - (void)requestCommodityList:(NSString *)typeNum page:(NSInteger)page completion:(SCHttpRequestCompletion)completion
 {
-    if (page == 1) {
+    if (_isRequesting) {
+        return;
+    }
+    
+    _isRequesting = YES;
+    
+    if (!_commodityList) {
+        _commodityList = [NSMutableArray array];
+        
+    }else if (page == 1) {
         [self.commodityList removeAllObjects];
     }
     
@@ -59,11 +60,13 @@
         if (completion) {
             completion(nil);
         }
+        self.isRequesting = NO;
         
     } failure:^(NSString * _Nullable errorMsg) {
         if (completion) {
             completion(errorMsg);
         }
+        self.isRequesting = NO;
     }];
     
 }
@@ -113,13 +116,5 @@
     
 }
 
-
-- (NSMutableArray<SCCommodityModel *> *)commodityList
-{
-    if (!_commodityList) {
-        _commodityList = [NSMutableArray array];
-    }
-    return _commodityList;
-}
 
 @end

@@ -41,7 +41,8 @@
     SCBaseNavigationController *currentNav = tabBarController.viewControllers[index];
     
     //取消hud
-    UIViewController *vc = [SCUtilities currentViewController];
+    SCBaseViewController *vc = (SCBaseViewController *)[SCUtilities currentViewController];
+    vc.isChangingTab = YES;
     [vc stopLoading];
 
     
