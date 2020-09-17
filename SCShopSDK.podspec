@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
     s.name             = 'SCShopSDK'
-    s.version          = '1.4.3'
+    s.version          = '1.4.4'
     s.summary          = 'shopping'
     
     # This description is used to generate tags and improve search results.
@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
     ###
     
     #framework
-    #  s.vendored_framework   = 'SCShopSDK/Framework/SCShopSDK.framework'
+    s.vendored_framework   = 'SCShopSDK/Framework/AgoraRtcCryptoLoader.framework'
     #####
     
     s.user_target_xcconfig = {'OTHER_LDFLAGS' => ['-ObjC','-all_load']}
