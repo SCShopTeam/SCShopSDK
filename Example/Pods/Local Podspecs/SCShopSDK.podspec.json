@@ -31,7 +31,6 @@
     "SCShopSDK/Classes/Views/SCCustomAlertController.h"
   ],
   "prefix_header_file": "SCShopSDK/Classes/Util/SCCommonPrefix.pch",
-  "vendored_frameworks": "SCShopSDK/Framework/AgoraRtcCryptoLoader.framework",
   "user_target_xcconfig": {
     "OTHER_LDFLAGS": [
       "-ObjC",

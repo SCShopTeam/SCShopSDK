@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
     ###
     
     #framework
-    s.vendored_framework   = 'SCShopSDK/Framework/AgoraRtcCryptoLoader.framework'
+#    s.vendored_framework   = 'SCShopSDK/Framework/AgoraRtcCryptoLoader.framework'
     #####
     
     s.user_target_xcconfig = {'OTHER_LDFLAGS' => ['-ObjC','-all_load']}
