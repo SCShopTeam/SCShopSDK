@@ -52,11 +52,17 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 
 @implementation SCHomeViewController
 
-//白色状态栏
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
+
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+
+}
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -66,7 +72,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     [self requestTotalData:1];
     
     [self addNotification];
-    [self setNeedsStatusBarAppearanceUpdate];
+    
 }
 
 - (void)addNotification

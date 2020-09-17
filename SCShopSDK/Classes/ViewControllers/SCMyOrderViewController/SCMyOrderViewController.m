@@ -44,15 +44,15 @@
     }
 }
 
-//白色状态栏
--(UIStatusBarStyle)preferredStatusBarStyle
-{
-    return UIStatusBarStyleLightContent;
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
-
 
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+
 }
 
 - (void)viewDidLoad {
@@ -63,8 +63,6 @@
     self.hideNavigationBar = YES;
     
     [self sc_requestOrderListWithStatus:@"XSDD_DZF"];
-   
-    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)prepareUI
