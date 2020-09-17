@@ -1,6 +1,6 @@
 {
   "name": "SCShopSDK",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "summary": "shopping",
   "description": "A shopping framework demo",
   "homepage": "https://github.com/SCShopTeam/SCShopSDK",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/SCShopTeam/SCShopSDK.git",
-    "tag": "1.4.3"
+    "tag": "1.4.4"
   },
   "platforms": {
     "ios": "9.0"
@@ -31,6 +31,7 @@
     "SCShopSDK/Classes/Views/SCCustomAlertController.h"
   ],
   "prefix_header_file": "SCShopSDK/Classes/Util/SCCommonPrefix.pch",
+  "vendored_frameworks": "SCShopSDK/Framework/AgoraRtcCryptoLoader.framework",
   "user_target_xcconfig": {
     "OTHER_LDFLAGS": [
       "-ObjC",
