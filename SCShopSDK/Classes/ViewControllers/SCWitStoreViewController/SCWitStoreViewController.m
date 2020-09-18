@@ -16,6 +16,7 @@
 #import "SCWitNoStoreHeaderView.h"
 #import "SCWitStoreHeader.h"
 #import "SCWitStoreSortView.h"
+#import "SCShoppingManager.h"
 
 @interface SCAreaButton : UIButton
 @end
@@ -133,13 +134,13 @@
         [self showWithStatus:@"取号成功"];
         if (indexPath) { //是cell
             storeModel.cell.model = storeModel;
-            
+
         }else { //是header
             storeModel.headerView.model = storeModel;
         }
         [self pushToWebView:storeModel.storeLink title:@"智慧门店"];
-        
-        
+
+
     } failure:^(NSString * _Nullable errorMsg) {
         [self stopLoading];
         [self showWithStatus:errorMsg];
@@ -253,7 +254,7 @@
     
     cell.orderBlock = ^(SCWitStoreModel * _Nonnull model) {
       @strongify(self)
-        [self requestOrder:model indexPath:indexPath];
+        [self orderOnline:model indexPath:indexPath];
     };
     
     
@@ -353,6 +354,22 @@
 {
     [self hideNoNeedUI];
     [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"" navigation:self.navigationController];
+}
+
+- (void)orderOnline:(SCWitStoreModel *)storeModel indexPath:(nullable NSIndexPath *)indexPath
+{
+    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
+    if (![SCUserInfo currentUser].isLogin) { //未登录，先登录
+        if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
+            [manager.delegate scLoginWithNav:self.navigationController back:^(UIViewController * _Nonnull controller) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:SC_LOGINED_NOTIFICATION object:nil];
+                [self requestOrder:storeModel indexPath:indexPath];
+            }];
+        }
+        
+    }else { //已经登录
+        [self requestOrder:storeModel indexPath:indexPath];
+    }
 }
 
 
@@ -518,7 +535,7 @@
         _headerView.orderBlock = ^(SCWitStoreModel * _Nonnull model) {
             @strongify(self)
             [self hideNoNeedUI];
-            [self requestOrder:model indexPath:nil];
+            [self orderOnline:model indexPath:nil];
         };
         
         //进店逛逛
