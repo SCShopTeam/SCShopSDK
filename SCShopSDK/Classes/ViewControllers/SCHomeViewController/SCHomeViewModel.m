@@ -226,27 +226,21 @@
     }
 
     [[SCLocationService sharedInstance] startLocation:^(NSString * _Nullable longitude, NSString * _Nullable latitude) {
-        if (!VALID_STRING(longitude) || !VALID_STRING(latitude)) {
-            if (failure) {
-                failure(@"获取定位失败");
-            }
-            
-        }else {
-            [self requestStoreDataWithLongitude:longitude latitude:latitude success:success failure:failure];
-            
-        }
+        [self requestStoreDataWithLongitude:longitude latitude:latitude success:success failure:failure];
     }];
     
 
     
 }
 
-- (void)requestStoreDataWithLongitude:(NSString *)longitude latitude:(NSString *)latitude success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
+- (void)requestStoreDataWithLongitude:(nullable NSString *)longitude latitude:(nullable NSString *)latitude success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
     self.isStoreRequesting = YES;
     
-    NSDictionary *param = @{@"longitude": longitude,
-                            @"latitude": latitude};
+    
+    
+    NSDictionary *param = @{@"longitude": longitude?:@"",
+                            @"latitude": latitude?:@""};
     
     [SCRequestParams shareInstance].requestNum = @"shop.recommend";
 

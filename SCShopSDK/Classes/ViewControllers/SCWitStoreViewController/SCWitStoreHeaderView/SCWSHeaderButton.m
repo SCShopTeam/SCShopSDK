@@ -73,7 +73,7 @@
 {
     if (!_priceLabel) {
         CGFloat margin = SCREEN_FIX(10);
-        _priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(margin, self.titleLabel.bottom+SCREEN_FIX(5), self.qiangIcon.left - margin*2, SCREEN_FIX(22))];
+        _priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(margin, self.titleLabel.bottom+SCREEN_FIX(5), self.qiangIcon.left - margin - SCREEN_FIX(5), SCREEN_FIX(22))];
         _priceLabel.textAlignment = NSTextAlignmentRight;
         [self addSubview:_priceLabel];
     }
