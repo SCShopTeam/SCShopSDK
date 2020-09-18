@@ -185,14 +185,14 @@
         _enterShopBtn.titleLabel.font = SCFONT_SIZED(13);
         [_enterShopBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_enterShopBtn setTitle:@"进店逛逛" forState:UIControlStateNormal];
-        
-        @weakify(self)
-        [_enterShopBtn sc_addEventTouchUpInsideHandle:^(UIButton * _Nonnull sender) {
-            @strongify(self)
-            if (self.enterShopBlock && self.model.shopInfo) {
-                self.enterShopBlock(self.model.shopInfo);
-            }
-        }];
+        _enterShopBtn.userInteractionEnabled = NO;
+//        @weakify(self)
+//        [_enterShopBtn sc_addEventTouchUpInsideHandle:^(UIButton * _Nonnull sender) {
+//            @strongify(self)
+//            if (self.enterShopBlock && self.model.shopInfo) {
+//                self.enterShopBlock(self.model.shopInfo);
+//            }
+//        }];
         
         [self addSubview:_enterShopBtn];
     }

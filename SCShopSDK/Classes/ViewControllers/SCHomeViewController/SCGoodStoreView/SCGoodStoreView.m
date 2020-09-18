@@ -76,17 +76,17 @@ static NSInteger kMaxGoodShopCount = 3;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     SCGoodStoreCell *cell = (SCGoodStoreCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCGoodStoreCell.class) forIndexPath:indexPath];
-    
+            
     SCHomeStoreModel *model = self.goodStoreList[indexPath.row];
     cell.model = model;
     
     @weakify(self)
-    cell.enterShopBlock = ^(SCHShopInfoModel * _Nonnull shopModel) {
-        @strongify(self)
-        if (self.enterShopBlock) {
-            self.enterShopBlock(indexPath.row, shopModel);
-        }
-    };
+//    cell.enterShopBlock = ^(SCHShopInfoModel * _Nonnull shopModel) {
+//        @strongify(self)
+//        if (self.enterShopBlock) {
+//            self.enterShopBlock(indexPath.row, shopModel);
+//        }
+//    };
     
     cell.imgBlock = ^(NSInteger index, SCHActImageModel * _Nonnull imgModel) {
         @strongify(self)
@@ -96,6 +96,14 @@ static NSInteger kMaxGoodShopCount = 3;
     };
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    SCHomeStoreModel *model = self.goodStoreList[indexPath.row];
+    if (self.enterShopBlock) {
+        self.enterShopBlock(indexPath.row, model.shopInfo);
+    }
 }
 
 

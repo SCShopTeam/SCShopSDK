@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCGoodStoreCell : UITableViewCell
 @property (nonatomic, strong) SCHomeStoreModel *model;
 
-@property (nonatomic, copy) void (^enterShopBlock)(SCHShopInfoModel *shopModel);
+//@property (nonatomic, copy) void (^enterShopBlock)(SCHShopInfoModel *shopModel);
 @property (nonatomic, copy) void (^imgBlock)(NSInteger index, SCHActImageModel *imgModel);
 
 @end
