@@ -7,6 +7,7 @@
 //
 
 #import "SCBaseViewController.h"
+#import "SCShoppingManager.h"
 
 @interface SCBaseViewController () <UIGestureRecognizerDelegate>
 
@@ -54,9 +55,7 @@
 {
     self.view.backgroundColor = [UIColor whiteColor];
     
-    if (nil != self.navigationController && [[self.navigationController viewControllers] count] > 1)
-    {
-
+    if (self.navigationController /* && [[self.navigationController viewControllers] count] > 1 */) {
         self.navigationItem.leftBarButtonItem = [SCUtilities makeBarButtonWithIcon:SCIMAGE(@"newnavbar_back") target:self action:@selector(backBarButtonPressed) isLeft:YES];
         
     }
@@ -69,7 +68,15 @@
 - (void)backBarButtonPressed
 {
     [self stopLoading];
-    [self.navigationController popViewControllerAnimated:YES];
+    
+    if (self == self.navigationController.viewControllers.firstObject) {
+        [SCShoppingManager dissmissMallPage];
+        
+    }else {
+        [self.navigationController popViewControllerAnimated:YES];
+        
+    }
+  
 }
 
 - (void)showLoading

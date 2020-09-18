@@ -11,6 +11,7 @@
 #import "SCNetworkManager.h"
 #import "SCNetworkDefine.h"
 #import "SCLocationService.h"
+#import "SCShoppingManager.h"
 @implementation SCRequest
 
 +(void)scLoginResultBlock:(void (^)(BOOL, NSDictionary *, NSString *))callBack{
@@ -280,7 +281,6 @@
     [SCRequestParams shareInstance].requestNum = @"goodsType.queryGoodsTypeList";
     
     [SCNetworkManager GET:SC_GOODTYPE_LIST parameters:@{} success:^(id  _Nullable responseObject) {
-        
          if ([SCUtilities isValidDictionary:responseObject]) {
             NSString*resCode = responseObject[@"resCode"];
             if ([SCUtilities isValidString:resCode] && [resCode isEqualToString:@"0"]) {
@@ -291,6 +291,7 @@
                     callBack(NO,nil,nil);
                 }
             }else{
+                
                 callBack(NO,nil,nil);
             }
         }else{
@@ -389,6 +390,20 @@
     } failure:^(NSString * _Nullable errorMsg) {
         callBack(NO,nil,nil);
     }];
+}
+
+
++(void)requestWithErrorLoginCode:(NSString *)code{
+    
+    if ([SCUtilities isValidString:code] && [code isEqualToString:@"403"]) {
+        UINavigationController *nav = [SCUtilities currentNavigationController];
+         SCShoppingManager *manager = [SCShoppingManager sharedInstance];
+         if (manager.delegate && [manager.delegate respondsToSelector:@selector(scLoginResultBlock:)]) {
+             [manager.delegate scLoginWithNav:nav back:^(UIViewController * _Nonnull controller) {
+                 
+             }];
+         }
+    }
 }
 
 @end

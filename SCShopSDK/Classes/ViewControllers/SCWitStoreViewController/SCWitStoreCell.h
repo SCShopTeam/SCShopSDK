@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)calculateRowHeight:(SCWitStoreModel *)model;
 
-@property (nonatomic, copy) void (^enterBlock)(SCWitStoreModel *storeModel); //进店逛逛
+//@property (nonatomic, copy) void (^enterBlock)(SCWitStoreModel *storeModel); //进店逛逛
 @property (nonatomic, copy) void (^phoneBlock)(NSString *phone);             //电话
 @property (nonatomic, copy) void (^orderBlock)(SCWitStoreModel *model);      //取号
 

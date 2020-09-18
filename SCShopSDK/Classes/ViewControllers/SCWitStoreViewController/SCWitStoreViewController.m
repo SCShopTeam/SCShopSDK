@@ -246,10 +246,10 @@
         [self phoneAction:phone];
     };
     
-    cell.enterBlock = ^(SCWitStoreModel * _Nonnull storeModel) {
-      @strongify(self)
-        [self pushToWebView:storeModel.storeLink title:@"智慧门店"];
-    };
+//    cell.enterBlock = ^(SCWitStoreModel * _Nonnull storeModel) {
+//      @strongify(self)
+//        [self pushToWebView:storeModel.storeLink title:@"智慧门店"];
+//    };
     
     cell.orderBlock = ^(SCWitStoreModel * _Nonnull model) {
       @strongify(self)
@@ -263,6 +263,13 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self hideNoNeedUI];
+    
+    SCWitStoreCacheModel *cacheModel = self.viewModel.currentCacheModel;
+    
+    NSArray <SCWitStoreModel *> *dataList = indexPath.section == 0 ? cacheModel.storeList : self.viewModel.professionalList;
+    
+    SCWitStoreModel *model = dataList[indexPath.row];
+    [self pushToWebView:model.storeLink title:@"智慧门店"];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

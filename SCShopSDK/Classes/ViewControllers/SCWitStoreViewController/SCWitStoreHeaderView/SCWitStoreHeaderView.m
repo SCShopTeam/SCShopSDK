@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UIButton *styleIcon;
 @property (nonatomic, strong) UILabel *addressLabel;
 @property (nonatomic, strong) UILabel *peopleNumLabel;
+@property (nonatomic, strong) UIButton *phoneBtn;
 @property (nonatomic, strong) UILabel *couponTipLabel;
 @property (nonatomic, strong) UIButton *orderBtn; //立即取号
 @property (nonatomic, strong) UIButton *enterBtn;    //进店逛逛
@@ -47,14 +48,16 @@
     _model = model;
     model.headerView = self;
     
+    CGFloat maxW = self.phoneBtn.left - SCREEN_FIX(1) - self.styleIcon.width - SCREEN_FIX(3) - self.titleLabel.left;
     //标题
     self.titleLabel.text = model.storeName;
     [self.titleLabel sizeToFit];
-    if (self.titleLabel.width > SCREEN_FIX(240)) {
-        self.titleLabel.width = SCREEN_FIX(240);
+    if (self.titleLabel.width > maxW) {
+        self.titleLabel.width = maxW;
     }
     //style
-    self.styleIcon.left = self.titleLabel.right + SCREEN_FIX(5);
+    self.styleIcon.hidden = !model.professional;
+    self.styleIcon.left = self.titleLabel.right + SCREEN_FIX(3);
     //地址
     NSString *length = model.geoDistance ?: @"0m";
     NSString *address = model.storeAddress ?: @"";
@@ -187,17 +190,17 @@
         
         //电话
         CGFloat wh = SCREEN_FIX(36.5);
-        UIButton *phoneBtn = [[UIButton alloc] initWithFrame:CGRectMake(_contentView.width-SCREEN_FIX(22)-wh, SCREEN_FIX(40), wh, wh)];
-        [phoneBtn setImage:SCIMAGE(@"sc_wit_tel") forState:UIControlStateNormal];
+        _phoneBtn = [[UIButton alloc] initWithFrame:CGRectMake(_contentView.width-SCREEN_FIX(5)-wh, SCREEN_FIX(40), wh, wh)];
+        [_phoneBtn setImage:SCIMAGE(@"sc_wit_tel") forState:UIControlStateNormal];
         @weakify(self)
-        [phoneBtn sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+        [_phoneBtn sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
             @strongify(self)
             if (self.phoneBlock && VALID_STRING(self.model.contactPhone)) {
                 self.phoneBlock(self.model.contactPhone);
             }
         }];
         
-        [_contentView addSubview:phoneBtn];
+        [_contentView addSubview:_phoneBtn];
         
         //取号背景
         UIImageView *orderBg = [[UIImageView alloc] initWithFrame:CGRectMake(0, SCREEN_FIX(97.5), _contentView.width, SCREEN_FIX(69))];
@@ -233,6 +236,16 @@
         _emptyTipLabel.hidden = YES;
         [_contentView addSubview:_emptyTipLabel];
         
+        UIButton *enterButton = [[UIButton alloc] initWithFrame:CGRectMake(0, nearIcon.bottom, _phoneBtn.left, self.addressLabel.bottom-nearIcon.bottom)];
+        [enterButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+            @strongify(self)
+            if (self.enterBlock && VALID_STRING(self.model.storeLink)) {
+                self.enterBlock(self.model);
+            }
+        }];
+        [_contentView addSubview:enterButton];
+        [_contentView bringSubviewToFront:enterButton];
+        
     }
     return _contentView;
 }
@@ -241,8 +254,8 @@
 - (UILabel *)titleLabel
 {
     if (!_titleLabel) {
-        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(17.5), SCREEN_FIX(42.5), 0, SCREEN_FIX(15))];
-        _titleLabel.font          = SCFONT_SIZED(_titleLabel.height);
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(11), SCREEN_FIX(42.5), 0, SCREEN_FIX(16))];
+        _titleLabel.font          = SCFONT_SIZED(16);
         _titleLabel.textColor     = HEX_RGB(@"#333333");
         _titleLabel.textAlignment = NSTextAlignmentLeft;
         [self.contentView addSubview:_titleLabel];
@@ -261,6 +274,7 @@
         _styleIcon.userInteractionEnabled = NO;
         [_styleIcon setTitle:@"旗舰" forState:UIControlStateNormal];
         [self.contentView addSubview:_styleIcon];
+        [self.contentView sendSubviewToBack:_styleIcon];
     }
     return _styleIcon;
 }
@@ -268,8 +282,10 @@
 - (UILabel *)addressLabel
 {
     if (!_addressLabel) { //68
-        _addressLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.titleLabel.left, SCREEN_FIX(68), SCREEN_FIX(270), SCREEN_FIX(11.5))];
-        _addressLabel.font = SCFONT_SIZED(_addressLabel.height);
+        CGFloat x = self.titleLabel.left;
+        CGFloat w = self.phoneBtn.left - SCREEN_FIX(5) - x;
+        _addressLabel = [[UILabel alloc] initWithFrame:CGRectMake(x, SCREEN_FIX(68), w, SCREEN_FIX(11.5))];
+        _addressLabel.font = SCFONT_SIZED(11.5);
         _addressLabel.textColor = HEX_RGB(@"#666666");
         [self.contentView addSubview:_addressLabel];
     }

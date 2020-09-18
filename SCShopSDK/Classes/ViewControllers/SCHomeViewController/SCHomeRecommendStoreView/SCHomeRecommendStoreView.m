@@ -95,12 +95,20 @@
         _shopInfoView = [[SCRecommendStoreInfoView alloc] initWithFrame:CGRectMake(0, self.topView.bottom, self.width, SCREEN_FIX(80))];
         [self addSubview:_shopInfoView];
         @weakify(self)
-        _shopInfoView.enterShopBlock = ^(SCHShopInfoModel * _Nonnull model) {
+        [_shopInfoView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
             @strongify(self)
-            if (self.enterShopBlock) {
+            SCHShopInfoModel *model = self.shopInfoView.shopInfoModel;
+            
+            if (self.enterShopBlock && model && VALID_STRING(model.link)  ) {
                 self.enterShopBlock(model);
             }
-        };
+        }];
+//        _shopInfoView.enterShopBlock = ^(SCHShopInfoModel * _Nonnull model) {
+//            @strongify(self)
+//            if (self.enterShopBlock) {
+//                self.enterShopBlock(model);
+//            }
+//        };
         
     }
     return _shopInfoView;

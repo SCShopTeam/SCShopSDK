@@ -30,7 +30,19 @@
     
     self.title = @"移动好货";
     
+    self.navigationItem.rightBarButtonItem = [SCUtilities makeBarButtonWithIcon:SCIMAGE(@"sc_store_service") target:self action:@selector(servicePressed) isLeft:NO];
+    
     [self requestData];
+    
+}
+
+- (void)servicePressed
+{
+    NSString *url = [self.viewModel getOnlineServiceUrl:self.tenantNum];
+    
+    if (url) {
+        [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"在线客服" navigation:self.navigationController];
+    }
     
 }
 

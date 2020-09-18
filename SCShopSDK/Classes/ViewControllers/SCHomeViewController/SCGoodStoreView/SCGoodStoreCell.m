@@ -34,9 +34,15 @@
     if (self) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         [self enterShopBtn];
-        [self line];
     }
     return self;
+}
+
+- (void)setIsLast:(BOOL)isLast
+{
+    _isLast = isLast;
+    
+    self.line.hidden = isLast;
 }
 
 - (void)setModel:(SCHomeStoreModel *)model
@@ -185,6 +191,7 @@
         _enterShopBtn.titleLabel.font = SCFONT_SIZED(13);
         [_enterShopBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_enterShopBtn setTitle:@"进店逛逛" forState:UIControlStateNormal];
+        
         _enterShopBtn.userInteractionEnabled = NO;
 //        @weakify(self)
 //        [_enterShopBtn sc_addEventTouchUpInsideHandle:^(UIButton * _Nonnull sender) {

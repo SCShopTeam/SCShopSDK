@@ -7,6 +7,7 @@
 //
 
 #import "SCStoreHomeViewModel.h"
+#import "NSData+SCBase64.h"
 
 @interface SCStoreHomeViewModel ()
 @property (nonatomic, strong) SCTenantInfoModel *tenantInfo;
@@ -113,6 +114,31 @@
             completion(errorMsg);
         }
     }];
+}
+
+- (NSString *)getOnlineServiceUrl:(NSString *)tenantNum
+{
+    NSString *host = IS_RELEASE_ENVIRONMENT ? @"https://wx.apollojs.cn" : @"https://cnr.asiainfo.com";
+    NSString *html = [NSString stringWithFormat:@"%@/xin_ucfront/uc_channel_access/h5webchat/webChat.html",host];
+    
+    NSString *tenantId = tenantNum ?: @"";
+    NSString *skillId  = tenantId;
+    NSString *phoneNum = [SCUserInfo currentUser].phoneNumber ?: @"";
+    NSDictionary *param = @{@"tenantId": tenantId,
+                            @"skillId": skillId,
+                            @"phoneNum": phoneNum,
+                            @"requestSource": @"2"}; //2表示掌厅
+    //参数转data
+    NSData *data = [NSJSONSerialization dataWithJSONObject:param options:NSJSONWritingPrettyPrinted error:nil];
+    if (!data) {
+        return nil;
+    }
+    
+    //base64加密
+    NSString *paramBase64 = [data base64EncodedString];
+    NSString *url = [NSString stringWithFormat:@"%@?param=%@",html,paramBase64];
+    
+    return url;
 }
 
 - (NSMutableDictionary<NSString *,SCStoreHomeCacheModel *> *)commodityDict

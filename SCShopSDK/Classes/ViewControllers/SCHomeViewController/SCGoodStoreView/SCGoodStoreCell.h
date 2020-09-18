@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 //@property (nonatomic, copy) void (^enterShopBlock)(SCHShopInfoModel *shopModel);
 @property (nonatomic, copy) void (^imgBlock)(NSInteger index, SCHActImageModel *imgModel);
 
+@property (nonatomic, assign) BOOL isLast;//是否是最后一个row
+
 @end
 
 NS_ASSUME_NONNULL_END

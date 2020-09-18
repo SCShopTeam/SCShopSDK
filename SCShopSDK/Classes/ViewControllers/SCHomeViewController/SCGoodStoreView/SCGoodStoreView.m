@@ -11,6 +11,7 @@
  
 #define kGrayLineH SCREEN_FIX(13.5)
 #define kTopViewH  SCREEN_FIX(41.5)
+#define kBottomH   SCREEN_FIX(29.5)
 
 static NSInteger kMaxGoodShopCount = 3;
 
@@ -18,6 +19,7 @@ static NSInteger kMaxGoodShopCount = 3;
 @property (nonatomic, strong) UIView *grayLine;
 @property (nonatomic, strong) UIView *topView;
 @property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UIButton *moreButton;
 
 @end
 
@@ -35,7 +37,7 @@ static NSInteger kMaxGoodShopCount = 3;
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    self.tableView.height = self.height - self.tableView.top;
+    self.tableView.height = self.height - self.tableView.top - kBottomH;
 }
 
 - (void)setGoodStoreList:(NSArray<SCHomeStoreModel *> *)goodStoreList
@@ -57,7 +59,7 @@ static NSInteger kMaxGoodShopCount = 3;
         
     }else {
         NSInteger count = MIN(rowNumber, kMaxGoodShopCount);
-        return kGrayLineH + kTopViewH + kGoodStoreRowH *count;
+        return kGrayLineH + kTopViewH + kGoodStoreRowH *count + kBottomH;
     }
 }
 
@@ -76,9 +78,13 @@ static NSInteger kMaxGoodShopCount = 3;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     SCGoodStoreCell *cell = (SCGoodStoreCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCGoodStoreCell.class) forIndexPath:indexPath];
-            
-    SCHomeStoreModel *model = self.goodStoreList[indexPath.row];
-    cell.model = model;
+    
+    NSInteger row = indexPath.row;
+    if (row < self.goodStoreList.count) {
+        SCHomeStoreModel *model = self.goodStoreList[row];
+        cell.model = model;
+        cell.isLast = row == self.goodStoreList.count-1;
+    }
     
     @weakify(self)
 //    cell.enterShopBlock = ^(SCHShopInfoModel * _Nonnull shopModel) {
@@ -159,7 +165,8 @@ static NSInteger kMaxGoodShopCount = 3;
 - (UITableView *)tableView
 {
     if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, self.topView.bottom, self.width, 0)];
+        CGFloat y = self.topView.bottom;
+        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, y, self.width, self.height - y - self.moreButton.height)];
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         _tableView.delegate = self;
         _tableView.dataSource = self;
@@ -168,6 +175,25 @@ static NSInteger kMaxGoodShopCount = 3;
         [self addSubview:_tableView];
     }
     return _tableView;
+}
+
+- (UIButton *)moreButton
+{
+    if (!_moreButton) {
+        CGFloat w = SCREEN_FIX(362);
+        _moreButton = [[UIButton alloc] initWithFrame:CGRectMake((self.width-w)/2, self.height-kBottomH, w, kBottomH)];
+        [_moreButton setBackgroundImage:SCIMAGE(@"sc_more_store") forState:UIControlStateNormal];
+        [self addSubview:_moreButton];
+        
+        @weakify(self)
+        [_moreButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+           @strongify(self)
+            if (self.moreBlock) {
+                self.moreBlock();
+            }
+        }];
+    }
+    return _moreButton;
 }
 
 @end

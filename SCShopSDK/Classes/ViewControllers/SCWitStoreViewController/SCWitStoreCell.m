@@ -23,6 +23,7 @@
 @property (nonatomic, strong) UILabel *addressLabel;
 @property (nonatomic, strong) UIButton *styleIcon;
 @property (nonatomic, strong) UILabel *couponTipLabel;
+@property (nonatomic, strong) UIButton *enterButton;
 @property (nonatomic, strong) NSArray <UILabel *>*couponLabelList;
 @property (nonatomic, strong) UILabel *peopleNumLabel;
 @property (nonatomic, strong) UIButton *phoneBtn;
@@ -100,13 +101,15 @@
     //标题
     self.titleLabel.text = model.storeName;
     [self.titleLabel sizeToFit];
-    if (self.titleLabel.width > SCREEN_FIX(200)) {
-        self.titleLabel.width = SCREEN_FIX(200);
+    
+    CGFloat maxW = self.enterButton.left - SCREEN_FIX(2) - self.styleIcon.width - SCREEN_FIX(2) - self.titleLabel.left;
+    if (self.titleLabel.width > maxW) {
+        self.titleLabel.width = maxW;
     }
     
     //旗舰
     self.styleIcon.hidden = !model.professional;
-    self.styleIcon.left = self.titleLabel.right + SCREEN_FIX(4); //professional
+    self.styleIcon.left = self.titleLabel.right + SCREEN_FIX(2); //professional
     
     //地址
     self.addressLabel.text = NSStringFormat(@"%@ | %@",(model.geoDistance ?: @"0m"), (model.storeAddress ?: @""));
@@ -205,24 +208,32 @@
         [self.whiteBG addSubview:_dataView];
         
         //进店逛逛
-        CGFloat enterW = SCREEN_FIX(74);
-        UIButton *enterButton = [[UIButton alloc] initWithFrame:CGRectMake(_dataView.width - SCREEN_FIX(11.5) - enterW, SCREEN_FIX(11.5), enterW, SCREEN_FIX(23))];
-        enterButton.layer.cornerRadius  = enterButton.height/2;
-        enterButton.layer.borderWidth   = 1;
-        enterButton.layer.borderColor   = HEX_RGB(@"#058FFF").CGColor;
-        enterButton.layer.masksToBounds = YES;
-        enterButton.titleLabel.font = SCFONT_SIZED(SCREEN_FIX(12));
-        [enterButton setTitleColor:HEX_RGB(@"#058FFF") forState:UIControlStateNormal];
-        [enterButton setTitle:@"进店逛逛 >" forState:UIControlStateNormal];
-        [_dataView addSubview:enterButton];
-        
-        @weakify(self)
-        [enterButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
-           @strongify(self)
-            if (self.enterBlock && VALID_STRING(self.model.storeLink)) {
-                self.enterBlock(self.model);
-            }
-        }];
+        CGFloat enterW = SCREEN_FIX(50);
+        _enterButton = [[UIButton alloc] initWithFrame:CGRectMake(_dataView.width - SCREEN_FIX(7) - enterW, SCREEN_FIX(15), enterW, SCREEN_FIX(18))];
+        _enterButton.layer.cornerRadius  = _enterButton.height/2;
+        _enterButton.layer.borderWidth   = 0.5;
+        _enterButton.layer.borderColor   = HEX_RGB(@"#058FFF").CGColor;
+        _enterButton.layer.masksToBounds = YES;
+        _enterButton.titleLabel.font = SCFONT_SIZED(10);
+        [_enterButton setTitleColor:HEX_RGB(@"#058FFF") forState:UIControlStateNormal];
+        [_enterButton setTitle:@"进店逛逛 " forState:UIControlStateNormal];
+        UILabel *label = [UILabel new];
+        label.textColor = HEX_RGB(@"#058FFF");
+        label.font = SCFONT_SIZED(11);
+        label.text = @"›";
+        [label sizeToFit];
+        label.centerY = _enterButton.height/2;
+        label.right = _enterButton.width - SCREEN_FIX(3);
+        [_enterButton addSubview:label];
+        [_dataView addSubview:_enterButton];
+        _enterButton.userInteractionEnabled = NO;
+//        @weakify(self)
+//        [enterButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+//           @strongify(self)
+//            if (self.enterBlock && VALID_STRING(self.model.storeLink)) {
+//                self.enterBlock(self.model);
+//            }
+//        }];
 
     }
     return _dataView;
@@ -231,9 +242,9 @@
 - (UILabel *)titleLabel
 {
     if (!_titleLabel) {
-        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(10.5), SCREEN_FIX(15), 0, SCREEN_FIX(15))];
-        _titleLabel.font = SCFONT_SIZED(_titleLabel.height);
-        _titleLabel.textColor = [UIColor blackColor];
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(8), SCREEN_FIX(15), 0, SCREEN_FIX(15))];
+        _titleLabel.font = SCFONT_SIZED(15);
+        _titleLabel.textColor = HEX_RGB(@"#333333");
         [self.dataView addSubview:_titleLabel];
     }
     return _titleLabel;
@@ -242,11 +253,11 @@
 - (UIButton *)styleIcon
 {
     if (!_styleIcon) {
-        _styleIcon = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(29), SCREEN_FIX(14.5))];
+        _styleIcon = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(24), SCREEN_FIX(14))];
         _styleIcon.centerY = self.titleLabel.centerY;
         [_styleIcon setBackgroundImage:SCIMAGE(@"sc_home_store_type") forState:UIControlStateNormal];
         [_styleIcon setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        _styleIcon.titleLabel.font = SCFONT_SIZED(11);
+        _styleIcon.titleLabel.font = SCFONT_SIZED(9);
         _styleIcon.userInteractionEnabled = NO;
         [_styleIcon setTitle:@"旗舰" forState:UIControlStateNormal];
         [self.dataView addSubview:_styleIcon];
@@ -257,8 +268,10 @@
 - (UILabel *)addressLabel
 {
     if (!_addressLabel) {
-        _addressLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.titleLabel.left, self.titleLabel.bottom + SCREEN_FIX(13.5), SCREEN_FIX(250), SCREEN_FIX(11))];
-        _addressLabel.font = SCFONT_SIZED(_addressLabel.height);
+        CGFloat x = self.titleLabel.left;
+        CGFloat w = self.phoneBtn.left - SCREEN_FIX(3) - x;
+        _addressLabel = [[UILabel alloc] initWithFrame:CGRectMake(x, self.titleLabel.bottom + SCREEN_FIX(13.5), w, SCREEN_FIX(12))];
+        _addressLabel.font = SCFONT_SIZED(12);
         _addressLabel.textAlignment = NSTextAlignmentLeft;
         _addressLabel.textColor = HEX_RGB(@"#666666");
         [self.dataView addSubview:_addressLabel];
@@ -270,7 +283,7 @@
 {
     if (!_phoneBtn) {
         CGFloat phoneWh = SCREEN_FIX(36.5);
-        _phoneBtn = [[UIButton alloc] initWithFrame:CGRectMake(self.dataView.width-SCREEN_FIX(20)-phoneWh, SCREEN_FIX(48.5), phoneWh, phoneWh)];
+        _phoneBtn = [[UIButton alloc] initWithFrame:CGRectMake(self.dataView.width-SCREEN_FIX(10)-phoneWh, SCREEN_FIX(48.5), phoneWh, phoneWh)];
         [_phoneBtn setImage:SCIMAGE(@"sc_wit_tel") forState:UIControlStateNormal];
         [self.dataView addSubview:_phoneBtn];
         
@@ -288,7 +301,7 @@
 - (UILabel *)couponTipLabel
 {
     if (!_couponTipLabel) {
-        _couponTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(10.5), self.addressLabel.bottom + SCREEN_FIX(12), SCREEN_FIX(113), SCREEN_FIX(17))];
+        _couponTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(8.5), self.addressLabel.bottom + SCREEN_FIX(12), SCREEN_FIX(113), SCREEN_FIX(17))];
         _couponTipLabel.backgroundColor = HEX_RGB(@"#EEFBF8");
         _couponTipLabel.textColor = HEX_RGB(@"#01CDCD");
         _couponTipLabel.font = SCFONT_SIZED(SCREEN_FIX(10));

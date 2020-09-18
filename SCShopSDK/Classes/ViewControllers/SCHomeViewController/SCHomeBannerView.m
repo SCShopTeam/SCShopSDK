@@ -106,11 +106,9 @@
 - (SDCycleScrollView *)cycleView
 {
     if (!_cycleView) {
-        CGFloat x = SCREEN_FIX(18);
         CGFloat y = SCREEN_FIX(64) + STATUS_BAR_HEIGHT;
-        CGFloat w = self.width - x*2;
         CGFloat h = self.height - y;
-        _cycleView = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(x, y, w, h) delegate:self placeholderImage:nil];
+        _cycleView = [SDCycleScrollView cycleScrollViewWithFrame:CGRectMake(0, y, self.width, h) delegate:self placeholderImage:nil];
         _cycleView.backgroundColor = [UIColor clearColor];
         _cycleView.showPageControl = YES;
         _cycleView.pageControlAliment = SDCycleScrollViewPageContolAlimentRight;

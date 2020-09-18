@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)getCommodityList:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum showCache:(BOOL)showCache showHud:(BOOL)showHud completion:(SCHttpRequestCompletion)completion;
 
+
+- (nullable NSString *)getOnlineServiceUrl:(NSString *)tenantNum;
+
 @end
 
 

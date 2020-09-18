@@ -11,11 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCRecommendStoreInfoView : UIView
+@interface SCRecommendStoreInfoView : UIControl
 @property (nonatomic, strong) SCHShopInfoModel *shopInfoModel;
 @property (nonatomic, strong) NSArray <NSString *> *couponList;
 
-@property (nonatomic, copy) void (^enterShopBlock)(SCHShopInfoModel *model);
+//@property (nonatomic, copy) void (^enterShopBlock)(SCHShopInfoModel *model);
 @end
 
 NS_ASSUME_NONNULL_END

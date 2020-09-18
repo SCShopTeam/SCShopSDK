@@ -122,13 +122,14 @@
         [_enterButton setImage:SCIMAGE(@"home_witApollo_enterShop") forState:UIControlStateNormal];
         [self addSubview:_enterButton];
         
-        @weakify(self)
-        [_enterButton sc_addEventTouchUpInsideHandle:^(UIButton * _Nonnull sender) {
-            @strongify(self)
-            if (self.enterShopBlock && VALID_STRING(self.shopInfoModel.link)  ) {
-                self.enterShopBlock(self.shopInfoModel);
-            }
-        }];
+        _enterButton.userInteractionEnabled = NO;
+//        @weakify(self)
+//        [_enterButton sc_addEventTouchUpInsideHandle:^(UIButton * _Nonnull sender) {
+//            @strongify(self)
+//            if (self.enterShopBlock && VALID_STRING(self.shopInfoModel.link)  ) {
+//                self.enterShopBlock(self.shopInfoModel);
+//            }
+//        }];
     }
     return _enterButton;
 }
