@@ -11,7 +11,6 @@
 #import "NSTimer+SCAdditionProgress.h"
 #import "SCWebViewCustom+JSCallback.h"
 #import "NSData+SCBase64.h"
-#import "UIImage+SCPalette.h"
 #import "SCProgressHUD.h"
 #import "SCURLSerialization.h"
 #import "SCLocationService.h"

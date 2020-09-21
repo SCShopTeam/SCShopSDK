@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIImage *)thumbWithSize:(CGSize)size;
 
+- (UIColor *)getPixelColorAtPoint:(CGPoint)point;
+
 @end
 
 NS_ASSUME_NONNULL_END

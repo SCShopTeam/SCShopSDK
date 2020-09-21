@@ -1,6 +1,6 @@
 {
   "name": "SCShopSDK",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "summary": "shopping",
   "description": "A shopping framework demo",
   "homepage": "https://github.com/SCShopTeam/SCShopSDK",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/SCShopTeam/SCShopSDK.git",
-    "tag": "1.5.1"
+    "tag": "1.5.2"
   },
   "platforms": {
     "ios": "9.0"

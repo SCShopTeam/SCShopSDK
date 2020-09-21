@@ -8,7 +8,6 @@
 
 #import "SCHomeBannerView.h"
 #import <SDCycleScrollView/SDCycleScrollView.h>
-#import "UIImage+SCPalette.h"
 
 @interface SCHomeBannerView () <SDCycleScrollViewDelegate>
 @property (nonatomic, strong) SDCycleScrollView *cycleView;
@@ -92,11 +91,9 @@
 
     [[SDWebImageManager sharedManager] loadImageWithURL:[NSURL URLWithString:(model.picUrl?:@"")] options:0 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
         UIImage *targetImg = image ?: IMG_PLACE_HOLDER;
-        [targetImg getPaletteImageColor:^(SCPaletteColorModel *recommendColor, NSDictionary *allModeColorDic, NSError *error) {
-            UIColor *imgColor = recommendColor ? HEX_RGB(recommendColor.imageColorString) : HEX_RGB(@"#EE2C3A");
-            self.gradientLayer.colors = @[(__bridge id)imgColor.CGColor,(__bridge id)[UIColor whiteColor].CGColor];
-            self.colorDict[colorKey] = imgColor;
-        }];
+        UIColor *imgColor = [targetImg getPixelColorAtPoint:CGPointMake(image.size.width/2, 0)];
+        self.gradientLayer.colors = @[(__bridge id)imgColor.CGColor,(__bridge id)[UIColor whiteColor].CGColor];
+        self.colorDict[colorKey] = imgColor;
     }];
     
     
