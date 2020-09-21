@@ -37,10 +37,12 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        _currentSortKey  = SCCategorySortKeyRecommand;
-        _currentSortType = SCCategorySortTypeDesc;
+        SiftItem *item = self.itemList.firstObject;
+        _currentSortKey  = item.sortKey;
+        _currentSortType = item.isAscend ? SCCategorySortTypeAsc : SCCategorySortTypeDesc;
         
         [self collectionView];
+        
     }
     return self;
 }

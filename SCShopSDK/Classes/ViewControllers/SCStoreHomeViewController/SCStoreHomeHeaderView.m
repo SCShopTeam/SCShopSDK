@@ -69,6 +69,7 @@
     if (!_bannerView) {
         CGFloat y = SCREEN_FIX(45);
         _bannerView = [[UIButton alloc] initWithFrame:CGRectMake(0, y, self.width, self.height - y)];
+        _bannerView.adjustsImageWhenHighlighted = NO;
         [self addSubview:_bannerView];
         
         @weakify(self)

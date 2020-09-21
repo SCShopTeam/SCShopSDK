@@ -69,7 +69,7 @@
         sortStr = @"TIME";
         
     }else if (sort == SCCategorySortKeyRecommand) {
-        sortStr = @"SALE"; //先用销量
+        sortStr = @"SUGGEST";
     }
     
     NSString *sortTypeStr = sortType == SCCategorySortTypeAsc ? @"ASC" : @"DESC";

@@ -183,6 +183,7 @@ static NSInteger kMaxGoodShopCount = 3;
         CGFloat w = SCREEN_FIX(362);
         _moreButton = [[UIButton alloc] initWithFrame:CGRectMake((self.width-w)/2, self.height-kBottomH, w, kBottomH)];
         [_moreButton setBackgroundImage:SCIMAGE(@"sc_more_store") forState:UIControlStateNormal];
+        _moreButton.adjustsImageWhenHighlighted = NO;
         [self addSubview:_moreButton];
         
         @weakify(self)

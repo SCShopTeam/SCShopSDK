@@ -460,18 +460,13 @@
 
 - (NSDictionary *)getParams
 {
-    
-    NSDictionary *location    =  @{@"lon":[SCLocationService sharedInstance].longitude ?: @"",
-                                   @"lat":[SCLocationService sharedInstance].latitude ?: @""};
-    
     NSString *busiRegCityCode = VALID_STRING(self.busiRegCityCode) ? self.busiRegCityCode : ([SCLocationService sharedInstance].cityCode ?: @"14");
     
     NSDictionary *page        = @{@"pageNum": NSStringFormat(@"%li",(self.page > 0 ? self.page : 1)),
                                   @"pageSize": NSStringFormat(@"%i",kCountCurPage)};
     
     
-    NSMutableDictionary *param = @{@"location": location,
-                                   @"busiRegCityCode": busiRegCityCode,
+    NSMutableDictionary *param = @{@"busiRegCityCode": busiRegCityCode,
                                    @"page": page,
                                    @"queryType": NSStringFormat(@"%li",self.queryType),
                                    @"sortType" : NSStringFormat(@"%li",self.sortType)}.mutableCopy;
@@ -485,6 +480,14 @@
     if (self.queryType == SCWitQueryTypeSearch) {
         param[@"queryStr"] = self.queryStr ?: @"";
         
+    }
+    
+    NSString *lon = [SCLocationService sharedInstance].longitude;
+    NSString *lat = [SCLocationService sharedInstance].latitude;
+    if (VALID_STRING(lon) && VALID_STRING(lat)) {
+        NSDictionary *location    =  @{@"lon":[SCLocationService sharedInstance].longitude,
+                                       @"lat":[SCLocationService sharedInstance].latitude};
+        param[@"location"] = location;
     }
 
     return param;
