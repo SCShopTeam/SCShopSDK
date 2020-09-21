@@ -12,8 +12,8 @@
 
 @interface SCHomeBannerView () <SDCycleScrollViewDelegate>
 @property (nonatomic, strong) SDCycleScrollView *cycleView;
-//@property (nonatomic, strong) CAGradientLayer *gradientLayer; //渐变色
-@property (nonatomic, strong) UIImageView *backImageView;
+@property (nonatomic, strong) CAGradientLayer *gradientLayer; //渐变色
+//@property (nonatomic, strong) UIImageView *backImageView;
 @property (nonatomic, strong) NSMutableDictionary *colorDict;
 @property (nonatomic, strong) UIImageView *defaultImageView;
 @end
@@ -32,8 +32,8 @@
 {
     self.backgroundColor = [UIColor whiteColor];
     
-//    [self gradientLayer];
-    [self backImageView];
+    [self gradientLayer];
+//    [self backImageView];
     [self defaultImageView];
    
 }
@@ -76,28 +76,28 @@
 /** 图片滚动回调 */
 - (void)cycleScrollView:(SDCycleScrollView *)cycleScrollView didScrollToIndex:(NSInteger)index
 {
-//    if (index >= self.bannerList.count || index < 0 ) {
-//        return;
-//    }
-//
-//    SCHomeTouchModel *model = self.bannerList[index];
-//
-//    NSString *colorKey = [NSString stringWithFormat:@"%li",index];
-//    UIColor *color = self.colorDict[colorKey];
-//
-//    if ([color isKindOfClass:UIColor.class]) {
-//        self.gradientLayer.colors = @[(__bridge id)color.CGColor,(__bridge id)[UIColor whiteColor].CGColor];
-//        return;
-//    }
-//
-//    [[SDWebImageManager sharedManager] loadImageWithURL:[NSURL URLWithString:(model.picUrl?:@"")] options:0 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
-//        UIImage *targetImg = image ?: IMG_PLACE_HOLDER;
-//        [targetImg getPaletteImageColor:^(SCPaletteColorModel *recommendColor, NSDictionary *allModeColorDic, NSError *error) {
-//            UIColor *imgColor = recommendColor ? HEX_RGB(recommendColor.imageColorString) : HEX_RGB(@"#EE2C3A");
-//            self.gradientLayer.colors = @[(__bridge id)imgColor.CGColor,(__bridge id)[UIColor whiteColor].CGColor];
-//            self.colorDict[colorKey] = imgColor;
-//        }];
-//    }];
+    if (index >= self.bannerList.count || index < 0 ) {
+        return;
+    }
+
+    SCHomeTouchModel *model = self.bannerList[index];
+
+    NSString *colorKey = [NSString stringWithFormat:@"%li",index];
+    UIColor *color = self.colorDict[colorKey];
+
+    if ([color isKindOfClass:UIColor.class]) {
+        self.gradientLayer.colors = @[(__bridge id)color.CGColor,(__bridge id)[UIColor whiteColor].CGColor];
+        return;
+    }
+
+    [[SDWebImageManager sharedManager] loadImageWithURL:[NSURL URLWithString:(model.picUrl?:@"")] options:0 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
+        UIImage *targetImg = image ?: IMG_PLACE_HOLDER;
+        [targetImg getPaletteImageColor:^(SCPaletteColorModel *recommendColor, NSDictionary *allModeColorDic, NSError *error) {
+            UIColor *imgColor = recommendColor ? HEX_RGB(recommendColor.imageColorString) : HEX_RGB(@"#EE2C3A");
+            self.gradientLayer.colors = @[(__bridge id)imgColor.CGColor,(__bridge id)[UIColor whiteColor].CGColor];
+            self.colorDict[colorKey] = imgColor;
+        }];
+    }];
     
     
 }
@@ -117,25 +117,23 @@
         _cycleView.pageDotColor = [UIColor colorWithWhite:0.5 alpha:0.5];
         _cycleView.autoScrollTimeInterval = 3;
         _cycleView.contentMode = UIViewContentModeScaleAspectFill;
-        _cycleView.layer.cornerRadius = 5;
-        _cycleView.layer.masksToBounds = YES;
         [self addSubview:_cycleView];
         
     }
     return _cycleView;
 }
 
-- (UIImageView *)backImageView
-{
-    if (!_backImageView) {
-        CGFloat w = self.width;
-        CGFloat h = w/375*201.5;
-        _backImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
-        _backImageView.image = SCIMAGE(@"sc_banner_back");
-        [self addSubview:_backImageView];
-    }
-    return _backImageView;
-}
+//- (UIImageView *)backImageView
+//{
+//    if (!_backImageView) {
+//        CGFloat w = self.width;
+//        CGFloat h = w/375*201.5;
+//        _backImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, w, h)];
+//        _backImageView.image = SCIMAGE(@"sc_banner_back");
+//        [self addSubview:_backImageView];
+//    }
+//    return _backImageView;
+//}
 
 - (UIImageView *)defaultImageView
 {
@@ -150,19 +148,19 @@
 }
 
 
-//- (CAGradientLayer *)gradientLayer
-//{
-//    if (!_gradientLayer) {
-//        _gradientLayer = [CAGradientLayer layer];
-//        _gradientLayer.frame = self.bounds;
-//        _gradientLayer.startPoint = CGPointMake(0, 0);
-//        _gradientLayer.endPoint = CGPointMake(0, 0.8);
-//        _gradientLayer.locations = @[@(0.0),@(1.0)];
-//        _gradientLayer.colors = @[(__bridge id)HEX_RGB(@"#c51018").CGColor,(__bridge id)[UIColor whiteColor].CGColor];
-//        [self.layer addSublayer:_gradientLayer];
-//    }
-//    return _gradientLayer;
-//}
+- (CAGradientLayer *)gradientLayer
+{
+    if (!_gradientLayer) {
+        _gradientLayer = [CAGradientLayer layer];
+        _gradientLayer.frame = self.bounds;
+        _gradientLayer.startPoint = CGPointMake(0, 0);
+        _gradientLayer.endPoint = CGPointMake(0, 0.8);
+        _gradientLayer.locations = @[@(0.0),@(1.0)];
+        _gradientLayer.colors = @[(__bridge id)HEX_RGB(@"#c51018").CGColor,(__bridge id)[UIColor whiteColor].CGColor];
+        [self.layer addSublayer:_gradientLayer];
+    }
+    return _gradientLayer;
+}
 
 - (NSMutableDictionary *)colorDict
 {

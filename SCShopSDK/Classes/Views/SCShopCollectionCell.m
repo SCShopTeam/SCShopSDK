@@ -78,12 +78,12 @@
     [self.priceLabel sizeToFit];
     
     //原价
-    if (model.minSuggPrice <= model.minSalePrice) {
+    if (model.minSuggPrice <= 0) {
         self.oldPriceLabel.hidden = YES;
         
     }else {
         self.oldPriceLabel.hidden = NO;
-        self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:model.minSuggPrice font:SCFONT_SIZED(8) color:HEX_RGB(@"#7D7F82")];
+        self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:model.minSuggPrice font:SCFONT_SIZED(9) color:HEX_RGB(@"#7D7F82")];
         self.oldPriceLabel.left = self.priceLabel.right + SCREEN_FIX(4.5);
     }
     

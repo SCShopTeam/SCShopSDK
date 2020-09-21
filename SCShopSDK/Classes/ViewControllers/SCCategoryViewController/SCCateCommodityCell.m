@@ -141,14 +141,14 @@
     [currentStr addAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:9]} range:NSMakeRange(0, 1)];
     _currentPriceLab.attributedText = currentStr;
     
-    if (model.minSalePrice > 0) {
+    if (model.minSuggPrice > 0) {
         NSString *oldPrice = [NSString stringWithFormat:@"¥%@",[NSNumber numberWithFloat: model.minSuggPrice]];
         NSMutableAttributedString *oldStr = [[NSMutableAttributedString alloc]initWithString:oldPrice];
         [oldStr addAttributes:@{NSStrikethroughStyleAttributeName:@(NSUnderlineStyleSingle)} range:NSMakeRange(0, oldPrice.length)];
         _oldPriceLab.attributedText = oldStr;
         
     }else {
-        _oldPriceLab.attributedText = nil;
+        _oldPriceLab.text = nil;
     }
 
     

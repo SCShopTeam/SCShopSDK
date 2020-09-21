@@ -53,6 +53,10 @@
         //标题
         self.titleLabel.text = model.shopInfo.storeName;
         [self.titleLabel sizeToFit];
+        CGFloat maxW = SCREEN_WIDTH - SCREEN_FIX(5) - self.styleIcon.width - SCREEN_FIX(4.5) - self.titleLabel.left;
+        if (self.titleLabel.width > maxW) {
+            self.titleLabel.width = maxW;
+        }
         
         //类型
         if (VALID_STRING(model.shopInfo.label)) {

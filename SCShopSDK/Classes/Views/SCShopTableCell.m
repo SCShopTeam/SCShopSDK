@@ -62,7 +62,7 @@
     [self.priceLabel sizeToFit];
     self.priceLabel.height = 14;
     //原价
-    if (searchModel.linePrice.floatValue <= searchModel.rate.floatValue) {
+    if (searchModel.linePrice.floatValue <= 0) {
         self.oldPriceLabel.hidden = YES;
         
     }else {
@@ -120,7 +120,7 @@
     [self.priceLabel sizeToFit];
     self.priceLabel.height = 14;
     //原价
-    if (model.minSuggPrice <= model.minSalePrice) {
+    if (model.minSuggPrice <= 0) {
         self.oldPriceLabel.hidden = YES;
         
     }else {
