@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 #define kBannerH     SCREEN_FIX(219.5) + STATUS_BAR_HEIGHT
 #define kGridH       (self.viewModel.touchList ? SCREEN_FIX(201) : 0)
 #define kRecommnedH  (self.viewModel.recommendStoreModel ? SCREEN_FIX(373) : 0)
-#define kAdH         SCREEN_FIX(117)
+#define kAdH         SCREEN_FIX(105)
 #define kTagH        SCREEN_FIX(55)
 
 @interface SCHomeViewController () <UICollectionViewDelegate, UICollectionViewDataSource>

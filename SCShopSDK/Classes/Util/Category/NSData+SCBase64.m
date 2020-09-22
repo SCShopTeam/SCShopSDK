@@ -293,5 +293,25 @@ char *sc_NewBase64Encode(
     return result;
 }
 
++ (NSData *)bundleResource:(NSString *)resourceName type:(NSString *)type
+{
+    NSBundle *frameworkBundle = [NSBundle mainBundle];
+
+    NSURL *bundleUrl = [frameworkBundle.resourceURL URLByAppendingPathComponent:@"SCShopResource.bundle"];
+    NSBundle *resourceBundle = [NSBundle bundleWithURL:bundleUrl];
+    
+    NSString *path;
+    if (resourceBundle) {
+        path = [resourceBundle pathForResource:resourceName ofType:type];
+        
+    }else {
+        path = [frameworkBundle pathForResource:resourceName ofType:type];
+    }
+    
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    
+    return data;
+}
+
 
 @end

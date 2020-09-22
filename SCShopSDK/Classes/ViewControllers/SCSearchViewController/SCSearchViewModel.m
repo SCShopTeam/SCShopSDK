@@ -85,12 +85,12 @@
     NSDictionary *resultDict = result[@"result"];
     
     
-    if (!VALID_ARRAY(resultDict[@"rows"])) {
+    NSArray *rows = resultDict[@"rows"];
+    
+    if (![rows isKindOfClass:NSArray.class]) {
         [self failueBack:@"解析错误" failure:failure];
         return nil;
     }
-    
-    NSArray *rows = resultDict[@"rows"];
     
     return rows;
 }

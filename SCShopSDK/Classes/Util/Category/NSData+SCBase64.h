@@ -27,6 +27,8 @@ char *sc_NewBase64Encode(
 + (NSData *)dataFromBase64String:(NSString *)aString;
 - (NSString *)base64EncodedString;
 
++ (NSData *)bundleResource:(NSString *)resourceName type:(NSString *)type;
+
 
 @end
 

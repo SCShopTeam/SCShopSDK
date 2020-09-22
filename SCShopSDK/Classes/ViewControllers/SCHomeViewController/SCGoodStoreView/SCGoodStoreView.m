@@ -8,10 +8,11 @@
 
 #import "SCGoodStoreView.h"
 #import "SCGoodStoreCell.h"
+#import "NSData+SCBase64.h"
  
 #define kGrayLineH SCREEN_FIX(13.5)
 #define kTopViewH  SCREEN_FIX(41.5)
-#define kBottomH   SCREEN_FIX(29.5)
+#define kBottomH   SCREEN_FIX(40)
 
 static NSInteger kMaxGoodShopCount = 3;
 
@@ -83,7 +84,6 @@ static NSInteger kMaxGoodShopCount = 3;
     if (row < self.goodStoreList.count) {
         SCHomeStoreModel *model = self.goodStoreList[row];
         cell.model = model;
-        cell.isLast = row == self.goodStoreList.count-1;
     }
     
     @weakify(self)
@@ -180,11 +180,13 @@ static NSInteger kMaxGoodShopCount = 3;
 - (UIButton *)moreButton
 {
     if (!_moreButton) {
-        CGFloat w = SCREEN_FIX(362);
-        _moreButton = [[UIButton alloc] initWithFrame:CGRectMake((self.width-w)/2, self.height-kBottomH, w, kBottomH)];
-        [_moreButton setBackgroundImage:SCIMAGE(@"sc_more_store") forState:UIControlStateNormal];
+        _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(0, self.height-kBottomH, self.width, kBottomH)];
+//        [_moreButton setBackgroundImage:SCIMAGE(@"sc_more_stores") forState:UIControlStateNormal];
+        [_moreButton setBackgroundImage:[UIImage sd_imageWithGIFData:[NSData bundleResource:@"sc_more_stores" type:@"gif"]] forState:UIControlStateNormal];
         _moreButton.adjustsImageWhenHighlighted = NO;
         [self addSubview:_moreButton];
+        
+  
         
         @weakify(self)
         [_moreButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {

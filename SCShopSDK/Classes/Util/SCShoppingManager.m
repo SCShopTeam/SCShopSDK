@@ -61,7 +61,7 @@
 //测试用假数据,模拟赋值
 - (void)testFakeData
 {
- 
+
 }
 
 +(void)showDiffNetAlert:(UINavigationController *)nav{

@@ -34,15 +34,9 @@
     if (self) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         [self enterShopBtn];
+        [self line];
     }
     return self;
-}
-
-- (void)setIsLast:(BOOL)isLast
-{
-    _isLast = isLast;
-    
-    self.line.hidden = isLast;
 }
 
 - (void)setModel:(SCHomeStoreModel *)model
