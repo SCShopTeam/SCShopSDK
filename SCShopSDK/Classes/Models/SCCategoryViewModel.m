@@ -43,7 +43,7 @@
             
         }else {
             if (failureBlock) {
-                failureBlock(@"分类信息请求失败");
+                failureBlock(@"暂无数据");
             }
         }
 

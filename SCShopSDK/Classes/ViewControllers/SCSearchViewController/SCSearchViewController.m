@@ -24,6 +24,11 @@
 
 @implementation SCSearchViewController
 
+
+-(void)viewDidLayoutSubviews{
+    [_searchField becomeFirstResponder];
+
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     
