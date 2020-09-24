@@ -495,8 +495,9 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         [self.view addSubview:_topView];
         
         //返回
-        CGFloat lWh = SCREEN_FIX(22.5);
-        UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(SCREEN_FIX(18.5), SCREEN_FIX(18) + STATUS_BAR_HEIGHT, lWh, lWh)];
+//        CGFloat lWh = SCREEN_FIX(22.5);
+        CGFloat lWh = SCREEN_FIX(32.5);
+        UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(SCREEN_FIX(13.5), SCREEN_FIX(13) + STATUS_BAR_HEIGHT, lWh, lWh)];
         backButton.tintColor = [UIColor whiteColor];
         [backButton setImage:[SCIMAGE(@"newnavbar_back") imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
         backButton.adjustsImageWhenHighlighted = NO;
@@ -526,7 +527,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         [_topView addSubview:serviceBtn];
         
         //搜索框
-        CGFloat sX = backButton.right + SCREEN_FIX(15);
+        CGFloat sX = backButton.right + SCREEN_FIX(10);
         CGFloat sW = serviceBtn.left - sX - SCREEN_FIX(10);
         UIButton *searchButton = [[UIButton alloc] initWithFrame:CGRectMake(sX, 0, sW, SCREEN_FIX(32.5))];
         searchButton.centerY = backButton.centerY;

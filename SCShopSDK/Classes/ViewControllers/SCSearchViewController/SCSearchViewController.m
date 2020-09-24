@@ -24,11 +24,6 @@
 
 @implementation SCSearchViewController
 
-
--(void)viewDidLayoutSubviews{
-    [_searchField becomeFirstResponder];
-
-}
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -57,10 +52,10 @@
     
     [self.viewModel requestSearch:text success:^(id  _Nullable responseObject) {
         [self stopLoading];
-        [SCCacheManager cacheObject:text forKey:@"scLastSearchContent"];
         [self.historyView addSearchRecord:text];
         self.historyView.hidden = YES;
         [self.tableView reloadData];
+        self.searchField.placeholder = text;
         self.emptyDataView.hidden = VALID_ARRAY(self.viewModel.itemList);
         
     } failure:^(NSString * _Nullable errorMsg) {
@@ -129,10 +124,8 @@
         _searchField.delegate        = self;
         _searchField.font            = SCFONT_SIZED(12);
         _searchField.returnKeyType   = UIReturnKeySearch;
+        [_searchField becomeFirstResponder];
         [_searchView addSubview:_searchField];
-        
-        NSString *historyText = [SCCacheManager getCachedObjectWithKey:@"scLastSearchContent"];
-        _searchField.placeholder = [SCUtilities isValidString:historyText]?historyText:@"";
     }
     return _searchView;
 }
@@ -174,6 +167,8 @@
             self.searchField.text = record;
             [self requestSearchText:record];
         };
+        
+        _searchField.placeholder = _historyView.lastRecord;
     }
     return _historyView;
 }

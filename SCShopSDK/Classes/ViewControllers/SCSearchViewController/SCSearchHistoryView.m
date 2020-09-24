@@ -48,6 +48,10 @@ static CGFloat kFontSize = 13;
     
     NSArray <NSString *> *records = [self.util queryAllRecords];
     
+    if (records.count > 0) {
+        _lastRecord = records.firstObject;
+    }
+    
     CGFloat p      = SCREEN_FIX(11); //按钮间水平和垂直间距
     CGFloat margin = SCREEN_FIX(17.5); //屏幕左右边距
     __block CGFloat x = margin;

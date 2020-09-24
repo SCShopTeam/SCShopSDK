@@ -153,6 +153,7 @@
 
 - (void)requestTouchData:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
+    
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
 
     if (![manager.delegate respondsToSelector:@selector(scADTouchDataWithTouchPageNum:backData:)]) {
@@ -236,8 +237,6 @@
 - (void)requestStoreDataWithLongitude:(nullable NSString *)longitude latitude:(nullable NSString *)latitude success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
     self.isStoreRequesting = YES;
-    
-    
     
     NSDictionary *param = @{@"longitude": longitude?:@"",
                             @"latitude": latitude?:@""};

@@ -105,7 +105,8 @@
     
     [_detailAddress mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(leftImg.mas_right).mas_offset(15);
-        make.centerY.equalTo(self.mas_centerY);
+        make.top.equalTo(_phoneNumber.mas_bottom).mas_offset(14);
+//        make.centerY.equalTo(self.mas_centerY);
         make.right.equalTo(self).mas_offset(-15);
     }];
     
@@ -130,7 +131,13 @@
     _model = model;
     _useName.text = [self isString:model.realName];
     _phoneNumber.text =[self isString:model.mobile];
-    _detailAddress.text = [self isString:model.detail];
+    
+    NSString *pro = [SCUtilities isValidString:model.provinceName]?model.provinceName:@"";
+    NSString *city = [SCUtilities isValidString:model.cityName]?model.cityName:@"";
+    NSString *reg = [SCUtilities isValidString:model.regionName]?model.regionName:@"";
+    NSString *detail =  [SCUtilities isValidString:model.detail]?model.detail:@"";
+    NSString *allAddress = [NSString stringWithFormat:@"%@%@%@%@",pro,city,reg,detail];
+    _detailAddress.text = allAddress;//[self isString:model.detail];
     _defaultAdMark.hidden = !model.isDefault;
 }
 

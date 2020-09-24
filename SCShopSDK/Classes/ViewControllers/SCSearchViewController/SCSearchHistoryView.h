@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) void (^selectBlock)(NSString *record);
 
+@property (nonatomic, copy, readonly) NSString *lastRecord;
+
 - (void)addSearchRecord:(NSString *)record;
 
 @end

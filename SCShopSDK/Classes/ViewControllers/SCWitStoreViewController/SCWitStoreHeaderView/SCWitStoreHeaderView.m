@@ -25,7 +25,7 @@
 @property (nonatomic, strong) NSArray <UILabel *> *couponLabelList;
 @property (nonatomic, strong) NSArray <SCWSHeaderButton *> *btnList;
 
-@property (nonatomic, strong) UILabel *emptyTipLabel;
+//@property (nonatomic, strong) UILabel *emptyTipLabel;
 
 @end
 
@@ -71,7 +71,6 @@
     }else {
         NSString *text = model.storeAddress ?: @"";
         self.addressLabel.text = text;
-
     }
     
 
@@ -146,7 +145,7 @@
         }
     }];
     
-    self.emptyTipLabel.hidden = goodsList.count > 0;
+//    self.emptyTipLabel.hidden = goodsList.count > 0;
 }
 
 
@@ -233,18 +232,18 @@
         _couponTipLabel.layer.masksToBounds = YES;
         [_contentView addSubview:_couponTipLabel];
         
-        CGFloat emptyY = couponIcon.bottom;
-        _emptyTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, emptyY, _contentView.width, _contentView.height-emptyY)];
-        
-        _emptyTipLabel.textAlignment = NSTextAlignmentCenter;
-        _emptyTipLabel.font = SCFONT_SIZED(15);
-        _emptyTipLabel.textColor = HEX_RGB(@"#999999");
-        _emptyTipLabel.text = @"抱歉，商品不存在~";
-        CGPoint center = _emptyTipLabel.center;
-        [_emptyTipLabel sizeToFit];
-        _emptyTipLabel.center = center;
-        _emptyTipLabel.hidden = YES;
-        [_contentView addSubview:_emptyTipLabel];
+//        CGFloat emptyY = couponIcon.bottom;
+//        _emptyTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, emptyY, _contentView.width, _contentView.height-emptyY)];
+//
+//        _emptyTipLabel.textAlignment = NSTextAlignmentCenter;
+//        _emptyTipLabel.font = SCFONT_SIZED(15);
+//        _emptyTipLabel.textColor = HEX_RGB(@"#999999");
+//        _emptyTipLabel.text = @"抱歉，商品不存在~";
+//        CGPoint center = _emptyTipLabel.center;
+//        [_emptyTipLabel sizeToFit];
+//        _emptyTipLabel.center = center;
+//        _emptyTipLabel.hidden = YES;
+//        [_contentView addSubview:_emptyTipLabel];
         
         UIButton *enterButton = [[UIButton alloc] initWithFrame:CGRectMake(0, nearIcon.bottom, _phoneBtn.left, self.addressLabel.bottom-nearIcon.bottom)];
         [enterButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
