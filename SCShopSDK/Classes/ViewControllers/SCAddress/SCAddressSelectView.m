@@ -89,6 +89,7 @@
         
         
     } failure:^(NSString * _Nullable errorMsg) {
+        [self showWithStatus:@"地市信息获取失败"];
         [self stopLoading];
     }];
 }

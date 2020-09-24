@@ -73,7 +73,8 @@
         SCStoreHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
         
         self.collectionView.page = cacheModel.page;
-        [self.collectionView reloadDataShowFooter:cacheModel.hasMoreData];
+//        [self.collectionView reloadDataShowFooter:cacheModel.hasMoreData];
+        [self.collectionView reloadDataWithNoMoreData:!cacheModel.hasMoreData];
         self.emptyTipLabel.hidden = cacheModel.commodityList.count > 0;
         
         if (errorMsg) {
@@ -167,7 +168,7 @@
         [_collectionView registerClass:SCStoreHomeHeaderView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCStoreHomeHeaderView.class)];
         
         [_collectionView showsRefreshHeader];
-//        [_collectionView showsRefreshFooter];
+        [_collectionView showsRefreshFooter];
         
         @weakify(self)
         _collectionView.refreshingBlock = ^(NSInteger page) {

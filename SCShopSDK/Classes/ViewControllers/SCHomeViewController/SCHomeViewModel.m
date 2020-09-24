@@ -153,7 +153,6 @@
 
 - (void)requestTouchData:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
-
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
 
     if (![manager.delegate respondsToSelector:@selector(scADTouchDataWithTouchPageNum:backData:)]) {

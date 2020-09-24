@@ -30,7 +30,8 @@
     self.titleLabel.text = model.goodsName;
     
     //价格
-    self.priceLabel.attributedText = [SCUtilities priceAttributedString:model.wholesalePrice font:SCFONT_SIZED(14.5) color:HEX_RGB(@"#FF3C34")];
+    CGFloat price = model.wholesalePrice/1000*1.f;
+    self.priceLabel.attributedText = [SCUtilities priceAttributedString:price font:SCFONT_SIZED(14.5) color:HEX_RGB(@"#FF3C34")];
 }
 
 #pragma mark -ui

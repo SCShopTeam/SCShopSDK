@@ -10,6 +10,7 @@
 #import "SCWSHeaderButton.h"
 #import "SCWitStoreGoodModel.h"
 #import "SCWitStoreHeader.h"
+#import "SCLocationService.h"
 
 @interface SCWitStoreHeaderView ()
 @property (nonatomic, strong) UIView *contentView;
@@ -59,12 +60,21 @@
     self.styleIcon.hidden = !model.professional;
     self.styleIcon.left = self.titleLabel.right + SCREEN_FIX(3);
     //地址
-    NSString *length = model.geoDistance ?: @"0m";
-    NSString *address = model.storeAddress ?: @"";
-    NSString *text = NSStringFormat(@"距离您%@|%@",length,address);
-    NSMutableAttributedString *mulAtt = [[NSMutableAttributedString alloc] initWithString:text];
-    [mulAtt addAttributes:@{NSForegroundColorAttributeName:HEX_RGB(@"#FF3C34")} range:[text rangeOfString:length]];
-    self.addressLabel.attributedText = mulAtt;
+    if ([SCLocationService sharedInstance].longitude && [SCLocationService sharedInstance].latitude && model.geoDistance && ![model.geoDistance isEqualToString:@"0m"]) {
+        NSString *length = model.geoDistance;
+        NSString *address = model.storeAddress ?: @"";
+        NSString *text = NSStringFormat(@"距离您%@|%@",length,address);
+        NSMutableAttributedString *mulAtt = [[NSMutableAttributedString alloc] initWithString:text];
+        [mulAtt addAttributes:@{NSForegroundColorAttributeName:HEX_RGB(@"#FF3C34")} range:[text rangeOfString:length]];
+        self.addressLabel.attributedText = mulAtt;
+        
+    }else {
+        NSString *text = model.storeAddress ?: @"";
+        self.addressLabel.text = text;
+
+    }
+    
+
     
     //取号信息
     //排队人数

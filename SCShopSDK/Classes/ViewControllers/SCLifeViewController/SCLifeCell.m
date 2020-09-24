@@ -40,7 +40,8 @@
 - (void)requestData:(NSInteger)page
 {
     [self.viewModel requestCommodityList:self.typeNum page:page completion:^(NSString * _Nullable errorMsg) {
-        [self.tableView reloadDataShowFooter:self.viewModel.hasMoreData];
+//        [self.tableView reloadDataShowFooter:self.viewModel.hasMoreData];
+        [self.tableView reloadDataWithNoMoreData:!self.viewModel.hasMoreData];
         
         if (errorMsg) {
             self.emptyTipLabel.text = errorMsg;
@@ -93,6 +94,7 @@
         _tableView.delegate = self;
         _tableView.dataSource = self;
         [_tableView showsRefreshHeader];
+        [_tableView showsRefreshFooter];
         [self addSubview:_tableView];
         [_tableView registerClass:SCShopTableCell.class forCellReuseIdentifier:NSStringFromClass(SCShopTableCell.class)];
         

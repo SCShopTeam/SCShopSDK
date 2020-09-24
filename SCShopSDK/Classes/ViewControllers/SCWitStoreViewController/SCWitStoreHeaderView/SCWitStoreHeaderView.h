@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) void (^orderHistoryBlock)(void);            //排队记录
 
 
-- (void)setGoodsList:(NSArray <SCWitStoreGoodModel *> *)goodsList;  //推荐商品
+- (void)setGoodsList:(nullable NSArray <SCWitStoreGoodModel *> *)goodsList;  //推荐商品
 
 @end
 

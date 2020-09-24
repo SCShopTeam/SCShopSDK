@@ -78,9 +78,9 @@
         
         self.tableView.page = cacheModel.page;
         [self updateNearStoreInfo:page];
-//        [self.tableView reloadDataShowFooter:cacheModel.hasMoreData];
-        [self.tableView reloadData];
-        cacheModel.hasMoreData ? [self.tableView showsRefreshFooter] : [self.tableView hidesRefreshFooter];
+//        [self.tableView reloadData];
+//        cacheModel.hasMoreData ? [self.tableView showsRefreshFooter] : [self.tableView hidesRefreshFooter];
+        [self.tableView reloadDataWithNoMoreData:!cacheModel.hasMoreData];
         
         if (showCache) {
             [self resizeContentOffset];
@@ -121,7 +121,7 @@
         self.headerView.goodsList = self.viewModel.goodsList;
         
     } failure:^(NSString * _Nullable errorMsg) {
-        
+        self.headerView.goodsList = nil;
     }];
 }
 
@@ -501,7 +501,7 @@
         [_tableView registerClass:SCWitProfessionalHeaderView.class forHeaderFooterViewReuseIdentifier:NSStringFromClass(SCWitProfessionalHeaderView.class)];
         [_tableView registerClass:SCWitNoStoreHeaderView.class forHeaderFooterViewReuseIdentifier:NSStringFromClass(SCWitNoStoreHeaderView.class)];
         
-//        [_tableView showsRefreshFooter];
+        [_tableView showsRefreshFooter];
         
         @weakify(self)
         _tableView.refreshingBlock = ^(NSInteger page) {

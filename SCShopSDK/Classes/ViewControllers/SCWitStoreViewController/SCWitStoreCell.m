@@ -8,6 +8,7 @@
 
 #import "SCWitStoreCell.h"
 #import "SCWitStoreHeader.h"
+#import "SCLocationService.h"
 
 #define kVerEdge   SCREEN_FIX(10)
 #define kOrderH    SCREEN_FIX(45)
@@ -112,7 +113,12 @@
     self.styleIcon.left = self.titleLabel.right + SCREEN_FIX(2); //professional
     
     //地址
-    self.addressLabel.text = NSStringFormat(@"%@ | %@",(model.geoDistance ?: @"0m"), (model.storeAddress ?: @""));
+    NSString *distanceStr = @"";
+    if ([SCLocationService sharedInstance].longitude && [SCLocationService sharedInstance].latitude && model.geoDistance && ![model.geoDistance isEqualToString:@"0m"]) {
+        distanceStr = NSStringFormat(@"%@ | ",model.geoDistance);
+    }
+    
+    self.addressLabel.text = NSStringFormat(@"%@%@",distanceStr,(model.storeAddress ?: @""));
     
     //电话
     self.phoneBtn.hidden = !VALID_STRING(model.contactPhone);
