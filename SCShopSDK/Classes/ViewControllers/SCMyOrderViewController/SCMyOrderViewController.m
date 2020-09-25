@@ -181,12 +181,12 @@
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
 
     if (_isMDStyle) {
-        if (_mdOrders && [SCUtilities isValidArray:_mdOrders[section].ordOrderItemsAppVOList]) {
+        if (_mdOrders && section < _mdOrders.count && [SCUtilities isValidArray:_mdOrders[section].ordOrderItemsAppVOList]) {
          
             return _mdOrders[section].ordOrderItemsAppVOList.count;
         }
     }else{
-        if (_scOrders && [SCUtilities isValidArray:_scOrders[section].goodsList]) {
+        if (_scOrders && section < _scOrders.count && [SCUtilities isValidArray:_scOrders[section].goodsList]) {
            
                return _scOrders[section].goodsList.count;
            }
