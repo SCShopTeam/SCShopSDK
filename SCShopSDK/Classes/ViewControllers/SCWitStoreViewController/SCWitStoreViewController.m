@@ -464,11 +464,12 @@
         
         //删除搜索结果
         CGFloat dWH = SCREEN_FIX(30);
-        _deleteSearchButton = [[UIButton alloc] initWithFrame:CGRectMake(_searchField.width - dWH, (_searchField.height - dWH)/2, dWH, dWH)];
+        _deleteSearchButton = [[UIButton alloc] initWithFrame:CGRectMake(_searchField.right - dWH, 0, dWH, dWH)];
+        _deleteSearchButton.centerY = _searchField.centerY;
         [_deleteSearchButton setImage:SCIMAGE(@"sc_wit_delete") forState:UIControlStateNormal];
         _deleteSearchButton.hidden = YES;
         [_deleteSearchButton addTarget:self action:@selector(textFieldClear) forControlEvents:UIControlEventTouchUpInside];
-        [_searchField addSubview:_deleteSearchButton];
+        [searchView addSubview:_deleteSearchButton];
     }
     return _topView;
 }

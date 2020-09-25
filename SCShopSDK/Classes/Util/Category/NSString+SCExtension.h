@@ -37,6 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)NSJSONValue;
 
+//判断是否是手机号
+- (BOOL)isValidPhone;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -102,7 +102,7 @@
     _editModel.mobile = phonetf.text;
     _editModel.detail = detailtf.text;
     if (![SCUtilities isValidString:_editModel.realName] ||
-        ![SCUtilities isValidString:_editModel.mobile] ||
+        ![_editModel.mobile isValidPhone] ||
         ![SCUtilities isValidString:_editModel.provinceName] ||
         ![SCUtilities isValidString:_editModel.cityName] ||
         /*![SCUtilities isValidString:_editModel.regionName] ||*/
@@ -112,8 +112,8 @@
         
         if (![SCUtilities isValidString:nametf.text]){
             msg = @"请填写姓名";
-        } else if(![SCUtilities isValidString:phonetf.text]){
-            msg = @"请输入联系号码";
+        } else if(![phonetf.text isValidPhone]){
+            msg = VALID_STRING(phonetf.text) ? @"手机号码格式不正确" : @"请输入联系号码";
         }else if (![SCUtilities isValidString:areatf.text]){
             msg = @"请选择所在省市区";
         }else  if (![SCUtilities isValidString:detailtf.text]) {

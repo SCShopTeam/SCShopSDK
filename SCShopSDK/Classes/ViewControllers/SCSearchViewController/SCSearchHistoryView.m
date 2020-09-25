@@ -99,6 +99,7 @@ static CGFloat kFontSize = 13;
     if (!_titleLabel) {
         _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(15), SCREEN_FIX(14), 100, SCREEN_FIX(15))];
         _titleLabel.font = SCFONT_SIZED(14);
+        _titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         _titleLabel.text = @"搜索历史";
         [self addSubview:_titleLabel];
     }

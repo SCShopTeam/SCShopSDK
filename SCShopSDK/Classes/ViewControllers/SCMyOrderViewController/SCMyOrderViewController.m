@@ -217,29 +217,35 @@
     
     SCMyOrderHeaderView *headerView = [[SCMyOrderHeaderView alloc]initWithFrame:CGRectMake(0, 0, _listTable.frame.size.width, 45)];
 //    headerView.dataDic = @{};
-    if (self.isMDStyle) {
-        headerView.nameLab.text = _mdOrders[section].storeName;
+    if ((self.isMDStyle && section < _mdOrders.count) || (!self.isMDStyle && section < _scOrders.count)) {
+        
+        if (self.isMDStyle) {
+            headerView.nameLab.text = _mdOrders[section].storeName;
 
-    }else{
-        headerView.nameLab.text = _scOrders[section].tenantName;
-    }
-    __weak typeof(self)wkSelf = self;
-    headerView.orderHeaderCallBack = ^(NSString * _Nonnull detailUrl) {
-        NSLog(@"%@",detailUrl);
-        NSString *url;
-        if (wkSelf.isMDStyle) {
-            url = wkSelf.mdOrders[section].orderDetailUrl;//SC_APOLLO_ORDER_DETAIL(wkSelf.mdOrders[section].orderId);
         }else{
-           url =  SC_SC_ORDER_DETAIL(wkSelf.scOrders[section].orderNum);
+            headerView.nameLab.text = _scOrders[section].tenantName;
         }
-        
-        if ([SCUtilities isValidString:url]) {
+        __weak typeof(self)wkSelf = self;
+        headerView.orderHeaderCallBack = ^(NSString * _Nonnull detailUrl) {
+            NSLog(@"%@",detailUrl);
+            NSString *url;
+            if (wkSelf.isMDStyle) {
+                url = wkSelf.mdOrders[section].orderDetailUrl;//SC_APOLLO_ORDER_DETAIL(wkSelf.mdOrders[section].orderId);
+            }else{
+               url =  SC_SC_ORDER_DETAIL(wkSelf.scOrders[section].orderNum);
+            }
+            
+            if ([SCUtilities isValidString:url]) {
 
-            [[SCURLSerialization shareSerialization]gotoWebcustom:url title:@"" navigation:self.navigationController];
-        }
+                [[SCURLSerialization shareSerialization]gotoWebcustom:url title:@"" navigation:self.navigationController];
+            }
+            
+           
+        };
         
-       
-    };
+    }
+    
+    
     return headerView;
 }
 
