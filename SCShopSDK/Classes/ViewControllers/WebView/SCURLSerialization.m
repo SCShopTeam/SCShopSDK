@@ -57,7 +57,12 @@ static SCURLSerialization *urlSerialization = nil;
 -(void)gotoController:(NSString *)url navigation:(UINavigationController *)nav{
     //jsmcc://M/5?tenantNum=TN00000010
     //phonestore://jumpToLogin
-    if (![SCUtilities isValidString:url] || [url containsString:@"http"] || [url containsString:@"https"] ) {
+    if (![SCUtilities isValidString:url]) {
+        return;
+    }
+    
+    if ([url hasPrefix:@"http"] || [url hasPrefix:@"https"] ) {
+        [self gotoWebcustom:url title:@"" navigation:nav];
         return;
     }
     
@@ -181,8 +186,14 @@ static SCURLSerialization *urlSerialization = nil;
         
         [SCShoppingManager sharedInstance].delegate = delegate;
         
+        
         if ([SCUtilities isValidString:url] && nav) {
-            [self gotoController:url navigation:nav];
+            
+            [SCShoppingManager showMallPageFrom:nav];
+          UINavigationController *scNav = [SCUtilities currentTabBarController].viewControllers.firstObject;
+            NSString *className = NSStringFromClass([scNav class]);
+            NSLog(@"外部的nav  %@",className);
+            [self gotoController:url navigation:scNav];
         }
     }
 }
