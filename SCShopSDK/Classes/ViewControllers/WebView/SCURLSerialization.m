@@ -43,6 +43,7 @@ static SCURLSerialization *urlSerialization = nil;
             }
             
             custom.urlString = url;
+            nav.hidesBottomBarWhenPushed = YES;
             [nav pushViewController:custom animated:YES];
         }
         
@@ -57,19 +58,29 @@ static SCURLSerialization *urlSerialization = nil;
 -(void)gotoController:(NSString *)url navigation:(UINavigationController *)nav{
     //jsmcc://M/5?tenantNum=TN00000010
     //phonestore://jumpToLogin
+    
     if (![SCUtilities isValidString:url]) {
         return;
     }
     
     if ([url hasPrefix:@"http"] || [url hasPrefix:@"https"] ) {
+        nav.hidesBottomBarWhenPushed = YES;
         [self gotoWebcustom:url title:@"" navigation:nav];
         return;
     }
-    
     if ([url hasPrefix:@"jsmcc://"]) {
         NSString *temp = [url substringFromIndex:8];
         NSMutableDictionary *paramDic;
         NSString *cmd = temp;
+        
+        if ([cmd isEqualToString:@"M/0"] && url.length>16) {
+            NSString *sUrl = [url substringFromIndex:16];//paramDic[@"url"];
+            if ([SCUtilities isValidString:sUrl]) {
+                NSString *nurl = [SCUtilities encodeURIComponent:sUrl];
+                [self gotoWebcustom:nurl title:@"" navigation:nav];
+            }
+            return;
+        }
         
         if ([temp containsString:@"?"]) {
             NSArray *tempArr = [temp componentsSeparatedByString:@"?"];
@@ -88,13 +99,7 @@ static SCURLSerialization *urlSerialization = nil;
             }
         }
         
-        if ([cmd isEqualToString:@"M/0"]) {
-            NSString *sUrl = paramDic[@"url"];
-            if ([SCUtilities isValidString:sUrl]) {
-                NSString *url = [SCUtilities encodeURIComponent:sUrl];
-                [self gotoWebcustom:url title:@"" navigation:nav];
-            }
-        }
+      
         
         
         if ([cmd isEqualToString:@"M/1"] ||
@@ -132,20 +137,24 @@ static SCURLSerialization *urlSerialization = nil;
             NSString *num = paramDic[@"tenantNum"];//[paramArr.lastObject componentsSeparatedByString:@"="].lastObject;
             SCStoreHomeViewController *shop = [[SCStoreHomeViewController alloc]init];
             shop.tenantNum = num;
+             nav.hidesBottomBarWhenPushed = YES;
             [nav pushViewController:shop animated:YES];
         }else if ([cmd isEqualToString:@"M/6"]){  //配件
             if ([SCUtilities isValidDictionary:paramDic]) {
                 
                 SCLifeViewController *tag = [[SCLifeViewController alloc]init];
                 tag.paramDic = paramDic;
+                nav.hidesBottomBarWhenPushed = YES;
                 [nav pushViewController:tag animated:YES];
             }
             
         }else if ([cmd isEqualToString:@"M/7"]){  //购物车
             SCCartViewController *cat = [[SCCartViewController alloc]init];
+             nav.hidesBottomBarWhenPushed = YES;
             [nav pushViewController:cat animated:YES];
         }else if ([cmd isEqualToString:@"M/8"]){ //智慧门店  原生
             SCWitStoreViewController *wit = [[SCWitStoreViewController alloc]init];
+             nav.hidesBottomBarWhenPushed = YES;
             [nav pushViewController:wit animated:YES];
         }
         
@@ -186,14 +195,8 @@ static SCURLSerialization *urlSerialization = nil;
         
         [SCShoppingManager sharedInstance].delegate = delegate;
         
-        
         if ([SCUtilities isValidString:url] && nav) {
-            
-            [SCShoppingManager showMallPageFrom:nav];
-          UINavigationController *scNav = [SCUtilities currentTabBarController].viewControllers.firstObject;
-            NSString *className = NSStringFromClass([scNav class]);
-            NSLog(@"外部的nav  %@",className);
-            [self gotoController:url navigation:scNav];
+            [self gotoController:url navigation:nav];
         }
     }
 }
