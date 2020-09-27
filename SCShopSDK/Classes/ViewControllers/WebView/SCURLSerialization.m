@@ -70,13 +70,6 @@ static SCURLSerialization *urlSerialization = nil;
         NSString *temp = [url substringFromIndex:8];
         NSMutableDictionary *paramDic;
         NSString *cmd = temp;
-        if ([cmd containsString:@"M/0"] && url.length>16) {
-            NSString *sUrl = [url substringFromIndex:16];//paramDic[@"url"];
-               if ([SCUtilities isValidString:sUrl]) {
-                   NSString *nurl = sUrl;//[SCUtilities encodeURIComponent:sUrl];
-                   [self gotoWebcustom:nurl title:@"" navigation:nav];
-               }
-           }
         
         if ([temp containsString:@"?"]) {
             NSArray *tempArr = [temp componentsSeparatedByString:@"?"];
@@ -95,13 +88,10 @@ static SCURLSerialization *urlSerialization = nil;
             }
         }
         
-        
         if ([cmd isEqualToString:@"M/1"] ||
             [cmd isEqualToString:@"M/2"] ||
             [cmd isEqualToString:@"M/3"] ||
             [cmd isEqualToString:@"M/4"]) {  //底部导航
-            
-            
             NSString *strNum = [cmd componentsSeparatedByString:@"/"].lastObject;
             NSInteger num = [strNum integerValue];
             
@@ -126,7 +116,7 @@ static SCURLSerialization *urlSerialization = nil;
             }
         }
         
-        if ([cmd isEqualToString:@"M/5"] || [cmd isEqualToString:@"M/6"] || [cmd isEqualToString:@"M/7"] || [cmd isEqualToString:@"M/8"]) {
+        if ([cmd isEqualToString:@"M/5"] || [cmd isEqualToString:@"M/6"] || [cmd isEqualToString:@"M/7"] || [cmd isEqualToString:@"M/8"] || [cmd containsString:@"M/0"]) {
              UITabBarController *tabBar = [SCUtilities currentTabBarController];
             if (!tabBar) {
                 
@@ -134,34 +124,71 @@ static SCURLSerialization *urlSerialization = nil;
                     [[SCShoppingManager sharedInstance].delegate scGetUserInfo:^(BOOL success) {
                         if (success) {
                             [SCShoppingManager showMallPageFrom:nav pageType:0];
+                            UINavigationController *nav1 = tabBar.viewControllers.firstObject;
+                            if ([cmd isEqualToString:@"M/5"]) { //商铺详情
+                                NSString *num = paramDic[@"tenantNum"];//[paramArr.lastObject componentsSeparatedByString:@"="].lastObject;
+                                SCStoreHomeViewController *shop = [[SCStoreHomeViewController alloc]init];
+                                shop.tenantNum = num;
+                                [nav1 pushViewController:shop animated:YES];
+                            }else if ([cmd isEqualToString:@"M/6"]){  //配件
+                                if ([SCUtilities isValidDictionary:paramDic]) {
+                                    
+                                    SCLifeViewController *tag = [[SCLifeViewController alloc]init];
+                                    tag.paramDic = paramDic;
+                                    [nav1 pushViewController:tag animated:YES];
+                                }
+                                
+                            }else if ([cmd isEqualToString:@"M/7"]){  //购物车
+                                SCCartViewController *cat = [[SCCartViewController alloc]init];
+                                [nav1 pushViewController:cat animated:YES];
+                            }else if ([cmd isEqualToString:@"M/8"]){ //智慧门店  原生
+                                SCWitStoreViewController *wit = [[SCWitStoreViewController alloc]init];
+                                [nav1 pushViewController:wit animated:YES];
+                            } else if ([cmd containsString:@"M/0"] && url.length>16) {
+                                    NSString *sUrl = [url substringFromIndex:16];//paramDic[@"url"];
+                                    if ([SCUtilities isValidString:sUrl]) {
+                                       NSString *nurl = sUrl;//[SCUtilities encodeURIComponent:sUrl];
+                                       [self gotoWebcustom:nurl title:@"" navigation:nav];
+                                    }
+                            }
                         }
                     }];
                 }
-                nav = tabBar.viewControllers.firstObject;
             }else{
-                nav = tabBar.tabBarController.selectedViewController;
+//                 for (int i=0; i<tabBar.viewControllers.count; i++)
+//                 {
+//                    UINavigationController *navCtr = [tabBar.viewControllers objectAtIndex:i];
+//                    [navCtr popToRootViewControllerAnimated:NO];
+//                 }
+//                 [tabBar setSelectedIndex:0];
+                 nav = tabBar.selectedViewController;
+                if ([cmd isEqualToString:@"M/5"]) { //商铺详情
+                    NSString *num = paramDic[@"tenantNum"];//[paramArr.lastObject componentsSeparatedByString:@"="].lastObject;
+                    SCStoreHomeViewController *shop = [[SCStoreHomeViewController alloc]init];
+                    shop.tenantNum = num;
+                    [nav pushViewController:shop animated:YES];
+                }else if ([cmd isEqualToString:@"M/6"]){  //配件
+                    if ([SCUtilities isValidDictionary:paramDic]) {
+                        
+                        SCLifeViewController *tag = [[SCLifeViewController alloc]init];
+                        tag.paramDic = paramDic;
+                        [nav pushViewController:tag animated:YES];
+                    }
+                    
+                }else if ([cmd isEqualToString:@"M/7"]){  //购物车
+                    SCCartViewController *cat = [[SCCartViewController alloc]init];
+                    [nav pushViewController:cat animated:YES];
+                }else if ([cmd isEqualToString:@"M/8"]){ //智慧门店  原生
+                    SCWitStoreViewController *wit = [[SCWitStoreViewController alloc]init];
+                    [nav pushViewController:wit animated:YES];
+                }else if ([cmd containsString:@"M/0"] && url.length>16) {
+                 NSString *sUrl = [url substringFromIndex:16];//paramDic[@"url"];
+                    if ([SCUtilities isValidString:sUrl]) {
+                        NSString *nurl = sUrl;//[SCUtilities encodeURIComponent:sUrl];
+                        [self gotoWebcustom:nurl title:@"" navigation:nav];
+                    }
+                }
             }
-           
-        if ([cmd isEqualToString:@"M/5"]) { //商铺详情
-            NSString *num = paramDic[@"tenantNum"];//[paramArr.lastObject componentsSeparatedByString:@"="].lastObject;
-            SCStoreHomeViewController *shop = [[SCStoreHomeViewController alloc]init];
-            shop.tenantNum = num;
-            [nav pushViewController:shop animated:YES];
-        }else if ([cmd isEqualToString:@"M/6"]){  //配件
-            if ([SCUtilities isValidDictionary:paramDic]) {
-                
-                SCLifeViewController *tag = [[SCLifeViewController alloc]init];
-                tag.paramDic = paramDic;
-                [nav pushViewController:tag animated:YES];
-            }
-            
-        }else if ([cmd isEqualToString:@"M/7"]){  //购物车
-            SCCartViewController *cat = [[SCCartViewController alloc]init];
-            [nav pushViewController:cat animated:YES];
-        }else if ([cmd isEqualToString:@"M/8"]){ //智慧门店  原生
-            SCWitStoreViewController *wit = [[SCWitStoreViewController alloc]init];
-            [nav pushViewController:wit animated:YES];
-        }
       }
     }else if ([url hasPrefix:@"phonestore://"]){
         NSString *temp = [url substringFromIndex:13];
