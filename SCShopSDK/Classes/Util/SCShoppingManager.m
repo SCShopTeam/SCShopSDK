@@ -79,8 +79,8 @@
 //    self.locationInfo = locationInfo;
     
     //tab
-    UITabBarController *tabVc = (UITabBarController *)[UIApplication sharedApplication].delegate.window.rootViewController;
-    [SCUtilities registerTabBarController:tabVc];
+//    UITabBarController *tabVc = (UITabBarController *)[UIApplication sharedApplication].delegate.window.rootViewController;
+//    [SCUtilities registerTabBarController:tabVc];
     
 }
 
