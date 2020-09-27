@@ -49,11 +49,11 @@
 
 
 -(UIImage *)thumbWithSize:(CGSize)size{
-        
-        CGSize originalsize = self.size;
-        CGSize targetSize = CGSizeZero;
-
-    if (!size.width || size.height) {
+    
+    CGSize originalsize = self.size;
+    CGSize targetSize = CGSizeZero;
+    
+    if (!size.width || !size.height) {
         if (self.size.width>self.size.height) {
             targetSize = CGSizeMake(self.size.height, self.size.height);
         }else{
@@ -61,174 +61,109 @@
         }
     }else{
         targetSize = size;
-
     }
     
-            //原图长宽均小于标准长宽的，不作处理返回原图
-
-            if (originalsize.width<targetSize.width && originalsize.height<targetSize.height)
-
-            {
-
-                return self;
-
-            }
-
-            
-
-            //原图长宽均大于标准长宽的，按比例缩小至最大适应值
-
-            else if(originalsize.width>targetSize.width && originalsize.height>targetSize.height)
-
-            {
-
-                CGFloat rate = 1.0;
-
-                CGFloat widthRate = originalsize.width/targetSize.width;
-
-                CGFloat heightRate = originalsize.height/targetSize.height;
-
-                
-
-                rate = widthRate>heightRate?heightRate:widthRate;
-
-                
-
-                CGImageRef imageRef = nil;
-
-                
-
-                if (heightRate>widthRate)
-
-                {
-
-                    imageRef = CGImageCreateWithImageInRect([self CGImage], CGRectMake(0, originalsize.height/2-targetSize.height*rate/2, originalsize.width, targetSize.height*rate));//获取图片整体部分
-
-                }
-
-                else
-
-                {
-
-                    imageRef = CGImageCreateWithImageInRect([self CGImage], CGRectMake(originalsize.width/2-targetSize.width*rate/2, 0, targetSize.width*rate, originalsize.height));//获取图片整体部分
-
-                }
-
-                UIGraphicsBeginImageContext(targetSize);//指定要绘画图片的大小
-
-                CGContextRef con = UIGraphicsGetCurrentContext();
-
-                
-
-                CGContextTranslateCTM(con, 0.0, targetSize.height);
-
-                CGContextScaleCTM(con, 1.0, -1.0);
-
-                
-
-                CGContextDrawImage(con, CGRectMake(0, 0, targetSize.width, targetSize.height), imageRef);
-
-                
-
-                UIImage *standardImage = UIGraphicsGetImageFromCurrentImageContext();
-
-                
-
-                UIGraphicsEndImageContext();
-
-                CGImageRelease(imageRef);
-
-                
-
-                return standardImage;
-
-            }
-
-            
-
-            //原图长宽有一项大于标准长宽的，对大于标准的那一项进行裁剪，另一项保持不变
-
-            else if(originalsize.height>targetSize.height || originalsize.width>targetSize.width)
-
-            {
-
-                CGImageRef imageRef = nil;
-
-                
-
-                if(originalsize.height>targetSize.height)
-
-                {
-
-                    imageRef = CGImageCreateWithImageInRect([self CGImage], CGRectMake(0, originalsize.height/2-size.height/2, originalsize.width, size.height));//获取图片整体部分
-
-                }
-
-                else if (originalsize.width>targetSize.width)
-
-                {
-
-                    imageRef = CGImageCreateWithImageInRect([self CGImage], CGRectMake(originalsize.width/2-targetSize.width/2, 0, targetSize.width, originalsize.height));//获取图片整体部分
-
-                }
-                
-                
-                
-                UIGraphicsBeginImageContext(targetSize);//指定要绘画图片的大小
-                
-                
-                
-                CGContextRef con = UIGraphicsGetCurrentContext();
-                
-                CGContextTranslateCTM(con, 0.0, targetSize.height);
-                
-                CGContextScaleCTM(con, 1.0, -1.0);
-                
-                
-
-                CGContextDrawImage(con, CGRectMake(0, 0, targetSize.width, targetSize.height), imageRef);
-
-                
-
-                 UIImage *standardImage = UIGraphicsGetImageFromCurrentImageContext();
-
-                NSLog(@"改变后图片的宽度为%f,图片的高度为%f",[standardImage size].width,[standardImage size].height);
-
-                
-
-                UIGraphicsEndImageContext();
-
-                CGImageRelease(imageRef);
-
-                
-
-                return standardImage;
-
-            }
-
-            
-
-            //原图为标准长宽的，不做处理
-
-            else
-
-            {
-
-                return self;
-
-            }
-
-
-
+    //原图长宽均小于标准长宽的，不作处理返回原图
+    if (originalsize.width<targetSize.width && originalsize.height<targetSize.height)
+    {
+        return self;
+    }
+    
+    //原图长宽均大于标准长宽的，按比例缩小至最大适应值
+    else if(originalsize.width>targetSize.width && originalsize.height>targetSize.height)
+    {
+        CGFloat rate = 1.0;
+        
+        CGFloat widthRate = originalsize.width/targetSize.width;
+        
+        CGFloat heightRate = originalsize.height/targetSize.height;
+        
+        rate = widthRate>heightRate?heightRate:widthRate;
+        
+        CGImageRef imageRef = nil;
+        
+        if (heightRate>widthRate)
+        {
+            imageRef = CGImageCreateWithImageInRect([self CGImage], CGRectMake(0, originalsize.height/2-targetSize.height*rate/2, originalsize.width, targetSize.height*rate));//获取图片整体部分
+        }
+        else
+        {
+            imageRef = CGImageCreateWithImageInRect([self CGImage], CGRectMake(originalsize.width/2-targetSize.width*rate/2, 0, targetSize.width*rate, originalsize.height));//获取图片整体部分
+        }
+        
+        UIGraphicsBeginImageContext(targetSize);//指定要绘画图片的大小
+        
+        CGContextRef con = UIGraphicsGetCurrentContext();
+        
+        CGContextTranslateCTM(con, 0.0, targetSize.height);
+        
+        CGContextScaleCTM(con, 1.0, -1.0);
+        
+        CGContextDrawImage(con, CGRectMake(0, 0, targetSize.width, targetSize.height), imageRef);
+        
+        UIImage *standardImage = UIGraphicsGetImageFromCurrentImageContext();
+        
+        UIGraphicsEndImageContext();
+        
+        CGImageRelease(imageRef);
+        
+        return standardImage;
+        
+    }
+    
+    //原图长宽有一项大于标准长宽的，对大于标准的那一项进行裁剪，另一项保持不变
+    else if(originalsize.height>targetSize.height || originalsize.width>targetSize.width)
+    {
+        CGImageRef imageRef = nil;
+        
+        if(originalsize.height>targetSize.height)
+        {
+            NSLog(@"比例 ： height > width");
+            imageRef = CGImageCreateWithImageInRect([self CGImage], CGRectMake(0, originalsize.height/2-targetSize.height/2, originalsize.width, targetSize.height));//获取图片整体部分
+        }
+        
+        else if (originalsize.width>targetSize.width)
+        {
+            NSLog(@"比例 ： height < width");
+            imageRef = CGImageCreateWithImageInRect([self CGImage], CGRectMake(originalsize.width/2-targetSize.width/2, 0, targetSize.width, originalsize.height));//获取图片整体部分
+        }
+        
+        UIGraphicsBeginImageContext(targetSize);//指定要绘画图片的大小
+        
+        CGContextRef con = UIGraphicsGetCurrentContext();
+        
+        CGContextTranslateCTM(con, 0.0, targetSize.height);
+        
+        CGContextScaleCTM(con, 1.0, -1.0);
+        
+        CGContextDrawImage(con, CGRectMake(0, 0, targetSize.width, targetSize.height), imageRef);
+        
+        UIImage *standardImage = UIGraphicsGetImageFromCurrentImageContext();
+        
+        NSLog(@"改变后图片的宽度为%f,图片的高度为%f",[standardImage size].width,[standardImage size].height);
+        
+        UIGraphicsEndImageContext();
+        
+        CGImageRelease(imageRef);
+        
+        return standardImage;
+    }
+    
+    //原图为标准长宽的，不做处理
+    else
+    {
+        NSLog(@"比例 ： height = width");
+        return self;
+    }
 }
 
 
 - (CGContextRef)createARGBBitmapContext {
-
+    
     // Get image width, height
     size_t pixelsWide = CGImageGetWidth(self.CGImage);
     size_t pixelsHigh = CGImageGetHeight(self.CGImage);
-
+    
     // Declare the number of bytes per row
     NSInteger bitmapBytesPerRow  = (pixelsWide * 4);
     NSInteger bitmapByteCount    = (bitmapBytesPerRow * pixelsHigh);
@@ -239,7 +174,7 @@
         fprintf(stderr, "Error allocating color space\n");
         return NULL;
     }
-
+    
     // Allocate memory for image data
     void *bitmapData = malloc( bitmapByteCount );
     if (bitmapData == NULL) {
