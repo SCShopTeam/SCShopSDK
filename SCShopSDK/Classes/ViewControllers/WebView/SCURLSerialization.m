@@ -149,7 +149,7 @@ static SCURLSerialization *urlSerialization = nil;
                                     NSString *sUrl = [url substringFromIndex:16];//paramDic[@"url"];
                                     if ([SCUtilities isValidString:sUrl]) {
                                        NSString *nurl = sUrl;//[SCUtilities encodeURIComponent:sUrl];
-                                       [self gotoWebcustom:nurl title:@"" navigation:nav];
+                                       [self gotoWebcustom:nurl title:@"" navigation:nav1];
                                     }
                             }
                         }
