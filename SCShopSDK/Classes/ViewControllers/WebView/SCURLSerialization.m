@@ -124,7 +124,8 @@ static SCURLSerialization *urlSerialization = nil;
                     [[SCShoppingManager sharedInstance].delegate scGetUserInfo:^(BOOL success) {
                         if (success) {
                             [SCShoppingManager showMallPageFrom:nav pageType:0];
-                            UINavigationController *nav1 = tabBar.viewControllers.firstObject;
+                            UITabBarController *tabBar1 = [SCUtilities currentTabBarController];
+                            UINavigationController *nav1 = tabBar1.viewControllers.firstObject;
                             if ([cmd isEqualToString:@"M/5"]) { //商铺详情
                                 NSString *num = paramDic[@"tenantNum"];//[paramArr.lastObject componentsSeparatedByString:@"="].lastObject;
                                 SCStoreHomeViewController *shop = [[SCStoreHomeViewController alloc]init];
