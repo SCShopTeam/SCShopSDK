@@ -43,7 +43,6 @@ static SCURLSerialization *urlSerialization = nil;
             }
             
             custom.urlString = url;
-            nav.hidesBottomBarWhenPushed = YES;
             [nav pushViewController:custom animated:YES];
         }
         
@@ -58,29 +57,26 @@ static SCURLSerialization *urlSerialization = nil;
 -(void)gotoController:(NSString *)url navigation:(UINavigationController *)nav{
     //jsmcc://M/5?tenantNum=TN00000010
     //phonestore://jumpToLogin
-    
     if (![SCUtilities isValidString:url]) {
         return;
     }
     
     if ([url hasPrefix:@"http"] || [url hasPrefix:@"https"] ) {
-        nav.hidesBottomBarWhenPushed = YES;
         [self gotoWebcustom:url title:@"" navigation:nav];
         return;
     }
+    
     if ([url hasPrefix:@"jsmcc://"]) {
         NSString *temp = [url substringFromIndex:8];
         NSMutableDictionary *paramDic;
         NSString *cmd = temp;
-        
-        if ([cmd isEqualToString:@"M/0"] && url.length>16) {
+        if ([cmd containsString:@"M/0"] && url.length>16) {
             NSString *sUrl = [url substringFromIndex:16];//paramDic[@"url"];
-            if ([SCUtilities isValidString:sUrl]) {
-                NSString *nurl = [SCUtilities encodeURIComponent:sUrl];
-                [self gotoWebcustom:nurl title:@"" navigation:nav];
-            }
-            return;
-        }
+               if ([SCUtilities isValidString:sUrl]) {
+                   NSString *nurl = sUrl;//[SCUtilities encodeURIComponent:sUrl];
+                   [self gotoWebcustom:nurl title:@"" navigation:nav];
+               }
+           }
         
         if ([temp containsString:@"?"]) {
             NSArray *tempArr = [temp componentsSeparatedByString:@"?"];
@@ -98,8 +94,6 @@ static SCURLSerialization *urlSerialization = nil;
                 }
             }
         }
-        
-      
         
         
         if ([cmd isEqualToString:@"M/1"] ||
@@ -132,32 +126,43 @@ static SCURLSerialization *urlSerialization = nil;
             }
         }
         
-        
+        if ([cmd isEqualToString:@"M/5"] || [cmd isEqualToString:@"M/6"] || [cmd isEqualToString:@"M/7"] || [cmd isEqualToString:@"M/8"]) {
+             UITabBarController *tabBar = [SCUtilities currentTabBarController];
+            if (!tabBar) {
+                
+                if ( [SCShoppingManager sharedInstance].delegate && [[SCShoppingManager sharedInstance].delegate respondsToSelector:@selector(scGetUserInfo:)]) {
+                    [[SCShoppingManager sharedInstance].delegate scGetUserInfo:^(BOOL success) {
+                        if (success) {
+                            [SCShoppingManager showMallPageFrom:nav pageType:0];
+                        }
+                    }];
+                }
+                nav = tabBar.viewControllers.firstObject;
+            }else{
+                nav = tabBar.tabBarController.selectedViewController;
+            }
+           
         if ([cmd isEqualToString:@"M/5"]) { //商铺详情
             NSString *num = paramDic[@"tenantNum"];//[paramArr.lastObject componentsSeparatedByString:@"="].lastObject;
             SCStoreHomeViewController *shop = [[SCStoreHomeViewController alloc]init];
             shop.tenantNum = num;
-             nav.hidesBottomBarWhenPushed = YES;
             [nav pushViewController:shop animated:YES];
         }else if ([cmd isEqualToString:@"M/6"]){  //配件
             if ([SCUtilities isValidDictionary:paramDic]) {
                 
                 SCLifeViewController *tag = [[SCLifeViewController alloc]init];
                 tag.paramDic = paramDic;
-                nav.hidesBottomBarWhenPushed = YES;
                 [nav pushViewController:tag animated:YES];
             }
             
         }else if ([cmd isEqualToString:@"M/7"]){  //购物车
             SCCartViewController *cat = [[SCCartViewController alloc]init];
-             nav.hidesBottomBarWhenPushed = YES;
             [nav pushViewController:cat animated:YES];
         }else if ([cmd isEqualToString:@"M/8"]){ //智慧门店  原生
             SCWitStoreViewController *wit = [[SCWitStoreViewController alloc]init];
-             nav.hidesBottomBarWhenPushed = YES;
             [nav pushViewController:wit animated:YES];
         }
-        
+      }
     }else if ([url hasPrefix:@"phonestore://"]){
         NSString *temp = [url substringFromIndex:13];
         if (![SCUtilities isValidString:temp]) {
@@ -195,7 +200,9 @@ static SCURLSerialization *urlSerialization = nil;
         
         [SCShoppingManager sharedInstance].delegate = delegate;
         
+        
         if ([SCUtilities isValidString:url] && nav) {
+            
             [self gotoController:url navigation:nav];
         }
     }

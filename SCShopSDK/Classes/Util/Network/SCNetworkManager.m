@@ -168,7 +168,7 @@ static AFHTTPSessionManager *_sessionManager;
     [_sessionManager.requestSerializer setValue:appPwd forHTTPHeaderField:@"appPwd"];
     
     //>>>>删
-    [_sessionManager.requestSerializer setValue:cmtokenid forHTTPHeaderField:@"Cookie"];
+//    [_sessionManager.requestSerializer setValue:cmtokenid forHTTPHeaderField:@"Cookie"];
     
     
     
