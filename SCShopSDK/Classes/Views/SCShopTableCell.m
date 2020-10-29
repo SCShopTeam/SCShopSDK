@@ -186,7 +186,7 @@
 //        CGFloat h = SCREEN_FIX(112);
         CGFloat wh = SCREEN_FIX(133.5);
         _icon = [[UIImageView alloc] initWithFrame:CGRectMake(SCREEN_FIX(10), (kCommonShopRowH-wh)/2, wh, wh)];
-        _icon.contentMode = UIViewContentModeScaleAspectFill;
+        _icon.contentMode = UIViewContentModeScaleAspectFit;
         _icon.layer.masksToBounds = YES;
         [self.contentView addSubview:_icon];
 

@@ -21,6 +21,7 @@
 #import "NSError+SCExtension.h"
 #import "NSObject+SCHUD.h"
 #import "UIControl+SCExtension.h"
+#import "NSDate+SCExtension.h"
 
 //View
 #import "SCTableView.h"

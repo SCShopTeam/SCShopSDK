@@ -14,6 +14,7 @@
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         _commodityImgV = [UIImageView new];
         [self addSubview:_commodityImgV];
+        _commodityImgV.contentMode = UIViewContentModeScaleAspectFit;
         [_commodityImgV mas_makeConstraints:^(MASConstraintMaker *make) {
                make.left.mas_equalTo(20);
                make.top.mas_equalTo(15);

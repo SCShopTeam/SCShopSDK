@@ -310,17 +310,17 @@
         ordOrderItemModel *model = _mdOrders[indexPath.section].ordOrderItemsAppVOList[indexPath.row];
         if ([SCUtilities isValidString:model.comGoodsPicturesUrl]) {
             [cell.commodityImgV sd_setImageWithURL:[NSURL URLWithString:model.comGoodsPicturesUrl] placeholderImage:[UIImage bundleImageNamed:@"home_witapollo_good_def"] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-                CGSize size;
-                if (image.size.width>image.size.height) {
-                    size = CGSizeMake(image.size.height, image.size.height);
-                }else if(image.size.width<image.size.height){
-                    size = CGSizeMake(image.size.width, image.size.width);
-                }else{
-                    size = image.size;
-                }
-                
-                UIImage *img = [image thumbWithSize:size];
-                cell.commodityImgV.image = img;
+//                CGSize size;
+//                if (image.size.width>image.size.height) {
+//                    size = CGSizeMake(image.size.height, image.size.height);
+//                }else if(image.size.width<image.size.height){
+//                    size = CGSizeMake(image.size.width, image.size.width);
+//                }else{
+//                    size = image.size;
+//                }
+//
+//                UIImage *img = [image thumbWithSize:size];
+//                cell.commodityImgV.image = img;
             }];
         }else{
             cell.commodityImgV.image = nil;//[UIImage bundleImageNamed:@"childCategory"];
@@ -343,8 +343,8 @@
         if ([SCUtilities isValidString:model.picUrl]) {
             [cell.commodityImgV sd_setImageWithURL:[NSURL URLWithString:model.picUrl] placeholderImage:/*[UIImage bundleImageNamed:@"childCategory"]*/nil completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
 
-                UIImage *img = [image thumbWithSize:CGSizeZero];
-                cell.commodityImgV.image = img;
+//                UIImage *img = [image thumbWithSize:CGSizeZero];
+//                cell.commodityImgV.image = img;
             }];
           }else{
               cell.commodityImgV.image = nil;//[UIImage bundleImageNamed:@"childCategory"];

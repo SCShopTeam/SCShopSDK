@@ -261,7 +261,7 @@
     if (!_icon) {
         CGFloat wh = self.width;
         _icon = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, wh, wh)];
-        _icon.contentMode = UIViewContentModeScaleAspectFill;
+        _icon.contentMode = UIViewContentModeScaleAspectFit;
         _icon.layer.masksToBounds = YES;
         [self addSubview:_icon];
     }

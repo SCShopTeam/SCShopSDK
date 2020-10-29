@@ -8,6 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSInteger, SCPopupType) {
+    SCPopupTypeSide,     //侧边栏弹窗
+    SCPopupTypeBottom,   //底部弹窗
+    SCPopupTypeCenter    //中心弹窗
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCHomeTouchModel : NSObject
@@ -63,8 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *isUseCdServer;
 @property (nonatomic, copy) NSString *advClickBodyFormat;
 @property (nonatomic, copy) NSString *isMc;
-
-//
 
 //父类属性
 @property (nonatomic, strong) NSDictionary *extraParam;

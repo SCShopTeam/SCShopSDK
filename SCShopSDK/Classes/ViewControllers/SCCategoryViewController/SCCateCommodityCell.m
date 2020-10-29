@@ -25,6 +25,7 @@
 
 -(void)createUI{
     _commodityImgV = [[UIImageView alloc]init];
+    _commodityImgV.contentMode = UIViewContentModeScaleAspectFit;
     [self addSubview:_commodityImgV];
     
     _markLab = [[UILabel alloc]init];
@@ -119,8 +120,8 @@
         __block typeof(_commodityImgV) wkImg = _commodityImgV;
         [_commodityImgV sd_setImageWithURL:[NSURL URLWithString:model.picUrl] placeholderImage:SCIMAGE(@"home_witapollo_good_def") completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
             
-            UIImage *img = [image thumbWithSize:CGSizeZero];
-            wkImg.image = img;
+//            UIImage *img = [image thumbWithSize:CGSizeZero];
+//            wkImg.image = img;
         }];
     }else{
         _commodityImgV.image = [UIImage bundleImageNamed:@"home_witapollo_good_def"];

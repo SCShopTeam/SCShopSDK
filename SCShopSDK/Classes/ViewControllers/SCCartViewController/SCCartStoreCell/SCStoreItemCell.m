@@ -204,7 +204,7 @@ static NSString *kReduce = @"-";
     if (!_icon) { //500 333
         CGFloat wh = SCREEN_FIX(73);
         _icon = [[UIImageView alloc] initWithFrame:CGRectMake(self.selectButton.right, (self.height-wh)/2, wh, wh)];
-        _icon.contentMode = UIViewContentModeScaleAspectFill;
+        _icon.contentMode = UIViewContentModeScaleAspectFit;
         _icon.layer.masksToBounds = YES;
         [self.contentView addSubview:_icon];
     }

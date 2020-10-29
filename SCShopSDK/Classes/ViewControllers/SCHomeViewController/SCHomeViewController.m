@@ -24,6 +24,7 @@
 #import "SCHomeEmptyView.h"
 #import "SCWitStoreViewController.h"
 //#import "SCStoreHomeViewController.h"
+#import "SCHomePopupView.h"
 
 typedef NS_ENUM(NSInteger, SCHomeSection) {
     SCHomeSectionBanner,      //轮播
@@ -47,6 +48,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 @property (nonatomic, strong) UIView *topView; //搜索框
 @property (nonatomic, strong) SCCollectionView *collectionView;
 @property (nonatomic, strong) SCHomeViewModel *viewModel;
+@property (nonatomic, strong) SCHomePopupView *sidePopupView;      //侧边弹窗
 
 @end
 
@@ -134,6 +136,8 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 //        }
         [self.collectionView reloadData];
         
+        [self showPopup];//展示弹窗
+        
     } failure:^(NSString * _Nullable errorMsg) {
     }];
 }
@@ -179,6 +183,50 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 //        [self.collectionView reloadDataShowFooter:cacheModel.hasMoreData];
         [self.collectionView reloadDataWithNoMoreData:!cacheModel.hasMoreData];
     }];
+    
+}
+
+
+#pragma mark -private
+- (void)showPopup
+{
+    //侧边弹窗
+    SCHomeTouchModel *sideModel = self.viewModel.popupDict[@(SCPopupTypeSide)];
+    if (sideModel) {
+        self.sidePopupView.model = sideModel;
+    }
+    
+    //底部弹窗
+    SCHomeTouchModel *bottomModel = self.viewModel.popupDict[@(SCPopupTypeBottom)];
+    if (bottomModel) {
+        SCHomePopupView *bottomPopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, SCREEN_FIX(200))];
+        bottomPopupView.bottom = self.collectionView.bottom;
+        [self.view addSubview:bottomPopupView];
+        
+        bottomPopupView.model = bottomModel;
+        @weakify(self)
+        bottomPopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
+          @strongify(self)
+            [self pushToWebView:model.linkUrl title:model.contentName];
+        };
+    }
+
+    
+    //中心弹窗
+    SCHomeTouchModel *centerModel = self.viewModel.popupDict[@(SCPopupTypeCenter)];
+    if (centerModel) {
+        SCHomePopupView *centerPopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(285), SCREEN_FIX(400))];
+        centerPopupView.center = self.collectionView.center;
+        [self.view addSubview:centerPopupView];
+        
+        centerPopupView.model = centerModel;
+        @weakify(self)
+        centerPopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
+            @strongify(self)
+            [self pushToWebView:model.linkUrl title:model.contentName];
+        };
+        
+    }
     
 }
 
@@ -597,6 +645,26 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     return _collectionView;
     
 }
+
+- (SCHomePopupView *)sidePopupView
+{
+    if (!_sidePopupView) {
+        CGFloat w = SCREEN_FIX(62.5);
+        _sidePopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(self.view.width-w, 0, w, SCREEN_FIX(78))];
+        _sidePopupView.centerY = self.collectionView.centerY;
+        _sidePopupView.moveAfterClicked = NO;
+        [self.view addSubview:_sidePopupView];
+        
+        @weakify(self)
+        _sidePopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
+            @strongify(self)
+            [self pushToWebView:model.linkUrl title:model.contentName];
+        };
+        
+    }
+    return _sidePopupView;
+}
+
 
 - (SCHomeViewModel *)viewModel
 {

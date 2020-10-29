@@ -39,8 +39,6 @@ DEF_SINGLETON(SCSearchHistoryUtil)
         NSString *sql = [NSString stringWithFormat:@"INSERT INTO %@ (%@,%@) VALUES (?,?)", kTableName, kRecordKey, kDateKey];
         [self.db executeUpdate:sql, record, [NSDate date]];
         
-        //检测数据数量
-        [self checkDataValid];
     }
 
 }
@@ -151,6 +149,10 @@ DEF_SINGLETON(SCSearchHistoryUtil)
 
 - (void)dealloc
 {
+    //检测数据数量
+    [self checkDataValid];
+    
+    
     [_db close];
 }
 

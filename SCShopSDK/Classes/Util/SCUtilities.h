@@ -24,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCUtilities : NSObject
 
+//判断是在shopping项目中开发调试，还是已经集成进SDK
++ (BOOL)isInShoppingDebug;
+
 //! 是否是有效的字典
 + (BOOL)isValidDictionary:(id)object;
 //! 是否是有效的数组
@@ -112,6 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 //拨打电话
 + (void)call:(NSString *)phoneNum;
+
 
 @end 
 

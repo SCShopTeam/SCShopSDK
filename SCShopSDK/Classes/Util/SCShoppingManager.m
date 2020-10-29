@@ -34,7 +34,12 @@
     if (self) {
         [self setupConfig];
         
-        [self testFakeData];
+        //>>>>删
+        if ([SCUtilities isInShoppingDebug]) {
+            [self testFakeData];
+        }
+        
+
     }
     return self;
 }
@@ -61,16 +66,14 @@
 //测试用假数据,模拟赋值
 - (void)testFakeData
 {
-    //>>>>删
-    
-//    //用户信息
-//    SCUserInfo *user = [SCUserInfo currentUser];
-//    user.isLogin = YES;
-//    user.phoneNumber = @"13401302424";
-//    user.isJSMobile = YES;
-//    user.uan = @"17";
-//    user.cmtokenid = @"9A970F2B54CF42F2948D6D581C4C1C52@js.ac.10086.cn";
-//    user.name = @"测试号";
+    //用户信息
+    SCUserInfo *user = [SCUserInfo currentUser];
+    user.isLogin = YES;
+    user.phoneNumber = @"13401302424";
+    user.isJSMobile = YES;
+    user.uan = @"17";
+    user.cmtokenid = @"9A970F2B54CF42F2948D6D581C4C1C52@js.ac.10086.cn";
+    user.name = @"测试号";
     //定位
 //    NSDictionary *locationInfo = @{@"cityCode": @"14",
 //                                   @"latitude": @32.05725221596182,
@@ -79,8 +82,8 @@
 //    self.locationInfo = locationInfo;
     
     //tab
-//    UITabBarController *tabVc = (UITabBarController *)[UIApplication sharedApplication].delegate.window.rootViewController;
-//    [SCUtilities registerTabBarController:tabVc];
+    UITabBarController *tabVc = (UITabBarController *)[UIApplication sharedApplication].delegate.window.rootViewController;
+    [SCUtilities registerTabBarController:tabVc];
     
 }
 

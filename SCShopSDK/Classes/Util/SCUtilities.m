@@ -29,6 +29,23 @@ DEF_SINGLETON(SCUtilities)
     return self;
 }
 
++ (BOOL)isInShoppingDebug
+{
+    NSDictionary *dict = [[NSBundle mainBundle] infoDictionary];
+    
+    if (!VALID_DICTIONARY(dict)) {
+        return NO;
+    }
+    
+    NSString *debugCode = dict[@"SCShoppingDebugCode"];
+    
+    if (!debugCode || ![debugCode isEqualToString:@"xinwang_shopping_debug"]) {
+        return NO;
+    }
+    
+    return YES;
+}
+
 + (BOOL)isValidDictionary:(id)object
 {
     return object && [object isKindOfClass:[NSDictionary class]] && ((NSDictionary *)object).count;

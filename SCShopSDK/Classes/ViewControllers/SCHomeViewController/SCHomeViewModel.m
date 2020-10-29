@@ -11,17 +11,19 @@
 #import "SCShoppingManager.h"
 #import "SCCacheManager.h"
 #import "SCLocationService.h"
+#import "SCPopupManager.h"
 
 @interface SCHomeViewModel ()
 @property (nonatomic, strong) NSArray <SCCategoryModel *> *categoryList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *bannerList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *touchList;
-@property (nonatomic, strong) NSArray <SCHomeTouchModel *> *adList;                //广告
-@property (nonatomic, strong) SCHomeStoreModel *recommendStoreModel;               //推荐门店
-@property (nonatomic, strong) NSArray <SCHomeStoreModel *> *goodStoreList;         //发现好店
+@property (nonatomic, strong) NSArray <SCHomeTouchModel *> *adList;                     //广告
+@property (nonatomic, strong) SCHomeStoreModel *recommendStoreModel;                    //推荐门店
+@property (nonatomic, strong) NSArray <SCHomeStoreModel *> *goodStoreList;              //发现好店
+@property (nonatomic, strong) NSDictionary <NSNumber *, SCHomeTouchModel *> *popupDict; //弹窗
 
 @property (nonatomic, assign) BOOL isStoreRequesting;
-//@property (nonatomic, weak) SCHomeCacheModel *currentCacheModel;                   //商品列表缓存
+//@property (nonatomic, weak) SCHomeCacheModel *currentCacheModel;                      //商品列表缓存
 @property (nonatomic, strong) NSMutableDictionary <NSNumber *, SCHomeCacheModel *> *commodityDict;
 
 @property (nonatomic, assign) BOOL isCategoryRequesting; //是否正在请求商品
@@ -153,11 +155,28 @@
 
 - (void)requestTouchData:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
-    //>>>>删
-//    NSDictionary *dict = @{@"SCDBBANNER_I":@{@"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/30725ab5dee54dc291439844f2e03641.png"},@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/77a9a0373014428e85bf6d30accabcf5.png"},@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/ca31256176734973b5915db2ce2bdd9a.jpg"}]}};
-//    [self parsingTouchData:dict];
-//    
-//    return;;
+        //>>>>删
+    if ([SCUtilities isInShoppingDebug]) {
+        NSDictionary *dict = @{@"SCDBBANNER_I":@{@"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/30725ab5dee54dc291439844f2e03641.png"},@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/77a9a0373014428e85bf6d30accabcf5.png"},@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/ca31256176734973b5915db2ce2bdd9a.jpg"}]
+                                                 
+        },
+                               @"SCSYCBLFC_I" : @{@"contactName" : @"商城首页侧边栏浮层",
+                                                  @"periodCount": @99,
+                                                  @"periodType":@"MONTH",
+                                                  @"cpmMax": @1,
+                                                  @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204"}]},
+                               @"SCSYZXDC_I" : @{@"contactName" : @"商城首页中心弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @1,
+                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204"}]},
+                               @"SCSYDBYXDC_I" : @{@"contactName" : @"商城首页底部异形弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @1,
+                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204"}]},
+        };
+        
+        [self parsingTouchData:dict];
+        success(nil);
+        
+        return;
+    }
+
     
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
 
@@ -221,7 +240,32 @@
         }
     }
     self.adList = tempAds.copy;
-
+    
+    
+    //弹窗
+    NSDictionary *popupDict = @{@"SCSYCBLFC_I": @(SCPopupTypeSide),
+                                @"SCSYZXDC_I": @(SCPopupTypeCenter),
+                                @"SCSYDBYXDC_I": @(SCPopupTypeBottom)};
+    
+    NSMutableDictionary *tempPopups = [NSMutableDictionary dictionary];
+    for (NSString *popupId in popupDict.allKeys) {
+        NSMutableArray *models = [SCHomeTouchModel createModelsWithDict:result[popupId]];
+        if (models.count > 0) {
+            SCHomeTouchModel *model = models.firstObject;
+            
+            NSNumber *popupNum = popupDict[popupId];
+            
+            BOOL show = [SCPopupManager validPopup:model type:popupNum.integerValue];
+            
+            if (show) {
+                tempPopups[popupNum] = model;
+            }
+            
+        }
+    }
+    
+    self.popupDict = tempPopups.copy;
+    
 }
 
 

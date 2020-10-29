@@ -50,7 +50,7 @@
 //        CGFloat h = w/720*494;
         CGFloat wh = SCREEN_FIX(90);
         _icon = [[UIImageView alloc] initWithFrame:CGRectMake(SCREEN_FIX(20), (self.height-wh)/2, wh, wh)];
-        _icon.contentMode = UIViewContentModeScaleAspectFill;
+        _icon.contentMode = UIViewContentModeScaleAspectFit;
         _icon.layer.masksToBounds = YES;
         [self.contentView addSubview:_icon];
     }

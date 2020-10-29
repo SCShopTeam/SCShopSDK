@@ -38,7 +38,7 @@ DEF_SINGLETON(SCNetworkTool)
                 self.isRelease = YES;
                 
             }else { //首次加载，默认情况下的环境
-                self.isRelease = kDefaultEnvironmentKey;
+                self.isRelease = (kDefaultEnvironmentKey == SCEnvitonmentKeyRelease);
             }
             
         }else { //无法切换，直接使用默认环境
