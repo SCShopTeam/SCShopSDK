@@ -28,6 +28,8 @@
 
 @property (nonatomic, assign) BOOL isCategoryRequesting; //是否正在请求商品
 
+@property (nonatomic, assign) BOOL hasShowedSidePopup; //是否已经展示过侧边弹窗
+
 @end
 
 @implementation SCHomeViewModel
@@ -164,11 +166,11 @@
                                                   @"periodCount": @99,
                                                   @"periodType":@"MONTH",
                                                   @"cpmMax": @1,
-                                                  @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204"}]},
+                                                  @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"DA2000021034"}]},
                                @"SCSYZXDC_I" : @{@"contactName" : @"商城首页中心弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @1,
-                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204"}]},
+                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"DA2000021034"}]},
                                @"SCSYDBYXDC_I" : @{@"contactName" : @"商城首页底部异形弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @1,
-                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204"}]},
+                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"DA2000021034"}]},
         };
         
         [self parsingTouchData:dict];
@@ -254,11 +256,17 @@
             SCHomeTouchModel *model = models.firstObject;
             
             NSNumber *popupNum = popupDict[popupId];
+            SCPopupType type = popupNum.integerValue;
             
-            BOOL show = [SCPopupManager validPopup:model type:popupNum.integerValue];
-            
-            if (show) {
+            if (type == SCPopupTypeSide && !self.hasShowedSidePopup) { //侧边弹窗没有限制，但本次打开app只显示一次。
+                self.hasShowedSidePopup = YES;
                 tempPopups[popupNum] = model;
+                
+            }else {
+                BOOL show = [SCPopupManager validPopup:model type:type]; //有周期内的次数限制
+                if (show) {
+                    tempPopups[popupNum] = model;
+                }
             }
             
         }

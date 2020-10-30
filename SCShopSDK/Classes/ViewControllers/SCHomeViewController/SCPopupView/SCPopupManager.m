@@ -10,7 +10,7 @@
 #import <FMDB/FMDB.h>
 
 static NSString *kTableName = @"popup_records";
-static NSString *kPopupType = @"popupType";
+static NSString *kPopupId   = @"popupId";
 static NSString *kDateKey   = @"date";
 static NSString *kIdKey     = @"id";
 
@@ -28,7 +28,7 @@ DEF_SINGLETON(SCPopupManager)
 {
     self = [super init];
     if (self) {
-        [self cleanData]; //清理一次数据
+//        [self cleanData]; //清理一次数据
     }
     return self;
 }
@@ -36,49 +36,25 @@ DEF_SINGLETON(SCPopupManager)
 
 + (BOOL)validPopup:(SCHomeTouchModel *)touchModel type:(SCPopupType)type
 {
-    BOOL show;
-    
-    if (!touchModel || !VALID_DICTIONARY(touchModel.extraParam)) {
-        show = YES;
-        
-    }else {
-        //要判断弹窗展示是否已经超过次数
-        show = [self canShowWithModel:touchModel popupType:type];
+    if (!touchModel || !touchModel.extraParam) {
+        return NO;
     }
-
-    if (show) {
-        [self saveShowRecord:type];
-    }
-    
-    return show;
-}
-
-+ (void)saveShowRecord:(SCPopupType)type
-{
-    NSString *sql = [NSString stringWithFormat:@"INSERT INTO %@ (%@,%@) VALUES (?,?)", kTableName, kPopupType, kDateKey];
-    
-    [[self sharedInstance].db executeUpdate:sql, @(type), [NSDate date]];
-    
-}
-
-+ (BOOL)canShowWithModel:(SCHomeTouchModel *)touchModel popupType:(SCPopupType)popupType
-{
     
     NSString *periodType  = touchModel.extraParam[@"periodType"];                             //周期类型 eg:MONTH
     NSInteger periodCount = [(touchModel.extraParam[@"periodCount"] ?: @0) integerValue];     //周期内最大次数
     NSInteger cpmMax      = [(touchModel.extraParam[@"cpmMax"] ?: @0) integerValue];          //每天显示最大次数
     
     if (!VALID_STRING(periodType)) {
-        [self saveShowRecord:popupType];
-        return YES;
+        return NO;
     }
     
     
     NSInteger monthCount = 0; //当月已显示次数
     NSInteger dayCount   = 0; //当天已显示次数
     
-    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?",kTableName, kPopupType];
-    FMResultSet *rs = [[self sharedInstance].db executeQuery:sql, @(popupType)];
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?",kTableName, kPopupId];
+    NSString *popupId = [self popupId:touchModel type:type];
+    FMResultSet *rs = [[self sharedInstance].db executeQuery:sql, popupId];
     
     while ([rs next]) {
         NSString *dateStr = [rs stringForColumn:kDateKey];
@@ -105,40 +81,26 @@ DEF_SINGLETON(SCPopupManager)
     }else {
         show = monthCount < periodCount && dayCount < cpmMax;
     }
+
+    if (show) {
+        [self saveShowRecord:touchModel popupId:popupId];
+    }
     
     return show;
 }
 
-- (NSInteger)totalCountInPeriod:(NSString *)period type:(SCPopupType)type
++ (void)saveShowRecord:(SCHomeTouchModel *)touchModel popupId:(NSString *)popupId
 {
-    //取数据
-    NSInteger count = 0;
+    NSString *sql = [NSString stringWithFormat:@"INSERT INTO %@ (%@,%@) VALUES (?,?)", kTableName, kPopupId, kDateKey];
     
-    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?",kTableName, kPopupType];
-    FMResultSet *rs = [self.db executeQuery:sql, @(type)];
+    [[self sharedInstance].db executeUpdate:sql, popupId, [NSDate date]];
     
-    while ([rs next]) {
-        NSString *dateStr = [rs stringForColumn:kDateKey]; //1603698436.76431
-        NSDate *date = [NSDate dateWithTimeIntervalSince1970:dateStr.integerValue];
-        
-        if ([period isEqualToString:@"MONTH"]) {
-            NSInteger months = [date monthsBetweenDate:[NSDate date]];
-            if (months <= 0) {
-                count++;
-            }
-            
-            
-        }else if ([period isEqualToString:@"DAY"]) {
-            BOOL isToday = [date isToday];
-            if (isToday) {
-                count++;
-            }
-            
-        }
+}
 
-    }
-    
-    return count;
++ (NSString *)popupId:(SCHomeTouchModel *)touchModel type:(SCPopupType)type
+{
+    NSString *popupId = [NSString stringWithFormat:@"%@_%li",touchModel.contentNum,type];
+    return popupId;
 }
 
 
@@ -154,7 +116,7 @@ DEF_SINGLETON(SCPopupManager)
         NSDate *date = [NSDate dateWithTimeIntervalSince1970:dateStr.integerValue];
         NSInteger months = [date monthsBetweenDate:[NSDate date]];
         
-        if (months >= 2) { //将连个月之前的数据清除，防止数据库膨胀
+        if (months >= 2) { //将两个月之前的数据清除，防止数据库膨胀
             NSNumber *nId = @([rs intForColumn:kIdKey]);
             [deleteList addObject:nId];
         }
@@ -200,7 +162,7 @@ DEF_SINGLETON(SCPopupManager)
             DDLOG(@"fail to open database:SCPopupHistory.sqlite");
         }
         
-        NSString *createTableSqlString = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (%@ integer PRIMARY KEY AUTOINCREMENT, %@ integer, %@ text NOT NULL)", kTableName, kIdKey,  kPopupType, kDateKey];
+        NSString *createTableSqlString = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (%@ integer PRIMARY KEY AUTOINCREMENT, %@ text, %@ text NOT NULL)", kTableName, kIdKey,  kPopupId, kDateKey];
         
         [_db executeUpdate:createTableSqlString];
         
