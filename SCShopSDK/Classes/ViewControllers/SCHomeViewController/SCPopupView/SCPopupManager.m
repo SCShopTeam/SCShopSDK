@@ -19,6 +19,10 @@ static NSString *kIdKey     = @"id";
 AS_SINGLETON(SCPopupManager)
 @property (nonatomic, strong) FMDatabase *db;
 
+@property (nonatomic, assign) BOOL hasShowedSidePopup;
+@property (nonatomic, assign) BOOL hasShowedCenterPopup;
+@property (nonatomic, assign) BOOL hasShowedBottomPopup;
+
 @end
 
 @implementation SCPopupManager
@@ -36,6 +40,48 @@ DEF_SINGLETON(SCPopupManager)
 
 + (BOOL)validPopup:(SCHomeTouchModel *)touchModel type:(SCPopupType)type
 {
+    SCPopupManager *m = [SCPopupManager sharedInstance];
+    //一个弹窗无论限制多少次数，启动一次app只打开一次
+    if (type == SCPopupTypeSide) {
+        if (m.hasShowedSidePopup) {
+            return NO;
+            
+        }else { //侧边弹窗没有次数限制，直接展示
+            m.hasShowedSidePopup = YES;
+            return YES;
+        }
+        
+    }else if (type == SCPopupTypeBottom) {
+        if (m.hasShowedBottomPopup) {
+            return NO;
+        }
+        
+    }else if (type == SCPopupTypeCenter) {
+        if (m.hasShowedCenterPopup) {
+            return NO;
+        }
+    }
+    
+    //底部和中心弹窗如果本次启动app没有展示过的话，则去数据库中查找当天和周期内打开次数是否已经到了限制
+    NSString *popupId = [self popupId:touchModel type:type];
+    BOOL show = [m executeQuery:touchModel popupId:popupId];
+    
+    if (show) {
+        [self saveShowRecord:touchModel popupId:popupId];
+        
+        if (type == SCPopupTypeBottom) {
+            m.hasShowedBottomPopup = YES;
+            
+        }else if (type == SCPopupTypeCenter) {
+            m.hasShowedCenterPopup = YES;
+        }
+    }
+    
+    return show;
+}
+
+- (BOOL)executeQuery:(SCHomeTouchModel *)touchModel popupId:(NSString *)popupId
+{
     if (!touchModel || !touchModel.extraParam) {
         return NO;
     }
@@ -47,14 +93,13 @@ DEF_SINGLETON(SCPopupManager)
     if (!VALID_STRING(periodType)) {
         return NO;
     }
-    
-    
+
     NSInteger monthCount = 0; //当月已显示次数
     NSInteger dayCount   = 0; //当天已显示次数
     
     NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?",kTableName, kPopupId];
-    NSString *popupId = [self popupId:touchModel type:type];
-    FMResultSet *rs = [[self sharedInstance].db executeQuery:sql, popupId];
+    
+    FMResultSet *rs = [self.db executeQuery:sql, popupId];
     
     while ([rs next]) {
         NSString *dateStr = [rs stringForColumn:kDateKey];
@@ -80,10 +125,6 @@ DEF_SINGLETON(SCPopupManager)
         
     }else {
         show = monthCount < periodCount && dayCount < cpmMax;
-    }
-
-    if (show) {
-        [self saveShowRecord:touchModel popupId:popupId];
     }
     
     return show;

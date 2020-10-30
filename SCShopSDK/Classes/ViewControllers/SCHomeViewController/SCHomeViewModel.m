@@ -28,8 +28,6 @@
 
 @property (nonatomic, assign) BOOL isCategoryRequesting; //是否正在请求商品
 
-@property (nonatomic, assign) BOOL hasShowedSidePopup; //是否已经展示过侧边弹窗
-
 @end
 
 @implementation SCHomeViewModel
@@ -256,17 +254,10 @@
             SCHomeTouchModel *model = models.firstObject;
             
             NSNumber *popupNum = popupDict[popupId];
-            SCPopupType type = popupNum.integerValue;
+            BOOL show = [SCPopupManager validPopup:model type:popupNum.integerValue];
             
-            if (type == SCPopupTypeSide && !self.hasShowedSidePopup) { //侧边弹窗没有限制，但本次打开app只显示一次。
-                self.hasShowedSidePopup = YES;
+            if (show) {
                 tempPopups[popupNum] = model;
-                
-            }else {
-                BOOL show = [SCPopupManager validPopup:model type:type]; //有周期内的次数限制
-                if (show) {
-                    tempPopups[popupNum] = model;
-                }
             }
             
         }
