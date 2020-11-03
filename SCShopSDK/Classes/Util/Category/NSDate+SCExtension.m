@@ -51,4 +51,39 @@
     return ([components1 year] == [components2 year] && [components1 month] == [components2 month] && [components1 day] == [components2 day]);
 }
 
+
+//是否是同一周
+- (BOOL)isSameWeek:(NSDate *)anotherDate
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    calendar.firstWeekday = 1; //一周开始默认为星期天 不设置会默认为星期天
+    unsigned unitFlag = NSCalendarUnitYear | NSCalendarUnitWeekOfYear;
+    NSDateComponents *comp1 = [calendar components:unitFlag fromDate:anotherDate];
+    NSDateComponents *comp2 = [calendar components:unitFlag fromDate:self];
+    return (([comp1 year] == [comp2 year]) && ([comp1 weekOfYear] == [comp2 weekOfYear]));
+}
+
+//是否是本周
+- (BOOL)isCurrentWeek
+{
+    return [self isSameWeek:[NSDate date]];
+}
+
+
+//是否是同一年
+- (BOOL)isSameYear:(NSDate *)anotherDate
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    unsigned unitFlag = NSCalendarUnitYear;
+    NSDateComponents *comp1 = [calendar components:unitFlag fromDate:anotherDate];
+    NSDateComponents *comp2 = [calendar components:unitFlag fromDate:self];
+    return ([comp1 year] == [comp2 year]);
+}
+
+//是否是今年
+- (BOOL)isCurrentYear
+{
+    return [self isSameWeek:[NSDate date]];
+}
+
 @end

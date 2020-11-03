@@ -27,6 +27,18 @@ NS_ASSUME_NONNULL_BEGIN
 //是否是今天
 - (BOOL)isToday;
 
+//是否是同一周
+- (BOOL)isSameWeek:(NSDate *)anotherDate;
+
+//是否是本周
+- (BOOL)isCurrentWeek;
+
+//是否是同一年
+- (BOOL)isSameYear:(NSDate *)anotherDate;
+
+//是否是今年
+- (BOOL)isCurrentYear;
+
 @end
 
 NS_ASSUME_NONNULL_END

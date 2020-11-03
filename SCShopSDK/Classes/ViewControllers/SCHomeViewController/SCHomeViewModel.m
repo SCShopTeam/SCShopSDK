@@ -28,6 +28,8 @@
 
 @property (nonatomic, assign) BOOL isCategoryRequesting; //是否正在请求商品
 
+@property (nonatomic, assign) BOOL hasShowedTouch; //是否已经成功展示过触点
+
 @end
 
 @implementation SCHomeViewModel
@@ -155,6 +157,10 @@
 
 - (void)requestTouchData:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
+    if (self.hasShowedTouch) { //本次启动商城展示过触点后，不再请求触点数据
+        return;
+    }
+    
         //>>>>删
     if ([SCUtilities isInShoppingDebug]) {
         NSDictionary *dict = @{@"SCDBBANNER_I":@{@"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/30725ab5dee54dc291439844f2e03641.png"},@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/77a9a0373014428e85bf6d30accabcf5.png"},@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/ca31256176734973b5915db2ce2bdd9a.jpg"}]
@@ -163,15 +169,16 @@
                                @"SCSYCBLFC_I" : @{@"contactName" : @"商城首页侧边栏浮层",
                                                   @"periodCount": @99,
                                                   @"periodType":@"MONTH",
-                                                  @"cpmMax": @1,
-                                                  @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"DA2000021034"}]},
-                               @"SCSYZXDC_I" : @{@"contactName" : @"商城首页中心弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @1,
-                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"DA2000021034"}]},
-                               @"SCSYDBYXDC_I" : @{@"contactName" : @"商城首页底部异形弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @1,
-                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"DA2000021034"}]},
+                                                  @"cpmMax": @3,
+                                                  @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"nlass,d"}]},
+                               @"SCSYZXDC_I" : @{@"contactName" : @"商城首页中心弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @4,
+                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"sdfsdfsddddxcewefcc"}]},
+                               @"SCSYDBYXDC_I" : @{@"contactName" : @"商城首页底部异形弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @4,
+                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"dfgdcsdddddfssfsdfwef"}]},
         };
         
         [self parsingTouchData:dict];
+        self.hasShowedTouch = YES;
         success(nil);
         
         return;
@@ -195,6 +202,7 @@
 
         }else {
             [self parsingTouchData:touchData];
+            self.hasShowedTouch = YES;
             if (success) {
                 success(nil);
             }

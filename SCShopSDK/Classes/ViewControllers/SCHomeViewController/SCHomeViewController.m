@@ -48,7 +48,6 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 @property (nonatomic, strong) UIView *topView; //搜索框
 @property (nonatomic, strong) SCCollectionView *collectionView;
 @property (nonatomic, strong) SCHomeViewModel *viewModel;
-@property (nonatomic, strong) SCHomePopupView *sidePopupView;      //侧边弹窗
 
 @end
 
@@ -128,12 +127,9 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 //请求触点
 - (void)requestTouchData
 {
+    
     [self.viewModel requestTouchData:^(id  _Nullable responseObject) {
-//        if (!self.viewModel.isCategoryRequesting) {//分类商品接口请求完会刷新整个collectionview
-//            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionBanner]];
-//            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionGrid]];
-//            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:SCHomeSectionAd]];
-//        }
+        //这里不一定会回调，打开一次商城，除非请求失败，否则只会请求一次触点
         [self.collectionView reloadData];
         
         [self showPopup];//展示弹窗
@@ -193,7 +189,18 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     //侧边弹窗
     SCHomeTouchModel *sideModel = self.viewModel.popupDict[@(SCPopupTypeSide)];
     if (sideModel) {
-        self.sidePopupView.model = sideModel;
+        CGFloat w = SCREEN_FIX(62.5);
+        SCHomePopupView *sidePopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(self.view.width-w, 0, w, SCREEN_FIX(78))];
+        sidePopupView.centerY = self.collectionView.centerY;
+        sidePopupView.moveAfterClicked = NO;
+        [self.view addSubview:sidePopupView];
+        
+        sidePopupView.model = sideModel;
+        @weakify(self)
+        sidePopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
+          @strongify(self)
+            [self pushToWebView:model.linkUrl title:model.contentName];
+        };
     }
     
     //底部弹窗
@@ -645,26 +652,6 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     return _collectionView;
     
 }
-
-- (SCHomePopupView *)sidePopupView
-{
-    if (!_sidePopupView) {
-        CGFloat w = SCREEN_FIX(62.5);
-        _sidePopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(self.view.width-w, 0, w, SCREEN_FIX(78))];
-        _sidePopupView.centerY = self.collectionView.centerY;
-        _sidePopupView.moveAfterClicked = NO;
-        [self.view addSubview:_sidePopupView];
-        
-        @weakify(self)
-        _sidePopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
-            @strongify(self)
-            [self pushToWebView:model.linkUrl title:model.contentName];
-        };
-        
-    }
-    return _sidePopupView;
-}
-
 
 - (SCHomeViewModel *)viewModel
 {
