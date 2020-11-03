@@ -35,7 +35,7 @@ DEF_SINGLETON(SCPopupManager)
     SCPopupManager *m = [SCPopupManager sharedInstance];
     
     //查找该广告有没有展示过
-    BOOL hasShowed = [m hasShowed:touchModel];
+    BOOL hasShowed = [m hasShowed:touchModel type:type];
     //展示过则不再展示
     if (hasShowed) {
         return NO;
@@ -55,11 +55,11 @@ DEF_SINGLETON(SCPopupManager)
     return show;
 }
 
-- (BOOL)hasShowed:(SCHomeTouchModel *)touchModel
+- (BOOL)hasShowed:(SCHomeTouchModel *)touchModel type:(SCPopupType)type
 {
-    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?",kTableName, kAdId];
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ? AND %@ = ?",kTableName, kAdId, kPopupType];
     
-    FMResultSet *rs = [self.db executeQuery:sql, touchModel.contentNum];
+    FMResultSet *rs = [self.db executeQuery:sql, touchModel.contentNum, @(type)];
     
     BOOL hasShowed = NO;
     while ([rs next]) {
