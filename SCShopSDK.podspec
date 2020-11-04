@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
     s.name             = 'SCShopSDK'
-    s.version          = '1.7.6'
+    s.version          = '1.7.7'
     s.summary          = 'shopping'
     
     # This description is used to generate tags and improve search results.
@@ -56,7 +56,7 @@ Pod::Spec.new do |s|
     s.dependency 'FMDB', '~> 2.7.2'
     s.dependency 'YYModel', '~> 1.0.4'
     s.dependency 'SDWebImage', '~> 5.8.1'
-    s.dependency 'SDCycleScrollView', '~> 1.80'
+    s.dependency 'SDCycleScrollView', '~> 1.82'
     s.dependency 'MJRefresh', '~> 3.4.3'
     s.dependency 'Masonry', '~> 1.1.0'
     s.dependency 'WebViewJavascriptBridge', '~> 6.0.3'
