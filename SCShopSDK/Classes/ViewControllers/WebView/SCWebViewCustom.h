@@ -54,7 +54,7 @@
 //分享控制器
 //@property (nonatomic, strong) ShareViewController *zzdShareViewC;
 // 默认不设置 为NO 设置为YES使用uiwebview
-@property (nonatomic, assign)BOOL buseUIWebview;
+@property (nonatomic, assign)BOOL buseWebviewUI;
 
 @property BOOL shakeDoLottery;
 // 当前页面地址

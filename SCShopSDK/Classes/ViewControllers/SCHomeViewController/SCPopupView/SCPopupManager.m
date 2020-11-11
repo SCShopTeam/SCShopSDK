@@ -9,11 +9,16 @@
 #import "SCPopupManager.h"
 #import <FMDB/FMDB.h>
 
-static NSString *kTableName = @"popup_records";
-static NSString *kId        = @"id";
-static NSString *kAdId      = @"adId";
-static NSString *kPopupType = @"popupType";
-static NSString *kDateKey   = @"date";
+//总表
+static NSString *kTableName  = @"popup_records";
+static NSString *kId         = @"id";
+static NSString *kAdId       = @"adId";
+static NSString *kPopupType  = @"popupType";
+static NSString *kDateKey    = @"date";
+static NSString *kPeriodType = @"periodType";
+
+//只储存id且永不删除
+static NSString *kIdsTable   = @"popup_ids";
 
 @interface SCPopupManager ()
 AS_SINGLETON(SCPopupManager)
@@ -55,12 +60,13 @@ DEF_SINGLETON(SCPopupManager)
     return show;
 }
 
+
 - (BOOL)hasShowed:(SCHomeTouchModel *)touchModel type:(SCPopupType)type
 {
-    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ? AND %@ = ?",kTableName, kAdId, kPopupType];
-    
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ? AND %@ = ?",kIdsTable, kAdId, kPopupType];
+
     FMResultSet *rs = [self.db executeQuery:sql, touchModel.contentNum, @(type)];
-    
+
     BOOL hasShowed = NO;
     while ([rs next]) {
         hasShowed = YES;
@@ -81,6 +87,11 @@ DEF_SINGLETON(SCPopupManager)
     
     if (!VALID_STRING(periodType)) {
         return NO;
+    }
+    
+    //检测周期有没有更改,周期更改数据需要清理
+    if ([self checkPeriodType:periodType popupType:type]) {
+        [self cleanData:type periodType:nil];
     }
 
     NSInteger periodShowCount = 0;   //周期内已显示次数
@@ -109,6 +120,27 @@ DEF_SINGLETON(SCPopupManager)
     return show;
 }
 
+//检测周期有没有更改,周期更改数据需要清理
+- (BOOL)checkPeriodType:(NSString *)periodType popupType:(SCPopupType)type
+{
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ? ORDER BY %@ DESC LIMIT 0,1",kTableName, kPopupType, kDateKey];
+        
+    FMResultSet *rs = [self.db executeQuery:sql,@(type)];
+    
+    
+    NSString *lastPeriod;
+    while ([rs next]) {
+        lastPeriod = [rs stringForColumn:kPeriodType];
+    }
+    
+    if (lastPeriod) {
+        return ![lastPeriod isEqualToString:periodType];
+    }else {
+        return NO;
+    }
+}
+
+
 - (BOOL)dateHasShowed:(NSDate *)date inPeriod:(NSString *)periodType
 {
     if ([periodType isEqualToString:@"MONTH"]) { //月
@@ -135,15 +167,22 @@ DEF_SINGLETON(SCPopupManager)
     return NO;
 }
 
-- (void)saveShowRecord:(SCHomeTouchModel *)touchModel  type:(SCPopupType)type
+- (void)saveShowRecord:(SCHomeTouchModel *)touchModel type:(SCPopupType)type
 {
-    NSString *sql = [NSString stringWithFormat:@"INSERT INTO %@ (%@,%@,%@) VALUES (?,?,?)", kTableName, kAdId, kPopupType, kDateKey];
+    NSString *periodType = touchModel.extraParam[@"periodType"];
     
-    [self.db executeUpdate:sql, touchModel.contentNum, @(type), [NSDate date]];
+    NSString *sql = [NSString stringWithFormat:@"INSERT INTO %@ (%@,%@,%@,%@) VALUES (?,?,?,?)", kTableName, kAdId, kPopupType, kDateKey, kPeriodType];
+    
+    [self.db executeUpdate:sql, touchModel.contentNum, @(type), [NSDate date], periodType];
+    
+    
+    NSString *idsSql = [NSString stringWithFormat:@"INSERT INTO %@ (%@,%@) VALUES (?,?)", kIdsTable, kAdId, kPopupType];
+    
+    [self.db executeUpdate:idsSql, touchModel.contentNum, @(type)];
     
 }
 
-- (void)cleanData:(SCPopupType)popupType periodType:(NSString *)periodType
+- (void)cleanData:(SCPopupType)popupType periodType:(nullable NSString *)periodType
 {
     NSString *sql = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?",kTableName, kPopupType];
     FMResultSet *rs = [self.db executeQuery:sql,@(popupType)];
@@ -151,12 +190,19 @@ DEF_SINGLETON(SCPopupManager)
     NSMutableArray *deleteList = [NSMutableArray array];
     
     while ([rs next]) {
-        NSString *dateStr = [rs stringForColumn:kDateKey];
-        NSDate *date = [NSDate dateWithTimeIntervalSince1970:dateStr.integerValue];
+        NSNumber *nId = @([rs intForColumn:kId]);
         
-        if (![self dateHasShowed:date inPeriod:periodType]) {
-            NSNumber *nId = @([rs intForColumn:kId]);
+        if (!periodType) {
             [deleteList addObject:nId];
+            
+        }else {
+            NSString *dateStr = [rs stringForColumn:kDateKey];
+            NSDate *date = [NSDate dateWithTimeIntervalSince1970:dateStr.integerValue];
+            
+            if (![self dateHasShowed:date inPeriod:periodType]) {
+                
+                [deleteList addObject:nId];
+            }
         }
 
     }
@@ -196,14 +242,14 @@ DEF_SINGLETON(SCPopupManager)
         _db = [FMDatabase databaseWithPath:path];
         // 2.打开数据库
         if ([_db open]) {
-            //        DDLOG(@"Open database Success");
-        } else {
-            DDLOG(@"fail to open database:SCPopupRecords.sqlite");
+            NSString *createTableSqlString = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (%@ integer PRIMARY KEY AUTOINCREMENT, %@ text, %@ integer, %@ text, %@ text)", kTableName, kId, kAdId, kPopupType, kDateKey, kPeriodType];
+            
+            [_db executeUpdate:createTableSqlString];
+            
+            NSString *createIdsSqlString = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (%@ text, %@ integer)", kIdsTable, kAdId, kPopupType];
+            [_db executeUpdate:createIdsSqlString];
         }
-        
-        NSString *createTableSqlString = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (%@ integer PRIMARY KEY AUTOINCREMENT, %@ text, %@ integer, %@ text)", kTableName, kId, kAdId, kPopupType, kDateKey];
-        
-        [_db executeUpdate:createTableSqlString];
+
         
     }
     return _db;
