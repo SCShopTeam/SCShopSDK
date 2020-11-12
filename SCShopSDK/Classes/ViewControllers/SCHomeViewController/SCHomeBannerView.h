@@ -22,6 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 //点击事件
 @property (nonatomic, copy) void (^selectBlock)(NSInteger index, SCHomeTouchModel *model);
 
+//展示
+@property (nonatomic, copy) void (^showblock)(NSInteger index, SCHomeTouchModel *model);
+
 
 @end
 

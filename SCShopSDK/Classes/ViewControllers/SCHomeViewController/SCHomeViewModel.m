@@ -258,17 +258,17 @@
     NSMutableDictionary *tempPopups = [NSMutableDictionary dictionary];
     for (NSString *popupId in popupDict.allKeys) {
         NSMutableArray *models = [SCHomeTouchModel createModelsWithDict:result[popupId]];
-        if (models.count > 0) {
-            SCHomeTouchModel *model = models.firstObject;
-            
+        
+        for (SCHomeTouchModel *model in models) {
             NSNumber *popupNum = popupDict[popupId];
             BOOL show = [SCPopupManager validPopup:model type:popupNum.integerValue];
-            
             if (show) {
                 tempPopups[popupNum] = model;
+                break;
             }
             
         }
+        
     }
     
     self.popupDict = tempPopups.copy;
@@ -345,6 +345,29 @@
         _commodityDict = [NSMutableDictionary dictionary];
     }
     return _commodityDict;
+}
+
+
+//触点展示
+- (void)touchShow:(SCHomeTouchModel *)model
+{
+    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
+    
+    if ([manager.delegate respondsToSelector:@selector(scADTouchShow:)]) {
+        NSDictionary *dict = [model getParams];
+        [manager.delegate scADTouchShow:dict];
+    }
+}
+
+//触点点击
+- (void)touchClick:(SCHomeTouchModel *)model
+{
+    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
+    
+    if ([manager.delegate respondsToSelector:@selector(scADTouchClick:back:)]) {
+        NSDictionary *dict = [model getParams];
+        [manager.delegate scADTouchClick:dict back:^{}];
+    }
 }
 
 @end

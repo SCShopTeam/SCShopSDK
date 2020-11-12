@@ -41,6 +41,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clear;
 
+
+//触点展示
+- (void)touchShow:(SCHomeTouchModel *)model;
+//触点点击
+- (void)touchClick:(SCHomeTouchModel *)model;
+
 @end
 
 

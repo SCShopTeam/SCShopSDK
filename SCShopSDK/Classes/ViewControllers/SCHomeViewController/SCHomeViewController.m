@@ -189,6 +189,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     //侧边弹窗
     SCHomeTouchModel *sideModel = self.viewModel.popupDict[@(SCPopupTypeSide)];
     if (sideModel) {
+        [self.viewModel touchShow:sideModel];
         CGFloat w = SCREEN_FIX(62.5);
         SCHomePopupView *sidePopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(self.view.width-w, 0, w, SCREEN_FIX(78))];
         sidePopupView.centerY = self.collectionView.centerY;
@@ -200,12 +201,14 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         sidePopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
           @strongify(self)
             [self pushToWebView:model.linkUrl title:model.contentName];
+            [self.viewModel touchClick:model];
         };
     }
     
     //底部弹窗
     SCHomeTouchModel *bottomModel = self.viewModel.popupDict[@(SCPopupTypeBottom)];
     if (bottomModel) {
+        [self.viewModel touchShow:bottomModel];
         SCHomePopupView *bottomPopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, SCREEN_FIX(200))];
         bottomPopupView.bottom = self.collectionView.bottom;
         [self.view addSubview:bottomPopupView];
@@ -215,6 +218,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         bottomPopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
           @strongify(self)
             [self pushToWebView:model.linkUrl title:model.contentName];
+            [self.viewModel touchClick:model];
         };
     }
 
@@ -222,6 +226,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     //中心弹窗
     SCHomeTouchModel *centerModel = self.viewModel.popupDict[@(SCPopupTypeCenter)];
     if (centerModel) {
+        [self.viewModel touchShow:centerModel];
         SCHomePopupView *centerPopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(285), SCREEN_FIX(400))];
         centerPopupView.center = self.collectionView.center;
         [self.view addSubview:centerPopupView];
@@ -231,6 +236,7 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         centerPopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
             @strongify(self)
             [self pushToWebView:model.linkUrl title:model.contentName];
+            [self.viewModel touchClick:model];
         };
         
     }
@@ -284,10 +290,16 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         SCHomeBannerView *bannerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeBannerView.class) forIndexPath:indexPath];
         bannerView.bannerList = self.viewModel.bannerList;
         @weakify(self)
+        bannerView.showblock = ^(NSInteger index, SCHomeTouchModel * _Nonnull model) {
+            @strongify(self)
+            [self.viewModel touchShow:model];
+        };
+        
         bannerView.selectBlock = ^(NSInteger index, SCHomeTouchModel * _Nonnull model) {
             @strongify(self)
-            [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_A0%li",index+3) url:model.linkUrl inPage:NSStringFromClass(self.class)];
             [self pushToWebView:model.linkUrl title:model.contentName];
+            [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_A0%li",index+3) url:model.linkUrl inPage:NSStringFromClass(self.class)];
+            [self.viewModel touchClick:model];
         };
         return bannerView;
     }
@@ -295,7 +307,9 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     if (section == SCHomeSectionGrid) { //grid
         SCHomeGridView *gridView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeGridView.class) forIndexPath:indexPath];
         gridView.touchList = self.viewModel.touchList;
-        
+        if (gridView.touchList.count > 0) {
+            [self.viewModel touchShow:gridView.touchList.firstObject];
+        }
         @weakify(self)
         gridView.selectBlock = ^(NSInteger index) {
             @strongify(self)
@@ -357,11 +371,15 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
     if (section == SCHomeSectionAd) { //ad
         SCHomeAdView *adView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCHomeAdView.class) forIndexPath:indexPath];
         adView.adList = self.viewModel.adList;
+        if (adView.adList.count>0) {
+            [self.viewModel touchShow:adView.adList.firstObject];
+        }
         @weakify(self)
         adView.selectBlock = ^(NSInteger index, SCHomeTouchModel * _Nonnull touchModel) {
             @strongify(self)
-            [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_D0%li",index+1) url:touchModel.linkUrl inPage:NSStringFromClass(self.class)];
             [self pushToWebView:touchModel.linkUrl title:touchModel.contentName];
+            [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_D0%li",index+1) url:touchModel.linkUrl inPage:NSStringFromClass(self.class)];
+            [self.viewModel touchClick:touchModel];
         };
         return adView;
     }
@@ -485,14 +503,8 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
         [self pushToWebView:model.linkUrl title:model.contentName];
     }
     
-    
-    
-    //回调
-    if ([manager.delegate respondsToSelector:@selector(scADTouchClick:back:)]) {
-        NSDictionary *dict = [model getParams];
-        [manager.delegate scADTouchClick:dict back:^{}];
-        
-    }
+    //触点回调
+    [self.viewModel touchClick:model];
     
 }
 

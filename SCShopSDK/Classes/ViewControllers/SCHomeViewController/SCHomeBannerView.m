@@ -81,6 +81,7 @@
 
     SCHomeTouchModel *model = self.bannerList[index];
 
+    //变色
     NSString *colorKey = [NSString stringWithFormat:@"%li",index];
     UIColor *color = self.colorDict[colorKey];
 
@@ -95,6 +96,11 @@
         self.gradientLayer.colors = @[(__bridge id)imgColor.CGColor,(__bridge id)[UIColor whiteColor].CGColor];
         self.colorDict[colorKey] = imgColor;
     }];
+    
+    //触点展示
+    if (_showblock) {
+        _showblock(index,model);
+    }
     
     
 }

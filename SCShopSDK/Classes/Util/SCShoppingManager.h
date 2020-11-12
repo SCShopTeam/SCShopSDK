@@ -79,7 +79,8 @@ typedef void(^SC_WebBlock)(void);
 -(void)scADTouchDataWithTouchPageNum:(NSString *)pageNum backData:(SC_ADTouchDataBlock)callBack;
 //处理触点点击
 -(void)scADTouchClick:(NSDictionary *)dic back:(SC_ADTouchClickBlock)callback;
-
+//触点曝光处理
+-(void)scADTouchShow:(NSDictionary *)dic;
 //搜索
 - (void)scSearch:(NSString *)text backData:(SC_SearchBlock)callBack;
 
