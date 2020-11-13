@@ -241,8 +241,8 @@
         defaultBtn.selected = isDefault;
 
     }
-    [defaultBtn setImage:[UIImage bundleImageNamed:@"home_login_uncheck"] forState:UIControlStateNormal];
-    [defaultBtn setImage:[UIImage bundleImageNamed:@"home_login_check"] forState:UIControlStateSelected];
+    [defaultBtn setImage:[UIImage sc_imageNamed:@"home_login_uncheck"] forState:UIControlStateNormal];
+    [defaultBtn setImage:[UIImage sc_imageNamed:@"home_login_check"] forState:UIControlStateSelected];
     [defaultBtn addTarget:self action:@selector(choseDefault:) forControlEvents:UIControlEventTouchUpInside];
     
     UILabel *lab = [[UILabel alloc]initWithFrame:CGRectMake(SCREEN_WIDTH-100, 18, 80, 13)];

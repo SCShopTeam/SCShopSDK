@@ -50,7 +50,7 @@
     }];
     
     UIImageView *titleImg = [[UIImageView alloc]init];
-    titleImg.image = [UIImage bundleImageNamed:@"sc_login_alert_img"];
+    titleImg.image = [UIImage sc_imageNamed:@"sc_login_alert_img"];
     [bgView addSubview:titleImg];
     [titleImg mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(bgView.mas_centerX);

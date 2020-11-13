@@ -24,7 +24,7 @@
             make.height.mas_equalTo(16);
             make.centerY.mas_equalTo(self);
         }];
-        imgV.image = [UIImage bundleImageNamed:@"sc_head_store_icon"];
+        imgV.image = [UIImage sc_imageNamed:@"sc_head_store_icon"];
         _nameLab = [[UILabel alloc]init];//WithFrame:CGRectMake(45, 10, frame.size.width-80, 25)];
         [self addSubview:_nameLab];
         _nameLab.font = [UIFont systemFontOfSize:15];
@@ -39,7 +39,7 @@
         [btn setTitle:@"详情" forState:UIControlStateNormal];
         btn.titleLabel.font = [UIFont systemFontOfSize:12];
         [btn setTitleColor:HEX_RGB(@"#666666") forState:UIControlStateNormal];
-        [btn setImage:[UIImage bundleImageNamed:@"sc_right_arrow"] forState:UIControlStateNormal];
+        [btn setImage:[UIImage sc_imageNamed:@"sc_right_arrow"] forState:UIControlStateNormal];
         [btn addTarget:self action:@selector(headClick) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:btn];
         [btn mas_makeConstraints:^(MASConstraintMaker *make) {

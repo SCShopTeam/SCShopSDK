@@ -124,7 +124,7 @@
 //            wkImg.image = img;
         }];
     }else{
-        _commodityImgV.image = [UIImage bundleImageNamed:@"home_witapollo_good_def"];
+        _commodityImgV.image = [UIImage sc_imageNamed:@"home_witapollo_good_def"];
     }
     if ([SCUtilities isValidString:model.categoryTitle]) {
         _commodityNameLab.text = model.categoryTitle;

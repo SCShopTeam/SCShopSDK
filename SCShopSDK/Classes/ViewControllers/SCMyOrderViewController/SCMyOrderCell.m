@@ -93,9 +93,9 @@
 //    _numLab.text = @"";
 //    
 //    if (![_goodModel.picUrl isKindOfClass:[NSNull class]] && [SCUtilities isValidString:_goodModel.picUrl]) {
-//        [_commodityImgV sd_setImageWithURL:[NSURL URLWithString:_goodModel.picUrl] placeholderImage:[UIImage bundleImageNamed:@"childCategory"]];
+//        [_commodityImgV sd_setImageWithURL:[NSURL URLWithString:_goodModel.picUrl] placeholderImage:[UIImage sc_imageNamed:@"childCategory"]];
 //    }else{
-//        _commodityImgV.image = [UIImage bundleImageNamed:@"childCategory"];
+//        _commodityImgV.image = [UIImage sc_imageNamed:@"childCategory"];
 //
 //    }
 //    _nameLab.text =_goodModel.goodsName;

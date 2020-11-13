@@ -64,7 +64,7 @@
     }];
     
     UIImageView *noImgV = [[UIImageView alloc]init];
-    noImgV.image = [UIImage bundleImageNamed:@"sc_noAddress_icon"];
+    noImgV.image = [UIImage sc_imageNamed:@"sc_noAddress_icon"];
     [noOrderView addSubview:noImgV];
     [noImgV mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(noOrderView);

@@ -92,7 +92,7 @@
 
     [[SDWebImageManager sharedManager] loadImageWithURL:[NSURL URLWithString:(model.picUrl?:@"")] options:0 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
         UIImage *targetImg = image ?: IMG_PLACE_HOLDER;
-        UIColor *imgColor = [targetImg getPixelColorAtPoint:CGPointMake(image.size.width/2, 0)];
+        UIColor *imgColor = [targetImg sc_getPixelColorAtPoint:CGPointMake(image.size.width/2, 0)];
         self.gradientLayer.colors = @[(__bridge id)imgColor.CGColor,(__bridge id)[UIColor whiteColor].CGColor];
         self.colorDict[colorKey] = imgColor;
     }];

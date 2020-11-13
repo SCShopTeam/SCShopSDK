@@ -53,7 +53,7 @@
     
     UIImageView *leftImg = [[UIImageView alloc]init];
     [self addSubview:leftImg];
-    leftImg.image = [UIImage bundleImageNamed:@"localIcon"];
+    leftImg.image = [UIImage sc_imageNamed:@"localIcon"];
     
     UIButton *deleteBtn = [[UIButton alloc]init];
     [self addSubview:deleteBtn];

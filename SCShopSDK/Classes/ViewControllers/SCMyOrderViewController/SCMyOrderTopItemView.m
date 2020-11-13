@@ -24,7 +24,7 @@
         
         UIImageView *imgv = [[UIImageView alloc]init];
         [self addSubview:imgv];
-        imgv.image = [UIImage bundleImageNamed:@"order_personHeaderBG"];
+        imgv.image = [UIImage sc_imageNamed:@"order_personHeaderBG"];
         [imgv mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.top.right.equalTo(self);
             make.height.mas_equalTo(360*m6Scale);
@@ -32,7 +32,7 @@
         
         
         _headImgV = [[UIImageView alloc]init];
-        _headImgV.image = [UIImage bundleImageNamed:@"sc_header_icon"];
+        _headImgV.image = [UIImage sc_imageNamed:@"sc_header_icon"];
         [self addSubview:_headImgV];
         _headImgV.layer.cornerRadius = SCREEN_FIX(60)/2;
         _headImgV.layer.masksToBounds = YES;
@@ -72,7 +72,7 @@
             [btn setTitleColor:HEX_RGB(@"#FFFFFF") forState:UIControlStateNormal];
             btn.titleLabel.font = [UIFont systemFontOfSize:12];
             [btn setTag:i];
-            [btn setImage:[UIImage bundleImageNamed:fImages[i]] forState:UIControlStateNormal];
+            [btn setImage:[UIImage sc_imageNamed:fImages[i]] forState:UIControlStateNormal];
             [btn setTitle:fNames[i] forState:UIControlStateNormal];
             [btn layoutButtonWithEdgeInsetsStyle:XGButtonEdgeInsetsStyleTop imageTitleSpace:8];
             [btn addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -145,8 +145,8 @@
             [btn setTitleColor:HEX_RGB(@"#444242") forState:UIControlStateNormal];
             [btn setTitleColor:HEX_RGB(@"#FA353D") forState:UIControlStateSelected];
             btn.titleLabel.font = [UIFont systemFontOfSize:12];
-            [btn setImage:[UIImage bundleImageNamed:snormalImages[i-4]] forState:UIControlStateNormal];
-            [btn setImage:[UIImage bundleImageNamed:sselectedImages[i-4]] forState:UIControlStateSelected];
+            [btn setImage:[UIImage sc_imageNamed:snormalImages[i-4]] forState:UIControlStateNormal];
+            [btn setImage:[UIImage sc_imageNamed:sselectedImages[i-4]] forState:UIControlStateSelected];
 
             [btn setTitle:sNames[i-4] forState:UIControlStateNormal];
             [btn layoutButtonWithEdgeInsetsStyle:XGButtonEdgeInsetsStyleTop imageTitleSpace:12];
@@ -159,7 +159,7 @@
                 indexMarkImg = [[UIImageView alloc]init];
                 [self addSubview:indexMarkImg];
                 
-                indexMarkImg.image = [UIImage bundleImageNamed:@"order_flagSanjiao"];
+                indexMarkImg.image = [UIImage sc_imageNamed:@"order_flagSanjiao"];
                 [indexMarkImg mas_makeConstraints:^(MASConstraintMaker *make) {
                     make.height.mas_equalTo(15*m6Scale);
                     make.width.mas_equalTo(29*m6Scale);

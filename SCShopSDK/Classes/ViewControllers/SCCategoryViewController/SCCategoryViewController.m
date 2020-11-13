@@ -247,7 +247,7 @@
         }
         
         if (![SCUtilities isValidString:model.secondPic]) {
-            [btn setImage:[UIImage bundleImageNamed:@"childCategory"] forState:UIControlStateNormal];
+            [btn setImage:[UIImage sc_imageNamed:@"childCategory"] forState:UIControlStateNormal];
 
         }else{
             [btn sd_setImageWithURL:[NSURL URLWithString:model.secondPic] forState:UIControlStateNormal completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {

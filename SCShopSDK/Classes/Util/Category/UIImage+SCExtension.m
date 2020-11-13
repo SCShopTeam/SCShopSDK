@@ -11,22 +11,22 @@
 
 @implementation UIImage (SCExtension)
 
-+ (nullable UIImage *)bundleImageNamed:(NSString *)name
++ (nullable UIImage *)sc_imageNamed:(NSString *)name
 {
-    return [self bundleImageNamed:name scale:2 type:@"png"];
+    return [self sc_imageNamed:name scale:2 type:@"png"];
 }
 
-+ (nullable UIImage *)bundleImageNamed:(NSString *)name scale:(NSInteger)scale
++ (nullable UIImage *)sc_imageNamed:(NSString *)name scale:(NSInteger)scale
 {
-    return [self bundleImageNamed:name scale:scale type:@"png"];
+    return [self sc_imageNamed:name scale:scale type:@"png"];
 }
 
-+ (nullable UIImage *)bundleImageNamed:(NSString *)name type:(NSString *)type
++ (nullable UIImage *)sc_imageNamed:(NSString *)name type:(NSString *)type
 {
-    return [self bundleImageNamed:name scale:2 type:type];
+    return [self sc_imageNamed:name scale:2 type:type];
 }
 
-+ (nullable UIImage *)bundleImageNamed:(NSString *)name scale:(NSInteger)scale type:(NSString *)type
++ (nullable UIImage *)sc_imageNamed:(NSString *)name scale:(NSInteger)scale type:(NSString *)type
 {
     //开发
 //    NSBundle *frameworkBundle = [NSBundle bundleForClass:SCUtilities.class];
@@ -48,7 +48,7 @@
 }
 
 
--(UIImage *)thumbWithSize:(CGSize)size{
+-(UIImage *)sc_thumbWithSize:(CGSize)size{
     
     CGSize originalsize = self.size;
     CGSize targetSize = CGSizeZero;
@@ -158,7 +158,7 @@
 }
 
 
-- (CGContextRef)createARGBBitmapContext {
+- (CGContextRef)sc_createARGBBitmapContext {
     
     // Get image width, height
     size_t pixelsWide = CGImageGetWidth(self.CGImage);
@@ -202,12 +202,12 @@
     return context;
 }
 
-- (UIColor *)getPixelColorAtPoint:(CGPoint)point
+- (UIColor *)sc_getPixelColorAtPoint:(CGPoint)point
 {
     UIColor* color = nil;
     CGImageRef inImage = self.CGImage;
     // Create bitmap context to draw the image into
-    CGContextRef cgctx = [self createARGBBitmapContext];
+    CGContextRef cgctx = [self sc_createARGBBitmapContext];
     if (cgctx == NULL) {
         return nil; /* error */
     }
