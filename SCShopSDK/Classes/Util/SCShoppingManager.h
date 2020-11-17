@@ -87,6 +87,8 @@ typedef void(^SC_WebBlock)(void);
 //web
 -(void)scWebWithUrl:(NSString *)urlStr title:(NSString *)title nav:(UINavigationController *)nav back:(SC_WebBlock)callBack;
 
+
+
 @end
 
 @interface SCShoppingManager : NSObject
@@ -105,10 +107,14 @@ typedef void(^SC_WebBlock)(void);
 + (void)showMallPageFrom:(UIViewController *)vc;
 + (void)showMallPageFrom:(UIViewController *)vc pageType:(SCShopPageType)pageType;
 
+//打开接口日志打印 默认关闭
++ (void)openNetworkLog;
+
 //登录之后判断是异网，弹框
 +(void)showDiffNetAlert:(UINavigationController *)nav;
 //退出商城
 + (void)dissmissMallPage;
+
 
 @end
 

@@ -292,7 +292,7 @@ static AFHTTPSessionManager *_sessionManager;
             // 图片经过等比压缩后得到的二进制文件
             //            NSData *imageData = UIImageJPEGRepresentation(images[i], imageScale ?: 1.f);
             NSData *imageData = dataArr[i];
-            NSLog(@"---%ld---",imageData.length);
+//            NSLog(@"---%ld---",imageData.length);
             // 默认图片的文件名, 若fileNames为nil就使用
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
             formatter.dateFormat = @"yyyy-MM-dd-HH-mm-ss";

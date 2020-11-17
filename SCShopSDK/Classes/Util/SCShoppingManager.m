@@ -75,11 +75,11 @@
     user.cmtokenid = @"9A970F2B54CF42F2948D6D581C4C1C52@js.ac.10086.cn";
     user.name = @"测试号";
     //定位
-//    NSDictionary *locationInfo = @{@"cityCode": @"14",
-//                                   @"latitude": @32.05725221596182,
-//                                   @"longitude": @118.7405924432003,
-//                                   @"City": @"南京市"};
-//    self.locationInfo = locationInfo;
+    NSDictionary *locationInfo = @{@"cityCode": @"14",
+                                   @"latitude": @32.05725221596182,
+                                   @"longitude": @118.7405924432003,
+                                   @"City": @"南京市"};
+    self.locationInfo = locationInfo;
     
     //tab
     UITabBarController *tabVc = (UITabBarController *)[UIApplication sharedApplication].delegate.window.rootViewController;
@@ -158,6 +158,11 @@
     
     info.cmtokenid = userInfo[@"cmtokenid"];
     
+}
+
++ (void)openNetworkLog
+{
+    [SCNetworkManager openLog];
 }
 
 //-(NSString *)authToken{

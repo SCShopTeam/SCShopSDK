@@ -49,9 +49,7 @@ static NSString *kReduce = @"-";
     self.userSelected = item.selected;
     
     //icon
-    [self.icon sd_setImageWithURL:[NSURL URLWithString:item.itemThumb] placeholderImage:IMG_PLACE_HOLDER completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-        NSLog(@"%@",NSStringFromCGSize(image.size));
-    }];
+    [self.icon sd_setImageWithURL:[NSURL URLWithString:item.itemThumb] placeholderImage:IMG_PLACE_HOLDER];
 
     //标题
     self.titleLabel.size = CGSizeMake(SCREEN_FIX(220), SCREEN_FIX(300));

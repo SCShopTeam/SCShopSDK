@@ -40,6 +40,7 @@
         [_desLab mas_makeConstraints:^(MASConstraintMaker *make) {
               make.left.equalTo(_nameLab.mas_left);
               make.top.equalTo(_commodityImgV.mas_centerY);
+              make.right.equalTo(self);
           }];
         
         UILabel *priceMark = [UILabel new];

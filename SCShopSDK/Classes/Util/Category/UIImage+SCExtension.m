@@ -118,13 +118,13 @@
         
         if(originalsize.height>targetSize.height)
         {
-            NSLog(@"比例 ： height > width");
+//            NSLog(@"比例 ： height > width");
             imageRef = CGImageCreateWithImageInRect([self CGImage], CGRectMake(0, originalsize.height/2-targetSize.height/2, originalsize.width, targetSize.height));//获取图片整体部分
         }
         
         else if (originalsize.width>targetSize.width)
         {
-            NSLog(@"比例 ： height < width");
+//            NSLog(@"比例 ： height < width");
             imageRef = CGImageCreateWithImageInRect([self CGImage], CGRectMake(originalsize.width/2-targetSize.width/2, 0, targetSize.width, originalsize.height));//获取图片整体部分
         }
         
@@ -140,7 +140,7 @@
         
         UIImage *standardImage = UIGraphicsGetImageFromCurrentImageContext();
         
-        NSLog(@"改变后图片的宽度为%f,图片的高度为%f",[standardImage size].width,[standardImage size].height);
+//        NSLog(@"改变后图片的宽度为%f,图片的高度为%f",[standardImage size].width,[standardImage size].height);
         
         UIGraphicsEndImageContext();
         
@@ -152,7 +152,7 @@
     //原图为标准长宽的，不做处理
     else
     {
-        NSLog(@"比例 ： height = width");
+//        NSLog(@"比例 ： height = width");
         return self;
     }
 }
