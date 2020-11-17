@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "SCShopSDK"
-  s.version = "1.8.5"
+  s.version = "1.8.6"
   s.summary = "shopping"
   s.license = {"type"=>"MIT", "file"=>"LICENSE"}
   s.authors = {"gejunyu5"=>"393864523@qq.com"}

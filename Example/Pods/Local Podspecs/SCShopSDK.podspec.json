@@ -1,6 +1,6 @@
 {
   "name": "SCShopSDK",
-  "version": "1.8.6",
+  "version": "1.8.7",
   "summary": "shopping",
   "description": "A shopping framework demo",
   "homepage": "https://github.com/SCShopTeam/SCShopSDK",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/SCShopTeam/SCShopSDK.git",
-    "tag": "1.8.6"
+    "tag": "1.8.7"
   },
   "platforms": {
     "ios": "9.0"
@@ -32,10 +32,6 @@
   ],
   "prefix_header_file": "SCShopSDK/Classes/Util/SCCommonPrefix.pch",
   "user_target_xcconfig": {
-    "OTHER_LDFLAGS": [
-      "-ObjC",
-      "-all_load"
-    ],
     "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
   },
   "pod_target_xcconfig": {

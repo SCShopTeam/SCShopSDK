@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
     s.name             = 'SCShopSDK'
-    s.version          = '1.8.6'
+    s.version          = '1.8.7'
     s.summary          = 'shopping'
     
     # This description is used to generate tags and improve search results.
@@ -45,7 +45,8 @@ Pod::Spec.new do |s|
 #    s.vendored_framework   = 'SCShopSDK/Framework/AgoraRtcCryptoLoader.framework'
     #####
     
-    s.user_target_xcconfig = {'OTHER_LDFLAGS' => ['-ObjC','-all_load'],'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'}
+#    s.user_target_xcconfig = {'OTHER_LDFLAGS' => ['-ObjC','-all_load']}
+    s.user_target_xcconfig = {'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'}
     s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'}
     s.static_framework = true;
     s.requires_arc = true
