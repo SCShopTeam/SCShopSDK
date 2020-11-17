@@ -1,6 +1,0 @@
-framework module SCShopSDK {
-  umbrella header "SCShopSDK.h"
-
-  export *
-  module * { export * }
-}

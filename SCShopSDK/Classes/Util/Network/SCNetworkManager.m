@@ -26,19 +26,19 @@ static AFHTTPSessionManager *_sessionManager;
             switch (status) {
                 case AFNetworkReachabilityStatusUnknown:
                     networkStatus ? networkStatus(SCNetworkStatusUnknown) : nil;
-                    DDLOG(@"未知网络");
+                    NSLog(@"未知网络");
                     break;
                 case AFNetworkReachabilityStatusNotReachable:
                     networkStatus ? networkStatus(SCNetworkStatusNotReachable) : nil;
-                    DDLOG(@"无网络");
+                    NSLog(@"无网络");
                     break;
                 case AFNetworkReachabilityStatusReachableViaWWAN:
                     networkStatus ? networkStatus(SCNetworkStatusReachableViaWWAN) : nil;
-                    DDLOG(@"手机自带网络");
+                    NSLog(@"手机自带网络");
                     break;
                 case AFNetworkReachabilityStatusReachableViaWiFi:
                     networkStatus ? networkStatus(SCNetworkStatusReachableViaWiFi) : nil;
-                    DDLOG(@"WIFI");
+                    NSLog(@"WIFI");
                     break;
             }
         }];
@@ -99,7 +99,7 @@ static AFHTTPSessionManager *_sessionManager;
     //    requestURL = [requestURL jsbcInterfaceUrl]; //加密操作
     
     if (_isOpenLog) {
-        DDLOG(@"%@", NSStringFormat(@"requestURL = %@",requestURL));
+        NSLog(@"%@", NSStringFormat(@"requestURL = %@",requestURL));
     }
     
     NSString *appPwd = [SCRequestParams shareInstance].appPwd;
@@ -116,13 +116,13 @@ static AFHTTPSessionManager *_sessionManager;
     NSURLSessionTask *sessionTask = [_sessionManager GET:requestURL parameters:nil progress:^(NSProgress * _Nonnull uploadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        DDLOG(@"%@", _isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
+        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
         
         [[self allSessionTask] removeObject:task];
         success ? success(responseObject) : nil;
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        DDLOG(@"%@", _isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
+        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
         [[self allSessionTask] removeObject:task];
         failure ? failure(error.why) : nil;
     }];
@@ -179,14 +179,14 @@ static AFHTTPSessionManager *_sessionManager;
     NSURLSessionTask *sessionTask = [_sessionManager POST:URL parameters:param progress:^(NSProgress * _Nonnull uploadProgress) {
         
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        DDLOG(@"%@", _isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
+        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
         
         [[self allSessionTask] removeObject:task];
         
         success ? success(responseObject) : nil;
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        DDLOG(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
+        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
         [[self allSessionTask] removeObject:task];
         failure ? failure(error.why) : nil;
     }];
@@ -214,14 +214,14 @@ static AFHTTPSessionManager *_sessionManager;
 //    NSURLSessionTask *sessionTask = [_sessionManager POST:URL parameters:parameters progress:^(NSProgress * _Nonnull uploadProgress) {
 //
 //    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        DDLOG(@"%@", _isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
+//        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
 //
 //        [[self allSessionTask] removeObject:task];
 //
 //        success ? success(responseObject) : nil;
 //
 //    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        DDLOG(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
+//        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
 //        [[self allSessionTask] removeObject:task];
 //        failure ? failure(error) : nil;
 //    }];
@@ -252,13 +252,13 @@ static AFHTTPSessionManager *_sessionManager;
             progress ? progress(uploadProgress) : nil;
         });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        DDLOG(@"%@",_isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
+        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
         
         [[self allSessionTask] removeObject:task];
         success ? success(responseObject) : nil;
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        DDLOG(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
+        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
         
         [[self allSessionTask] removeObject:task];
         failure ? failure(error.why) : nil;
@@ -311,13 +311,13 @@ static AFHTTPSessionManager *_sessionManager;
             progress ? progress(uploadProgress) : nil;
         });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        DDLOG(@"%@",_isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
+        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
         
         [[self allSessionTask] removeObject:task];
         success(responseObject);
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        DDLOG(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
+        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
         
         [[self allSessionTask] removeObject:task];
         failure ? failure(error.why) : nil;
