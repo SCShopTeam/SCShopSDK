@@ -558,12 +558,12 @@ DEF_SINGLETON(SCUtilities)
 #pragma mark 添加的具体参数
 + (NSString *)suffixParameters :(NSString*)requesturl
 {
-    NSString *ua = @"jsapp";  //@"jsmcc"
+    NSString *ua = @"jsmcc";
     NSString *loginMobile = [SCUserInfo currentUser].phoneNumber;
     NSString *deviceID = [NSString stringWithUUID];//[Utility UUID];
     NSString *platform = @"iphone";
     NSString *channel = @"sd";
-    NSString *ch = @"02"; //@"03"
+    NSString *ch = @"03";
     NSString *version = [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"];
     NSDateFormatter *dateFormatter = [SCUtilities dateFormatterWithFormatString:@"yyyyMMddHHmmss"];
 //    dateFormatter.dateFormat = @"yyyyMMddHHmmss";

@@ -76,7 +76,7 @@ typedef void(^SC_WebBlock)(void);
 
 //触点
 //获取触点数据
--(void)scADTouchDataWithTouchPageNum:(NSString *)pageNum backData:(SC_ADTouchDataBlock)callBack;
+-(void)scADTouchDataFrom:(UIViewController *)viewController pageNum:(NSString *)pageNum backData:(SC_ADTouchDataBlock)callBack;
 //处理触点点击
 -(void)scADTouchClick:(NSDictionary *)dic back:(SC_ADTouchClickBlock)callback;
 //触点曝光处理

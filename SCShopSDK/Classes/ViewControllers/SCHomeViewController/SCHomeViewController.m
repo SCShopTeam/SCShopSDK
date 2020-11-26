@@ -127,14 +127,13 @@ typedef NS_ENUM(NSInteger, SCHomeSection) {
 //请求触点
 - (void)requestTouchData
 {
-    
-    [self.viewModel requestTouchData:^(id  _Nullable responseObject) {
+    [self.viewModel requestTouchData:self success:^(id  _Nullable responseObject) {
         //这里不一定会回调，打开一次商城，除非请求失败，否则只会请求一次触点
         [self.collectionView reloadData];
-        
         [self showPopup];//展示弹窗
         
-    } failure:^(NSString * _Nullable errorMsg) {
+    }failure:^(NSString * _Nullable errorMsg) {
+        
     }];
 }
 

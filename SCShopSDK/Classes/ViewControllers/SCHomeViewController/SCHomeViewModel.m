@@ -155,7 +155,7 @@
     return model;
 }
 
-- (void)requestTouchData:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
+- (void)requestTouchData:(UIViewController *)viewController success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
     if (self.hasShowedTouch) { //本次启动商城展示过触点后，不再请求触点数据
         return;
@@ -187,14 +187,14 @@
     
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
 
-    if (![manager.delegate respondsToSelector:@selector(scADTouchDataWithTouchPageNum:backData:)]) {
+    if (![manager.delegate respondsToSelector:@selector(scADTouchDataFrom:pageNum:backData:)]) {
         if (failure) {
             failure(@"delegate null");
         }
         return;
     }
 
-    [manager.delegate scADTouchDataWithTouchPageNum:@"B2CSCSY" backData:^(id  _Nonnull touchData) {
+    [manager.delegate scADTouchDataFrom:viewController pageNum:@"B2CSCSY" backData:^(id  _Nonnull touchData) {
         if (!VALID_DICTIONARY(touchData)) {
             if (failure) {
                 failure(@"get touch failure");

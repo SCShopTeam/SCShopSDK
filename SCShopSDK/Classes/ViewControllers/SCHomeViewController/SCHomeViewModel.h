@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)getCommodityList:(NSInteger)pageNum showCache:(BOOL)showCache completion:(SCHttpRequestCompletion)completion;
 
-- (void)requestTouchData:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
+- (void)requestTouchData:(UIViewController *)viewController success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
 
 - (void)requestStoreList:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
 

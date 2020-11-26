@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
     s.name             = 'SCShopSDK'
-    s.version          = '1.8.8'
+    s.version          = '1.8.9'
     s.summary          = 'shopping'
     
     # This description is used to generate tags and improve search results.
@@ -54,7 +54,7 @@ Pod::Spec.new do |s|
     s.libraries = 'z', 'sqlite3'
     s.frameworks = 'UIKit', 'MapKit', 'CoreGraphics', 'MobileCoreServices', 'Security', 'SystemConfiguration', 'CoreTelephony', 'MessageUI', 'QuartzCore', 'CoreFoundation', 'CoreText', 'CoreImage', 'ImageIO', 'AssetsLibrary', 'Accelerate', 'WebKit', 'CoreLocation' , 'EventKit', 'JavaScriptCore', 'AdSupport'
     
-    s.dependency 'AFNetworking', '~> 3.2.0'
+    s.dependency 'AFNetworking', '~> 4.0.1'
     s.dependency 'FMDB', '~> 2.7.2'
     s.dependency 'YYModel', '~> 1.0.4'
     s.dependency 'SDWebImage', '~> 5.8.1'
