@@ -328,7 +328,8 @@
         }
         cell.nameLab.text = [SCUtilities isValidString:model.skuName]?model.skuName:@"";
         cell.desLab.text =  [SCUtilities isValidString:model.Attribution]?model.Attribution:@"";
-        cell.priceLab.text = model.purchasePriceDesc;
+//        cell.priceLab.text = model.purchasePriceDesc;
+        cell.priceLab.text = [NSString stringWithFormat:@"%f",model.retailPrice];
         cell.numLab.text = [NSString stringWithFormat:@"%ld",model.quantity];
     }else{
         

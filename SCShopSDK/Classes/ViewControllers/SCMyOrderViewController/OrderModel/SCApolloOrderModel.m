@@ -64,6 +64,7 @@
         NSString *skuName = dic[@"skuName"];
         NSString *comGoodsPicturesUrl = dic[@"comGoodsPicturesUrl"];
             self.quantity = quantity;
+        self.retailPrice = [dic[@"retailPrice"] floatValue];
         
         if ([SCUtilities isValidString:purchasePriceDesc]) {
             self.purchasePriceDesc = purchasePriceDesc;

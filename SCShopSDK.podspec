@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
     s.name             = 'SCShopSDK'
-    s.version          = '1.8.9'
+    s.version          = '1.9.0'
     s.summary          = 'shopping'
     
     # This description is used to generate tags and improve search results.
