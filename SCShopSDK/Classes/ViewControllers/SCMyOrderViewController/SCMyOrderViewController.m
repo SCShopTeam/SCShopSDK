@@ -329,7 +329,7 @@
         cell.nameLab.text = [SCUtilities isValidString:model.skuName]?model.skuName:@"";
         cell.desLab.text =  [SCUtilities isValidString:model.Attribution]?model.Attribution:@"";
 //        cell.priceLab.text = model.purchasePriceDesc;
-        cell.priceLab.text = [NSString stringWithFormat:@"%f",model.retailPrice];
+        cell.priceLab.text = model.retailPriceYuan;
         cell.numLab.text = [NSString stringWithFormat:@"%ld",model.quantity];
     }else{
         
@@ -353,7 +353,8 @@
           }
         cell.nameLab.text =  [SCUtilities isValidString:model.goodsName]?model.goodsName:@"";
         cell.desLab.text =  [SCUtilities isValidString:model.goodsTitle]?model.goodsTitle:@"";
-        cell.priceLab.text = [NSString stringWithFormat:@"%@",[NSNumber numberWithFloat: model.dealMoney]];
+//        cell.priceLab.text = [NSString stringWithFormat:@"%@",[NSNumber numberWithFloat: model.dealMoney]];
+        cell.priceLab.text = [SCUtilities removeFloatSuffix:model.goodsPrice];
           cell.numLab.text = [NSString stringWithFormat:@"%ld",model.goodsCount];
     }
     

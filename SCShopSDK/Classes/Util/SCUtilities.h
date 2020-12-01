@@ -116,6 +116,9 @@ NS_ASSUME_NONNULL_BEGIN
 //拨打电话
 + (void)call:(NSString *)phoneNum;
 
+//去除小数位0
++ (NSString *)removeFloatSuffix:(CGFloat)number;
+
 
 @end 
 
