@@ -69,10 +69,10 @@
     //用户信息
     SCUserInfo *user = [SCUserInfo currentUser];
     user.isLogin = YES;
-    user.phoneNumber = @"13401302424";
+    user.phoneNumber = @"13701542424";
     user.isJSMobile = YES;
-    user.uan = @"17";
-    user.cmtokenid = @"9A970F2B54CF42F2948D6D581C4C1C52@js.ac.10086.cn";
+    user.uan = @"11";
+    user.cmtokenid = @"6CE6FB390A1F431AA995796B821E4AD2@js.ac.10086.cn";
     user.name = @"测试号";
     //定位
     NSDictionary *locationInfo = @{@"cityCode": @"14",

@@ -14,6 +14,7 @@
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *priceLabel;
 @property (nonatomic, strong) UIImageView *qiangIcon;
+@property (nonatomic, strong) UILabel *yuanLabel;
 
 @end
 
@@ -31,7 +32,17 @@
     
     //价格
     CGFloat price = model.wholesalePrice/1000*1.f;
-    self.priceLabel.attributedText = [SCUtilities priceAttributedString:price font:SCFONT_SIZED(14.5) color:HEX_RGB(@"#FF3C34")];
+    self.priceLabel.text = [SCUtilities removeFloatSuffix:price];
+    [self.priceLabel sizeToFit];
+    
+    CGFloat edge = self.width - self.qiangIcon.left;
+    CGFloat maxWidth = self.width - edge*2;
+    self.priceLabel.width   = MIN(maxWidth, self.priceLabel.width);
+    self.priceLabel.centerX = self.width/2;
+    self.priceLabel.centerY = self.qiangIcon.centerY;
+    
+    self.yuanLabel.right  = self.priceLabel.left;
+    self.yuanLabel.bottom = self.priceLabel.bottom;
 }
 
 #pragma mark -ui
@@ -73,12 +84,26 @@
 - (UILabel *)priceLabel
 {
     if (!_priceLabel) {
-        CGFloat margin = SCREEN_FIX(10);
-        _priceLabel = [[UILabel alloc] initWithFrame:CGRectMake(margin, self.titleLabel.bottom+SCREEN_FIX(5), self.qiangIcon.left - margin - SCREEN_FIX(5), SCREEN_FIX(22))];
-        _priceLabel.textAlignment = NSTextAlignmentRight;
+        _priceLabel = [UILabel new];
+        _priceLabel.textAlignment = NSTextAlignmentCenter;
+        _priceLabel.font = SCFONT_SIZED(14.5);
+        _priceLabel.textColor = HEX_RGB(@"#FF3C34");
         [self addSubview:_priceLabel];
     }
     return _priceLabel;
+}
+
+- (UILabel *)yuanLabel
+{
+    if (!_yuanLabel) {
+        _yuanLabel = [UILabel new];
+        _yuanLabel.font = SCFONT_SIZED(10);
+        _yuanLabel.textColor = self.priceLabel.textColor;
+        _yuanLabel.text = @"¥ ";
+        [_yuanLabel sizeToFit];
+        [self addSubview:_yuanLabel];
+    }
+    return _yuanLabel;
 }
 
 @end
