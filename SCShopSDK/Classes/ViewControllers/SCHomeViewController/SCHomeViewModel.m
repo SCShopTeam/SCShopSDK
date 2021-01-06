@@ -187,14 +187,14 @@
     
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
 
-    if (![manager.delegate respondsToSelector:@selector(scADTouchDataFrom:pageNum:backData:)]) {
+    if (![manager.delegate respondsToSelector:@selector(scADTouchDataFrom:backData:)]) {
         if (failure) {
             failure(@"delegate null");
         }
         return;
     }
 
-    [manager.delegate scADTouchDataFrom:viewController pageNum:@"B2CSCSY" backData:^(id  _Nonnull touchData) {
+    [manager.delegate scADTouchDataFrom:viewController backData:^(id  _Nonnull touchData) {
         if (!VALID_DICTIONARY(touchData)) {
             if (failure) {
                 failure(@"get touch failure");

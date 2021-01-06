@@ -19,7 +19,7 @@ PODS:
   - FMDB/standard (2.7.5)
   - Masonry (1.1.0)
   - MJRefresh (3.4.3)
-  - SCShopSDK (1.9.2):
+  - SCShopSDK (1.9.3):
     - AFNetworking (~> 4.0.1)
     - FMDB (~> 2.7.2)
     - Masonry (~> 1.1.0)
@@ -62,7 +62,7 @@ SPEC CHECKSUMS:
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: 53e3e3219f204425ee6d3e62e8733d3295944cd6
-  SCShopSDK: 091b4e9d814e2034fd4f53c437bec5d18d86c8f0
+  SCShopSDK: 0f196268d8a264ccf6bcf00f4a6a1d1b3f69540f
   SDCycleScrollView: a0d74c3384caa72bdfc81470bdbc8c14b3e1fbcf
   SDWebImage: cf6922231e95550934da2ada0f20f2becf2ceba9
   WebViewJavascriptBridge: 7f5bc4d3581e672e8f32bd0f812d54bc69bb8e29
