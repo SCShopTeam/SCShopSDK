@@ -56,7 +56,7 @@
     leftImg.image = [UIImage sc_imageNamed:@"localIcon"];
     
     UIButton *deleteBtn = [[UIButton alloc]init];
-    [self addSubview:deleteBtn];
+    [self.contentView addSubview:deleteBtn];
     [deleteBtn setTitleColor:HEX_RGB(@"#666666") forState:UIControlStateNormal];
     deleteBtn.titleLabel.font = [UIFont systemFontOfSize:13];
     [deleteBtn setTitle:@"删除" forState:UIControlStateNormal];
@@ -68,7 +68,7 @@
     [deleteBtn addTarget:self action:@selector(click:) forControlEvents:UIControlEventTouchUpInside];
     
     UIButton *editBtn = [[UIButton alloc]init];
-    [self addSubview:editBtn];
+    [self.contentView addSubview:editBtn];
     [editBtn setTitleColor: HEX_RGB(@"#666666") forState:UIControlStateNormal];
     editBtn.titleLabel.font = [UIFont systemFontOfSize:13];
     [editBtn setTitle:@"编辑" forState:UIControlStateNormal];

@@ -112,7 +112,7 @@
 - (UILabel *)label
 {
     if (!_label) {
-        _label = [[UILabel alloc] initWithFrame:CGRectMake(0, self.icon.top + SCREEN_FIX(51.5), self.contentView.width, SCREEN_FIX(12))];
+        _label = [[UILabel alloc] initWithFrame:CGRectMake(0, self.icon.bottom, self.contentView.width, SCREEN_FIX(12))];
         _label.font = SCFONT_SIZED(12);
         _label.textAlignment = NSTextAlignmentCenter;
         [self.contentView addSubview:_label];

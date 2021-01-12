@@ -175,8 +175,12 @@
                                @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"sddskghjdddddmghj31"}]},
                                @"SCSYDBYXDC_I" : @{@"contactName" : @"商城首页底部异形弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @5,
                                @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"sdfsdyjuserfgfdgfasaa12131"}]},
+                               @"SCSYDBGG_I":@{@"contactName":@"商城首页第八宫格",
+                                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",@"txt":@"话费购"}]
+                               }
         };
         
+
         [self parsingTouchData:dict];
         self.hasShowedTouch = YES;
         success(nil);
