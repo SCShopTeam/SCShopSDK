@@ -78,6 +78,7 @@
     pageCtr = [[UIPageControl alloc]initWithFrame:CGRectMake(leftSpace, CGRectGetMaxY(scroll.frame)-30, view_width-leftSpace, 30)];
     [pageCtr setPageIndicatorTintColor:HEX_RGB(@"F2F2F2")];
     [pageCtr setCurrentPageIndicatorTintColor:HEX_RGB(@"F0250F")];
+    pageCtr.userInteractionEnabled = NO;
     [self.view addSubview:pageCtr];
     
     
