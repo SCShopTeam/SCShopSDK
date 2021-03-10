@@ -302,6 +302,6 @@ typedef enum : NSUInteger {
 
 + (instancetype)currentUser;
 
-- (void)clear;
+//- (void)clear;
 @end
 

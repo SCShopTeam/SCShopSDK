@@ -41,7 +41,7 @@
 {
     [self.viewModel requestCommodityList:self.typeNum page:page completion:^(NSString * _Nullable errorMsg) {
 //        [self.tableView reloadDataShowFooter:self.viewModel.hasMoreData];
-        [self.tableView reloadDataWithNoMoreData:!self.viewModel.hasMoreData];
+        [self.tableView reloadDataWithNoMoreData:self.viewModel.hasNoData];
         
         if (errorMsg) {
             self.emptyTipLabel.text = errorMsg;
@@ -82,8 +82,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
-    //改
-    [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"" navigation:[SCUtilities currentNavigationController]];
+    
+    [SCURLSerialization gotoWebcustom:model.detailUrl title:@"" navigation:[SCUtilities currentNavigationController]];
 }
 
 #pragma mark -ui
@@ -96,6 +96,7 @@
         [_tableView showsRefreshHeader];
         [_tableView showsRefreshFooter];
         [self addSubview:_tableView];
+        [self insertSubview:_tableView belowSubview:self.emptyTipLabel];
         [_tableView registerClass:SCShopTableCell.class forCellReuseIdentifier:NSStringFromClass(SCShopTableCell.class)];
         
         @weakify(self)
@@ -110,12 +111,12 @@
 - (UILabel *)emptyTipLabel
 {
     if (!_emptyTipLabel) {
-        _emptyTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.width, 20)];
+        _emptyTipLabel = [[UILabel alloc] initWithFrame:self.bounds];
         _emptyTipLabel.textAlignment = NSTextAlignmentCenter;
+        _emptyTipLabel.backgroundColor = [UIColor whiteColor];
         _emptyTipLabel.font = SCFONT_SIZED(15);
         _emptyTipLabel.textColor = HEX_RGB(@"#999999");
         _emptyTipLabel.text = @"加载中...";
-        _emptyTipLabel.centerY = self.tableView.height/2;
         [self addSubview:_emptyTipLabel];
     }
     return _emptyTipLabel;

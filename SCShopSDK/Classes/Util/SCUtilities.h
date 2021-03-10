@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCUtilities : NSObject
 
-//判断是在shopping项目中开发调试，还是已经集成进SDK
+//判断是在shopping项目中开发调试，还是已经集成进SDK。开发测试用
 + (BOOL)isInShoppingDebug;
 
 //! 是否是有效的字典
@@ -49,10 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString*)encodeURIComponent:(NSString*)str;
 
 //baritem
-+ (UIBarButtonItem *)makeBarButton:(NSString *)title target:(id)target action:(SEL)selector isLeft:(BOOL)left;
-+ (UIBarButtonItem *)makeBarButton:(NSString *)title titleColor:(NSString *)titleColor target:(id)target action:(SEL)selector isLeft:(BOOL)left;
 + (UIBarButtonItem *)makeBarButtonWithIcon:(UIImage *)image target:(id)target action:(SEL)selector isLeft:(BOOL)left;
-+ (UIBarButtonItem *)makeBarButtonWithIcon2:(UIImage *)image target:(id)target action:(SEL)selector isLeft:(BOOL)left;
++ (UIBarButtonItem *)makeBarButtonWithIcon:(UIImage *)image isLeft:(BOOL)left handler:(void (^)(id sender))handler;
 
 //价格文字  eg:¥1000
 + (NSMutableAttributedString *)priceAttributedString:(CGFloat)price font:(UIFont *)font color:(UIColor *)color;
@@ -72,7 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 //获取vc
-+ (void)registerTabBarController:(UITabBarController *)tabBarVc;
 + (UITabBarController *)currentTabBarController;
 + (UINavigationController *)currentNavigationController;
 + (UIViewController *)currentViewController;
@@ -119,6 +116,9 @@ NS_ASSUME_NONNULL_BEGIN
 //去除小数位0
 + (NSString *)removeFloatSuffix:(CGFloat)number;
 
+//通知
++ (void)postLoginSuccessNotification; //登录成功
+//+ (void)postLoginOutNotification;     //退出登录
 
 @end 
 

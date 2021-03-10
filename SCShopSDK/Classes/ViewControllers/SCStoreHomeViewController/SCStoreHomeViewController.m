@@ -2,25 +2,31 @@
 //  SCStoreHomeViewController.m
 //  shopping
 //
-//  Created by gejunyu on 2020/7/23.
-//  Copyright © 2020 jsmcc. All rights reserved.
+//  Created by gejunyu on 2021/3/8.
+//  Copyright © 2021 jsmcc. All rights reserved.
 //
 
 #import "SCStoreHomeViewController.h"
-#import "SCCollectionView.h"
-#import "SCSiftView.h"
-#import "SCShopCollectionCell.h"
-#import "SCStoreHomeHeaderView.h"
 #import "SCStoreHomeViewModel.h"
-#import "SCCategoryViewModel.h"
+#import "SCSiftView.h"
+#import "SCStoreItemsView.h"
 
-#define kTopH SCREEN_FIX(185)
+@interface SCStoreScrollView : UIScrollView
 
-@interface SCStoreHomeViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
-@property (nonatomic, strong) SCCollectionView *collectionView;
-@property (nonatomic, strong) SCSiftView *siftView;
+@end
+
+@interface SCStoreHomeViewController () <UIScrollViewDelegate>
+@property (nonatomic, strong) SCStoreScrollView *scrollView;
 @property (nonatomic, strong) SCStoreHomeViewModel *viewModel;
-@property (nonatomic, strong) UILabel *emptyTipLabel;
+@property (nonatomic, strong) UIView *topView;
+@property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) UIImageView *iconView;
+@property (nonatomic, strong) UIButton *bannerView;
+@property (nonatomic, strong) SCSiftView *siftView;
+@property (nonatomic, strong) SCStoreItemsView *itemsView;
+
+@property (nonatomic, assign) BOOL canScroll; //多scrollView嵌套 相关参数
+
 @end
 
 @implementation SCStoreHomeViewController
@@ -28,21 +34,28 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = @"移动好货";
-    
-    self.navigationItem.rightBarButtonItem = [SCUtilities makeBarButtonWithIcon:SCIMAGE(@"sc_store_service") target:self action:@selector(servicePressed) isLeft:NO];
+    [self prepareUI];
     
     [self requestData];
     
 }
 
-- (void)servicePressed
+- (void)prepareUI
 {
-    NSString *url = [self.viewModel getOnlineServiceUrl:self.tenantNum];
+    self.title = @"移动好货";
     
-    if (url) {
-        [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"在线客服" navigation:self.navigationController];
-    }
+    //客服按钮
+    self.navigationItem.rightBarButtonItem = [SCUtilities makeBarButtonWithIcon:SCIMAGE(@"sc_store_service") target:self action:@selector(servicePressed) isLeft:NO];
+    
+    //scrollview联动相关设置
+    self.canScroll = YES;
+    [[NSNotificationCenter defaultCenter] addObserverForName:SCNOTI_STORE_SCROLL_CAN_SCROLL object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
+        self.canScroll = YES;
+    }];
+    
+    //主控件
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.width, self.itemsView.bottom);
+    
     
 }
 
@@ -52,152 +65,139 @@
         return;
     }
     
-    [self requestTenantInfo];
-    [self requestCommodityList:1 showCache:YES showHud:NO];
-}
-
-- (void)requestTenantInfo
-{
+    @weakify(self)
     [self.viewModel requestTenantInfo:_tenantNum completion:^(NSString * _Nullable errorMsg) {
-        [self.collectionView reloadData];
+        @strongify(self)
+        SCTenantInfoModel *model = self.viewModel.tenantInfo;
+        
+        self.titleLabel.text = model.shopName;
+        [self.titleLabel sizeToFit];
+        
+        self.iconView.hidden = ![model.tenantType isEqualToString:@"1"];
+        self.iconView.left = self.titleLabel.right + SCREEN_FIX(4);
+        
+        [self.bannerView sd_setBackgroundImageWithURL:[NSURL URLWithString:model.tenantIcon] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
     }];
 }
 
-- (void)requestCommodityList:(NSInteger)page showCache:(BOOL)showCache showHud:(BOOL)showHud
+#pragma mark -action
+- (void)servicePressed
 {
-    SCCategorySortKey sort      = self.siftView.currentSortKey;
-    SCCategorySortType sortType = self.siftView.currentSortType;
+    NSString *url = [self.viewModel getOnlineServiceUrl:self.tenantNum];
+
+    [SCURLSerialization gotoWebcustom:url title:@"在线客服" navigation:self.navigationController];
+
+}
     
-    [self.viewModel getCommodityList:_tenantNum sort:sort sortType:sortType pageNum:page showCache:showCache showHud:showHud completion:^(NSString * _Nullable errorMsg) {
-        [self stopLoading];
-        SCStoreHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
-        
-        self.collectionView.page = cacheModel.page;
-//        [self.collectionView reloadDataShowFooter:cacheModel.hasMoreData];
-        [self.collectionView reloadDataWithNoMoreData:!cacheModel.hasMoreData];
-        self.emptyTipLabel.hidden = cacheModel.commodityList.count > 0;
-        
-        if (errorMsg) {
-            [self showWithStatus:errorMsg];
+#pragma mark -UIScrollViewDelegate
+
+    - (void)scrollViewDidScroll:(UIScrollView *)scrollView
+    {
+        if (scrollView != _scrollView) {
+            return;
         }
-    }];
 
-}
+        //处理多scrollView联动
+        CGFloat y = scrollView.contentOffset.y;
 
-
-#pragma mark -UICollectionViewDelegate, UICollectionViewDataSource
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
-{
-    return CGSizeMake(collectionView.width, kTopH);
-}
-
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
-{
-    SCStoreHomeHeaderView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCStoreHomeHeaderView.class) forIndexPath:indexPath];
-    header.tenantInfo = self.viewModel.tenantInfo;
-    
-    header.bannerBlock = ^(SCTenantInfoModel * _Nonnull tenantInfo) {
-        [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSCSDDP_A01" url:@"" inPage:NSStringFromClass(self.class)];
-    };
-    
-    
-    
-    
-    return header;
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-    SCStoreHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
-    return cacheModel.commodityList.count;
-}
-
-- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    SCShopCollectionCell *cell = (SCShopCollectionCell *)[collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(SCShopCollectionCell.class) forIndexPath:indexPath];
-    
-    SCStoreHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
-    
-    if (indexPath.row < cacheModel.commodityList.count) {
-        SCCommodityModel *model = cacheModel.commodityList[indexPath.row];
-        cell.model = model;
+        CGFloat maxOffsetY = self.bannerView.bottom;
+        
+        if (y >= maxOffsetY && _canScroll) {
+            scrollView.contentOffset = CGPointMake(0, maxOffsetY);
+            _canScroll = NO;
+            [[NSNotificationCenter defaultCenter] postNotificationName:SCNOTI_STORE_CELL_CAN_SCROLL object:nil];
+        }
+        
+        if (!_canScroll) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:SCNOTI_STORE_CELL_CAN_SCROLL object:nil];
+            scrollView.contentOffset = CGPointMake(0, maxOffsetY);
+        }
     }
-
     
-    return cell;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    SCStoreHomeCacheModel *cacheModel = self.viewModel.currentCacheModel;
-    SCCommodityModel *model = cacheModel.commodityList[indexPath.row];
     
-    [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"" navigation:self.navigationController];
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    CGFloat offsetY = scrollView.contentOffset.y;
-    
-    //坐标
-    CGFloat y = kTopH - offsetY;
-    self.siftView.top = MAX(0, y);
-    
-}
 
 #pragma mark -ui
-- (SCCollectionView *)collectionView
+- (SCStoreScrollView *)scrollView
 {
-    if (!_collectionView) {
-        UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
-        layout.minimumLineSpacing      = SCREEN_FIX(18);
-        layout.minimumInteritemSpacing = SCREEN_FIX(13.5);
-        layout.itemSize                = CGSizeMake(kCommodityItemW, kCommodityItemH);
-        layout.scrollDirection         = UICollectionViewScrollDirectionVertical;
-        layout.sectionInset = UIEdgeInsetsMake(self.siftView.height, SCREEN_FIX(18), SCREEN_FIX(10), SCREEN_FIX(18));
+    if (!_scrollView) {
+        _scrollView = [[SCStoreScrollView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - NAV_BAR_HEIGHT)];
+        _scrollView.backgroundColor = [UIColor whiteColor];
+        _scrollView.showsVerticalScrollIndicator = NO;
+        _scrollView.delegate = self;
+        [self.view addSubview:_scrollView];
+    }
+    return _scrollView;
+}
+
+- (UIView *)topView
+{
+    if (!_topView) {
+        _topView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.scrollView.width, SCREEN_FIX(45))];
+        [self.scrollView addSubview:_topView];
         
-        _collectionView = [[SCCollectionView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT-NAV_BAR_HEIGHT) collectionViewLayout:layout];
-        _collectionView.backgroundColor = HEX_RGB(@"#F6F6F6");
-        _collectionView.delegate = self;
-        _collectionView.dataSource = self;
-        _collectionView.showsVerticalScrollIndicator = NO;
-        [self.view addSubview:_collectionView];
-        [self.view sendSubviewToBack:_collectionView];
+        //标题
+        CGFloat titleH = SCREEN_FIX(16);
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(19.5), (_topView.height-titleH)/2, 0, titleH)];
+        _titleLabel.font = SCFONT_SIZED(titleH);
+        [_topView addSubview:_titleLabel];
         
-        [_collectionView registerClass:SCShopCollectionCell.class forCellWithReuseIdentifier:NSStringFromClass(SCShopCollectionCell.class)];
-        [_collectionView registerClass:SCStoreHomeHeaderView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCStoreHomeHeaderView.class)];
-        
-        [_collectionView showsRefreshHeader];
-        [_collectionView showsRefreshFooter];
+        //图标
+        CGFloat iconH = SCREEN_FIX(15.5);
+        _iconView = [[UIImageView alloc] initWithFrame:CGRectMake(0, (_topView.height-iconH)/2, SCREEN_FIX(30), iconH)];
+        _iconView.image = SCIMAGE(@"qijian");
+
+        [_topView addSubview:_iconView];
+    }
+    return _topView;
+}
+
+- (UIButton *)bannerView
+{
+    if (!_bannerView) {
+        _bannerView = [[UIButton alloc] initWithFrame:CGRectMake(0, self.topView.bottom, self.scrollView.width, SCREEN_FIX(140))];
+        _bannerView.adjustsImageWhenHighlighted = NO;
+        [self.scrollView addSubview:_bannerView];
         
         @weakify(self)
-        _collectionView.refreshingBlock = ^(NSInteger page) {
-            @strongify(self)
-            [self requestCommodityList:page showCache:NO showHud:NO];
-        };
+        [_bannerView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+           @strongify(self)
+            [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSCSDDP_A01" url:@"" inPage:NSStringFromClass(self.class)];
+        }];
     }
-    return _collectionView;
+    return _bannerView;
 }
 
 - (SCSiftView *)siftView
 {
     if (!_siftView) {
-        _siftView = [[SCSiftView alloc] initWithFrame:CGRectMake(0, kTopH, SCREEN_WIDTH, SCREEN_FIX(51.5))];
-        [self.view addSubview:_siftView];
+        _siftView = [[SCSiftView alloc] initWithFrame:CGRectMake(0, self.bannerView.bottom, self.scrollView.width, SCREEN_FIX(51.5))];
+        [self.scrollView addSubview:_siftView];
         
         @weakify(self)
-        _siftView.selectBlock = ^{
+        _siftView.selectBlock = ^(NSInteger index) {
           @strongify(self)
-            [self requestCommodityList:1 showCache:YES showHud:YES];
+            self.itemsView.currentIndex = index;
             
-            //悬停高度
-            if (self.collectionView.contentOffset.y > kTopH) {
-                [self.collectionView setContentOffset:CGPointMake(0, kTopH) animated:NO];
-            }
         };
-        
     }
     return _siftView;
+}
+
+- (SCStoreItemsView *)itemsView
+{
+    if (!_itemsView) {
+        _itemsView = [[SCStoreItemsView alloc] initWithFrame:CGRectMake(0, self.siftView.bottom, self.scrollView.width, self.scrollView.height - self.siftView.height)];
+        _itemsView.tenantNum = self.tenantNum;
+        _itemsView.itemList = self.siftView.itemList;
+        [self.scrollView addSubview:_itemsView];
+        
+        @weakify(self)
+        _itemsView.scrollBlock = ^(NSInteger index) {
+          @strongify(self)
+            self.siftView.currentIndex = index;
+        };
+    }
+    return _itemsView;
 }
 
 - (SCStoreHomeViewModel *)viewModel
@@ -208,19 +208,14 @@
     return _viewModel;
 }
 
-- (UILabel *)emptyTipLabel
-{
-    if (!_emptyTipLabel) {
-        _emptyTipLabel = [UILabel new];
-        _emptyTipLabel.textAlignment = NSTextAlignmentCenter;
-        _emptyTipLabel.font = SCFONT_SIZED(15);
-        _emptyTipLabel.textColor = HEX_RGB(@"#999999");
-        _emptyTipLabel.text = @"抱歉，商品不存在，看看其他商品吧~";
-        [_emptyTipLabel sizeToFit];
-        _emptyTipLabel.center = self.collectionView.center;
-        [self.view addSubview:_emptyTipLabel];
-    }
-    return _emptyTipLabel;
+@end
+
+
+@implementation SCStoreScrollView
+
+//目的是让外层tableView接收其他手势
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
 }
 
 @end

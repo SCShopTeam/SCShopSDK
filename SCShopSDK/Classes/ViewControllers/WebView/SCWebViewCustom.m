@@ -439,10 +439,8 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
         
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     
-    if (manager.delegate && [manager.delegate respondsToSelector:@selector(scConfigCookiesWithUrl:wkweb:back:)]) {
-        [manager.delegate scConfigCookiesWithUrl:request  wkweb:self.myWebView.realWebView back:^(BOOL success) {
-            NSLog(@"%@",@"--sc-- 代理设置cookie成功回调");
-        }];
+    if (manager.delegate && [manager.delegate respondsToSelector:@selector(scConfigCookiesWithUrl:wkweb:)]) {
+        [manager.delegate scConfigCookiesWithUrl:request  wkweb:self.myWebView.realWebView];
     }else if([self.urlString containsString:@"wap.js.10086.cn"]){
       
 //        NSLog(@"--sc--  没有设置cookie代理，内部设置");
@@ -546,24 +544,12 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
         return;
     }
     
-    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
-    
-    if (manager.delegate && [manager.delegate respondsToSelector:@selector(scUserAgentWithUrl:back:)]) {
-        [manager.delegate scUserAgentWithUrl:self.urlString back:^(NSString * _Nonnull userAgent) {
-      
-                WKWebView* wkWebview = (WKWebView*)self.myWebView.realWebView;
-                
-                wkWebview.customUserAgent = userAgent;
-        }];
-    }else{
-                        
-        [self.myWebView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
-            WKWebView* wkWebview = (WKWebView*)self.myWebView.realWebView;
-            NSString *oldUA = result;
-            NSString *newUA =[NSString stringWithFormat:@"%@ Jsmcc/1.0 Mall/1.0 %@", oldUA, [SCUtilities suffixParameters:self.urlString]];
-            wkWebview.customUserAgent = newUA;
-        }];
-    }
+    [self.myWebView evaluateJavaScript:@"navigator.userAgent" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+        WKWebView* wkWebview = (WKWebView*)self.myWebView.realWebView;
+        NSString *oldUA = result;
+        NSString *newUA =[NSString stringWithFormat:@"%@ Jsmcc/1.0 Mall/1.0 %@", oldUA, [SCUtilities suffixParameters:self.urlString]];
+        wkWebview.customUserAgent = newUA;
+    }];
     
 }
 
@@ -773,7 +759,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
     
     if (![scheme hasPrefix:@"http"] && ![scheme hasPrefix:@"https"]) {
 
-        [[SCURLSerialization shareSerialization] gotoController:urlString navigation:self.navigationController];
+        [SCURLSerialization gotoController:urlString navigation:self.navigationController];
         
         return NO;
     }

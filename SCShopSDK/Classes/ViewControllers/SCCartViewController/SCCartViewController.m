@@ -27,56 +27,35 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self prepareUI];
-
-}
-
-- (void)prepareUI
-{
     self.title = @"购物车";
     
-    //环境切换
-    if (SC_CAN_CHANGE_ENVIRONMENT) {
-        UITapGestureRecognizer *mutiTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mutiTapAction)];
-        mutiTap.numberOfTapsRequired = 5;
-        [self.navigationController.navigationBar addGestureRecognizer:mutiTap];
-    }
-}
-
-- (void)mutiTapAction
-{
-    [SCNetworkTool changeRelease];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    if (!_collectionView) {
+        [self showLoading];
+    }
+    
     [self requestData];
+    
 }
 
 - (void)requestData
 {
-    dispatch_group_t group = dispatch_group_create();
-    // 请求购物车列表
-    dispatch_group_enter(group);
     [self.viewModel requestCartList:^(NSString * _Nullable errorMsg) {
-        dispatch_group_leave(group);
-    }];
-
-    // 请求为你推荐
-    if (!self.viewModel.recommendList) {
-        dispatch_group_enter(group);
-        [self.viewModel requestRecommend:^(NSString * _Nullable errorMsg) {
-            dispatch_group_leave(group);
-        }];
-    }
-
-
-    // 当上述两个请求结束后，收到通知，在此做后续工作
-    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
         [self stopLoading];
         [self.collectionView reloadData];
-    });
+    }];
+    
+    if (!self.viewModel.recommendList) {
+        [self.viewModel requestRecommend:^(NSString * _Nullable errorMsg) {
+            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:1]];
+        }];
+    }
+    
     
 }
 
@@ -114,7 +93,7 @@
     }
 }
 
-    
+
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
 {
     if (section == 0) { //商品
@@ -145,7 +124,7 @@
         height = VALID_ARRAY(self.viewModel.cartList) ? 0 : SCREEN_FIX(200);
         
     }else {
-        height = SCREEN_FIX(29.5);
+        height = VALID_ARRAY(self.viewModel.recommendList) ? SCREEN_FIX(29.5) : 0;
     }
     return CGSizeMake(width, height);
     
@@ -175,7 +154,7 @@
             [header addSubview:imageView];
         }
         
-
+        
         return header;
     }
     
@@ -207,12 +186,13 @@
         
         cell.commitBlock = ^{
             @strongify(self)
-            [self commitCart:model];
+            NSString *url = [self.viewModel getOrderUrl:model];
+            [SCURLSerialization gotoWebcustom:url title:@"" navigation:self.navigationController];
         };
         
         cell.rowClickBlock = ^(NSString *url) {
             @strongify(self)
-            [self pushDetail:url];
+            [SCURLSerialization gotoWebcustom:url title:@"" navigation:self.navigationController];
         };
         
         return cell;
@@ -230,22 +210,9 @@
 {
     if (indexPath.section != 0) { //为你推荐
         SCCommodityModel *model = self.viewModel.recommendList[indexPath.row];
-        [[SCURLSerialization shareSerialization] gotoWebcustom:model.detailUrl title:@"" navigation:self.navigationController];
+        [SCURLSerialization gotoWebcustom:model.detailUrl title:@"" navigation:self.navigationController];
         
     }
-}
-
-
-- (void)commitCart:(SCCartModel *)cart
-{   
-    NSString *url = [self.viewModel getOrderUrl:cart];
-
-    [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"" navigation:self.navigationController];
-}
-
-- (void)pushDetail:(NSString *)url
-{
-    [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"" navigation:self.navigationController];
 }
 
 - (void)deleteCartItem:(SCCartItemModel *)item needConfirm:(BOOL)needConfirm
@@ -282,7 +249,7 @@
 {
     if (!_collectionView) {
         UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
-        layout.scrollDirection         = UICollectionViewScrollDirectionVertical;
+        layout.scrollDirection = UICollectionViewScrollDirectionVertical;
         
         CGFloat h = SCREEN_HEIGHT - NAV_BAR_HEIGHT - (self.isMainTabVC ? TAB_BAR_HEIGHT: 0);
         
@@ -296,10 +263,10 @@
         [_collectionView registerClass:SCCartStoreCell.class forCellWithReuseIdentifier:NSStringFromClass(SCCartStoreCell.class)];
         [_collectionView registerClass:SCCartEmptyView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCCartEmptyView.class)];
         [_collectionView registerClass:UICollectionReusableView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(UICollectionReusableView.class)];
-
+        
         //
         [_collectionView showsRefreshHeader];
-//        [_collectionView showsRefreshFooter];
+        //        [_collectionView showsRefreshFooter];
         @weakify(self)
         _collectionView.refreshingBlock = ^(NSInteger page) {
             @strongify(self)

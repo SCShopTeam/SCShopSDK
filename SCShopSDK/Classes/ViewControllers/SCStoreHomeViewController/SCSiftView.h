@@ -7,17 +7,30 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SCCategoryViewModel.h"
+
+@class SCSiftItem;
 
 NS_ASSUME_NONNULL_BEGIN
 
 
 @interface SCSiftView : UIView
 
-@property (nonatomic, assign, readonly) SCCategorySortKey currentSortKey;
-@property (nonatomic, assign, readonly) SCCategorySortType currentSortType;
+@property (nonatomic, strong, readonly) NSArray <SCSiftItem *>*itemList;
 
-@property (nonatomic, copy) void (^selectBlock)(void);
+@property (nonatomic, copy) void (^selectBlock)(NSInteger index);
+
+- (void)setCurrentIndex:(NSInteger)currentIndex;
+
+@end
+
+@interface SCSiftItem : NSObject
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic, assign) BOOL sort;      //是否有排序
+@property (nonatomic, assign) BOOL selected;  //是否被选中
+@property (nonatomic, assign) BOOL isAscend;  //是否是升序
+@property (nonatomic, assign) SCCategorySortKey sortKey;
+
+@property (nonatomic, copy) void (^updateTypeBlock)(void);
 
 @end
 

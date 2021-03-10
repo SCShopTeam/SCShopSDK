@@ -2,37 +2,28 @@
 //  SCStoreHomeViewModel.h
 //  shopping
 //
-//  Created by gejunyu on 2020/8/13.
-//  Copyright © 2020 jsmcc. All rights reserved.
+//  Created by gejunyu on 2021/3/8.
+//  Copyright © 2021 jsmcc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "SCCategoryViewModel.h"
 #import "SCTenantInfoModel.h"
-#import "SCCommodityModel.h"
-@class SCStoreHomeCacheModel;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCStoreHomeViewModel : NSObject
 
 @property (nonatomic, strong, readonly) SCTenantInfoModel *tenantInfo;
-@property (nonatomic, weak, readonly) SCStoreHomeCacheModel *currentCacheModel; 
+@property (nonatomic, strong, readonly) NSMutableArray<SCCommodityModel *> * commodityList;
+@property (nonatomic, assign, readonly) BOOL hasNoData;
 
 - (void)requestTenantInfo:(NSString *)tenantNum completion:(SCHttpRequestCompletion)completion;
 
-- (void)getCommodityList:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum showCache:(BOOL)showCache showHud:(BOOL)showHud completion:(SCHttpRequestCompletion)completion;
+- (void)requestCommodityList:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum completion:(SCHttpRequestCompletion)completion;
 
 
 - (nullable NSString *)getOnlineServiceUrl:(NSString *)tenantNum;
 
-@end
-
-
-@interface SCStoreHomeCacheModel : NSObject
-@property (nonatomic, strong) NSMutableArray <SCCommodityModel *> *commodityList;
-@property (nonatomic, assign) NSInteger page;
-@property (nonatomic, assign) BOOL hasMoreData;
 @end
 
 NS_ASSUME_NONNULL_END

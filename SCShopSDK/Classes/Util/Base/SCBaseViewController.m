@@ -55,7 +55,7 @@
 {
     self.view.backgroundColor = [UIColor whiteColor];
     
-    if (self.navigationController /* && [[self.navigationController viewControllers] count] > 1 */) {
+    if (self.navigationController && [[self.navigationController viewControllers] count] > 1) {
         self.navigationItem.leftBarButtonItem = [SCUtilities makeBarButtonWithIcon:SCIMAGE(@"newnavbar_back") target:self action:@selector(backBarButtonPressed) isLeft:YES];
         
     }
@@ -69,13 +69,7 @@
 {
     [self stopLoading];
     
-    if (self == self.navigationController.viewControllers.firstObject) {
-        [SCShoppingManager dissmissMallPage];
-        
-    }else {
-        [self.navigationController popViewControllerAnimated:YES];
-        
-    }
+    [self.navigationController popViewControllerAnimated:YES];
   
 }
 

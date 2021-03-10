@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
     s.name             = 'SCShopSDK'
-    s.version          = '1.9.5'
+    s.version          = '2.0.0'
     s.summary          = 'shopping'
     
     # This description is used to generate tags and improve search results.
@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
     #####代码
     s.source_files = 'SCShopSDK/Classes/**/*.{h,m,pch}','SCShopSDK/Classes/**/**/*.{h,m}','SCShopSDK/Classes/**/**/**/*.{h,m}','SCShopSDK/Classes/**/**/**/**/*.{h,m}'
     
-    s.public_header_files = 'SCShopSDK/Classes/Util/SCShoppingManager.h', 'SCShopSDK/Classes/ViewControllers/WebView/SCURLSerialization.h','SCShopSDK/Classes/Util/SCShopSDK.h','SCShopSDK/Classes/Views/SCCustomAlertController.h'
+    s.public_header_files = 'SCShopSDK/Classes/Util/SCShoppingManager.h', 'SCShopSDK/Classes/Util/SCURLSerialization.h','SCShopSDK/Classes/Util/SCShopSDK.h'
     s.prefix_header_file = 'SCShopSDK/Classes/Util/SCCommonPrefix.pch'
     ######
     

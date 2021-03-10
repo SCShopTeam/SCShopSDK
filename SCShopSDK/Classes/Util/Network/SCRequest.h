@@ -7,7 +7,29 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SCCategoryModel.h"
+#import "SCCommodityModel.h"
 NS_ASSUME_NONNULL_BEGIN
+
+typedef NS_ENUM(NSInteger, SCCategorySortKey) {
+    SCCategorySortKeyRecommand, //推荐
+    SCCategorySortKeyTime,      //上新
+    SCCategorySortKeyPrice,     //价格
+    SCCategorySortKeySale,      //销量
+    
+};
+
+typedef NS_ENUM(NSInteger, SCCategorySortType) {
+    SCCategorySortTypeDesc,  //倒序
+    SCCategorySortTypeAsc    //升序
+};
+//
+
+typedef void(^SCCategoryBlock)(NSArray <SCCategoryModel *> *categoryList);
+
+typedef void(^SCCommodityBlock)(NSArray <SCCommodityModel *> *commodityList);
+
+
 @interface SCRequest : NSObject
 
 //登录1
@@ -40,11 +62,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 //分类查询（大类）
-+(void)scCategoryListBlock:(void(^_Nullable)(BOOL success, NSArray * _Nullable objArr, NSString * _Nullable errMsg))callBack;
+//+(void)scCategoryListBlock:(void (^)(BOOL, NSArray * _Nullable, NSString * _Nullable))callBack;
++ (void)requestCategory:(SCCategoryBlock)successBlock failure:(SCHttpRequestFailed)failureBlock;
 
 
 //品类列表查询
-+(void)scCategoryCommoditiesList:(NSDictionary *_Nullable)param block:(void(^_Nullable)(BOOL success, NSDictionary * _Nullable objArr, NSString * _Nullable errMsg))callBack;
+//+(void)scCategoryCommoditiesList:(NSDictionary *_Nullable)param block:(void(^_Nullable)(BOOL success, NSDictionary * _Nullable objArr, NSString * _Nullable errMsg))callBack;
++ (void)requestCommoditiesWithTypeNum:(nullable NSString *)typeNum brandNum:(nullable NSString *)brandNum tenantNum:(nullable NSString *)tenantNum categoryName:(nullable NSString *)categoryName cityNum:(nullable NSString *)cityNum isPreSale:(BOOL)isPreSale sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum success:(SCCommodityBlock)successBlock failure:(SCHttpRequestFailed)failureBlock;
+
+
+//为你推荐    品类列表封装接口
++ (void)requestRecommend:(SCCommodityBlock)successBlock failure:(SCHttpRequestFailed)failureBlock;
+
 
 //商城订单列表
 +(void)scMyOrderList_scParam:(NSDictionary *)param block:(void(^_Nullable)(BOOL success, NSDictionary * _Nullable objDic, NSString * _Nullable errMsg))callBack;

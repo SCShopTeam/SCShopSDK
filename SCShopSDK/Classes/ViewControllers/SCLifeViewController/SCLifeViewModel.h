@@ -14,7 +14,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCLifeViewModel : NSObject
-@property (nonatomic, assign, readonly) BOOL hasMoreData;
+@property (nonatomic, assign, readonly) BOOL hasNoData;
 @property (nonatomic, strong, readonly) NSArray <SCCategoryModel *> *categoryList;
 @property (nonatomic, strong, readonly) NSArray <SCLifeSubViewController *> *subVcList;
 @property (nonatomic, strong, readonly) NSMutableArray <SCCommodityModel *> *commodityList;

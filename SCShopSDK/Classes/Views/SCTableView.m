@@ -135,5 +135,9 @@
     }
 }
 
+//目的是让外层tableView接收其他手势
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return self.shouldRecognizeSimultaneouslyWithOtherGestureRecognizer;
+}
 
 @end

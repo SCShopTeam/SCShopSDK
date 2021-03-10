@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) SCWitStoreGoodModel *model;
 
+- (void)getData; //假数据
+
 @end
 
 NS_ASSUME_NONNULL_END

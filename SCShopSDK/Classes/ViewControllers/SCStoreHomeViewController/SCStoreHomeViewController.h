@@ -2,8 +2,8 @@
 //  SCStoreHomeViewController.h
 //  shopping
 //
-//  Created by gejunyu on 2020/7/23.
-//  Copyright © 2020 jsmcc. All rights reserved.
+//  Created by gejunyu on 2021/3/8.
+//  Copyright © 2021 jsmcc. All rights reserved.
 //
 
 #import "SCBaseViewController.h"
@@ -12,8 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCStoreHomeViewController : SCBaseViewController
 
-
-@property(nonatomic,strong)NSString *tenantNum;
+@property (nonatomic, copy) NSString *tenantNum;
 
 @end
 

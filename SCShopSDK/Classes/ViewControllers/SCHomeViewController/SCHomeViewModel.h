@@ -2,58 +2,51 @@
 //  SCHomeViewModel.h
 //  shopping
 //
-//  Created by gejunyu on 2020/8/7.
-//  Copyright © 2020 jsmcc. All rights reserved.
+//  Created by gejunyu on 2021/3/2.
+//  Copyright © 2021 jsmcc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "SCCategoryModel.h"
-#import "SCCommodityModel.h"
 #import "SCHomeTouchModel.h"
 #import "SCHomeStoreModel.h"
-@class SCHomeCacheModel;
-
+#import "SCCategoryModel.h"
+#import "SCCommodityModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCHomeViewModel : NSObject
-@property (nonatomic, strong, readonly) NSArray <SCCategoryModel *> *categoryList;                //分类
-@property (nonatomic, weak) SCHomeCacheModel *currentCacheModel;                                  //商品列表缓存
-@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *bannerList;                 //banner
-@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *touchList;                  //触点
+
+@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *topList;
+@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *bannerList;
+@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *gridList;
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *adList;                     //广告
-@property (nonatomic, strong, readonly) SCHomeStoreModel *recommendStoreModel;                    //推荐门店
-@property (nonatomic, strong, readonly) NSArray <SCHomeStoreModel *> *goodStoreList;              //发现好店
 @property (nonatomic, strong, readonly) NSDictionary <NSNumber *, SCHomeTouchModel *> *popupDict; //弹窗
 
-@property (nonatomic, assign, readonly) BOOL isCategoryRequesting;                                //是否正在请求分类信息和商品
+@property (nonatomic, strong, readonly) SCHomeStoreModel *recommendStoreModel;                    //推荐门店
+@property (nonatomic, strong, readonly) NSArray <SCHomeStoreModel *> *goodStoreList;              //发现好店
 
+@property (nonatomic, strong, readonly) NSArray <SCCategoryModel *> *categoryList;                //分类
 
-- (void)requestCategoryList:(SCHttpRequestCompletion)completion;
+@property (nonatomic, strong, readonly) NSMutableArray<SCCommodityModel *> *commodityList; //商品
+@property (nonatomic, assign, readonly) BOOL hasNoData;
 
-- (void)getCommodityList:(NSInteger)pageNum showCache:(BOOL)showCache completion:(SCHttpRequestCompletion)completion;
-
+//触点
 - (void)requestTouchData:(UIViewController *)viewController success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
 
+//店铺
 - (void)requestStoreList:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
 
-- (SCHomeCacheModel *)getCacheModel:(NSInteger)index;
-
-- (void)clear;
-
-
+//弹窗
 //触点展示
 - (void)touchShow:(SCHomeTouchModel *)model;
 //触点点击
 - (void)touchClick:(SCHomeTouchModel *)model;
 
-@end
+//分类
+- (void)requestCategoryList:(SCHttpRequestCompletion)completion;
 
-
-@interface SCHomeCacheModel : NSObject
-@property (nonatomic, strong) NSMutableArray <SCCommodityModel *> *commodityList;
-@property (nonatomic, assign) NSInteger page;
-@property (nonatomic, assign) BOOL hasMoreData;
+//商品
+- (void)requestCommodityListData:(NSString *)typeNum pageNum:(NSInteger)pageNum completion:(SCHttpRequestCompletion)completion;
 
 @end
 

@@ -11,6 +11,7 @@
 #import <AdSupport/ASIdentifierManager.h>
 #import "SCShoppingManager.h"
 #import "UIDevice+SCExtension.h"
+#import "SCLocationService.h"
 
 @interface SCUtilities ()
 AS_SINGLETON(SCUtilities)
@@ -157,157 +158,43 @@ DEF_SINGLETON(SCUtilities)
     return @"";
 }
 
-
-+ (UIBarButtonItem *)makeBarButton:(NSString *)title target:(id)target action:(SEL)selector isLeft:(BOOL)left
-{
-    UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button addTarget:target
-               action:selector
-     forControlEvents:UIControlEventTouchUpInside];
-    UIImage *image = SCIMAGE(@"newnavbar_back");
-    
-    CGSize size = CGSizeMake(0, 0);
-    if([SCUtilities isValidString:title])
-    {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
-        NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [UIFont boldSystemFontOfSize:14], NSFontAttributeName, nil];
-        CGRect rect = [title boundingRectWithSize:CGSizeMake(1000, 200)  options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
-       size = rect.size;
-#else
-        size = [title sizeWithFont:[UIFont boldSystemFontOfSize:14] constrainedToSize:CGSizeMake(1000, 200) lineBreakMode:NSLineBreakByWordWrapping];
-#endif
-    }
-
-    button.frame = CGRectMake(0,
-                              0,
-                              size.width+5,
-                              image.size.height);
-    [button setTitle:title
-            forState:UIControlStateNormal];
-    [button.titleLabel setFont:[UIFont boldSystemFontOfSize:14]];
-    [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [button.titleLabel setShadowOffset:CGSizeMake(0, 1)];
-    [view addSubview:button];
-    [view setFrame:CGRectMake(0, 0, size.width+5, image.size.height)];
-    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:view];
-    return barButtonItem;
-}
-
-+ (UIBarButtonItem *)makeBarButton:(NSString *)title titleColor:(NSString *)titleColor target:(id)target action:(SEL)selector isLeft:(BOOL)left
-{
-    UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button addTarget:target
-               action:selector
-     forControlEvents:UIControlEventTouchUpInside];
-    UIImage *image = SCIMAGE(@"newnavbar_back");
-    
-    CGSize size = CGSizeMake(0, 0);
-    if([SCUtilities isValidString:title])
-    {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
-        NSDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: [UIFont boldSystemFontOfSize:14], NSFontAttributeName, nil];
-        CGRect rect = [title boundingRectWithSize:CGSizeMake(1000, 200)  options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil];
-        size = rect.size;
-#else
-        size = [title sizeWithFont:[UIFont boldSystemFontOfSize:14] constrainedToSize:CGSizeMake(1000, 200) lineBreakMode:NSLineBreakByWordWrapping];
-#endif
-    }
-    
-    button.frame = CGRectMake(0,
-                              0,
-                              size.width+5,
-                              image.size.height);
-    [button setTitle:title
-            forState:UIControlStateNormal];
-    [button.titleLabel setFont:[UIFont boldSystemFontOfSize:14]];
-    if ([SCUtilities isValidString:titleColor]) {
-        [button setTitleColor:[UIColor colorWithHex:titleColor] forState:UIControlStateNormal];
-    }else{
-        [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    }
-    [button.titleLabel setShadowOffset:CGSizeMake(0, 1)];
-    [view addSubview:button];
-    [view setFrame:CGRectMake(0, 0, size.width+5, image.size.height)];
-    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:view];
-    return barButtonItem;
-}
-
-
 + (UIBarButtonItem *)makeBarButtonWithIcon:(UIImage *)image target:(id)target action:(SEL)selector isLeft:(BOOL)left
 {
-    UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
+    UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, image.size.width+20, 44)];
     
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button addTarget:target
-               action:selector
-     forControlEvents:UIControlEventTouchUpInside];
-//    UIImage *imageBg = nil;
-//
-//    imageBg = SCIMAGE(@"newnavbar_back");
+    UIButton *button = [[UIButton alloc] initWithFrame:bgView.bounds];
     
-    button.frame = CGRectMake(0 /*- kIOSEdgeInsets*/,
-                              0,
-                              image.size.width+20,
-                              44);
-//    image = [image imageWithTintColor:[UIColor blackColor]];
-    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    [button setImage:image forState:UIControlStateNormal];
+    if (target && selector) {
+        [button addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
+    }
+
+    [button setImage:[image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+    button.adjustsImageWhenHighlighted = NO;
     //左边按钮居左，右边按钮图片居右，为了实现左右的间距一样
-    if(left)
-    {
-        [button setImageEdgeInsets:UIEdgeInsetsMake(0, -(button.size.width-image.size.width)/2, 0, 0)];
-    }
-    else
-    {
-        [button setImageEdgeInsets:UIEdgeInsetsMake(0, (button.size.width-image.size.width)/2, 0, 0)];
-    }
+    CGFloat imgLeftEdge = left ? (-(button.size.width-image.size.width)/2) : ((button.size.width-image.size.width)/2);
+    button.imageEdgeInsets = UIEdgeInsetsMake(0, imgLeftEdge, 0, 0);
+    button.tag = 4238;
+
+    [bgView addSubview:button];
     
-    [button setAdjustsImageWhenHighlighted:NO];
-    [view addSubview:button];
-    [view setFrame:CGRectMake(0, 0, image.size.width+20, 44)];
-    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:view];
+    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:bgView];
+    
     return barButtonItem;
 }
 
-
-+ (UIBarButtonItem *)makeBarButtonWithIcon2:(UIImage *)image target:(id)target action:(SEL)selector isLeft:(BOOL)left
++ (UIBarButtonItem *)makeBarButtonWithIcon:(UIImage *)image isLeft:(BOOL)left handler:(nonnull void (^)(id _Nonnull))handler
 {
-    UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
+    UIBarButtonItem *item = [self makeBarButtonWithIcon:image target:nil action:nil isLeft:left];
+    UIButton *btn = [item.customView viewWithTag:4238];
+    [btn sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+        if (handler) {
+            handler(sender);
+        }
+    }];
     
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button addTarget:target
-               action:selector
-     forControlEvents:UIControlEventTouchUpInside];
-    //    UIImage *imageBg = nil;
-    //
-    //    imageBg = SCIMAGE(@"newnavbar_back");
+    return item;
     
-    button.frame = CGRectMake(0 /*- kIOSEdgeInsets*/,
-                              0,
-                              image.size.width+20,
-                              44);
-    [button setImage:image forState:UIControlStateNormal];
-    //左边按钮居左，右边按钮图片居右，为了实现左右的间距一样
-    if(left)
-    {
-        [button setImageEdgeInsets:UIEdgeInsetsMake(0, -(button.size.width-image.size.width)/2, 0, 0)];
-    }
-    else
-    {
-        [button setImageEdgeInsets:UIEdgeInsetsMake(0, (button.size.width-image.size.width)/2, 0, 0)];
-    }
-    
-    [button setAdjustsImageWhenHighlighted:NO];
-    [view addSubview:button];
-    [view setFrame:CGRectMake(0, 0, image.size.width+20, 44)];
-    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:view];
-    return barButtonItem;
 }
-
 
 + (NSMutableAttributedString *)priceAttributedString:(CGFloat)price font:(UIFont *)font color:(UIColor *)color
 {
@@ -392,39 +279,44 @@ DEF_SINGLETON(SCUtilities)
     
 }
 
-
 //获取vc
-+ (void)registerTabBarController:(UITabBarController *)tabBarVc
-{
-    //这个tabbarvc不是掌厅delegate的rootvc,不容易获取，所以用单例保留，方便获取
-    [SCUtilities sharedInstance].tabBarVc = tabBarVc;
-}
-
 + (UITabBarController *)currentTabBarController
 {
-    return [SCUtilities sharedInstance].tabBarVc;
+    UIViewController *vc = [UIApplication sharedApplication].delegate.window.rootViewController;
+    
+    return [vc isKindOfClass:UITabBarController.class] ? (UITabBarController *)vc : nil;
 }
 
 + (UINavigationController *)currentNavigationController
 {
-    UITabBarController *tabBarVc = [SCUtilities sharedInstance].tabBarVc;
+    UITabBarController *tabBarVc = [SCUtilities currentTabBarController];
     if (!tabBarVc) {
         return nil;
     }
     
     NSInteger currentIndex = tabBarVc.selectedIndex;
-    UINavigationController *navVc = tabBarVc.viewControllers[currentIndex];
-    return navVc;
+    UIViewController *vc = tabBarVc.viewControllers[currentIndex];
+
+    return [vc isKindOfClass:UINavigationController.class] ? (UINavigationController *)vc : nil;
 }
 
 + (UIViewController *)currentViewController
 {
-    UINavigationController *navVc = [self currentNavigationController];
-    if (!navVc) {
+    UITabBarController *tabBarVc = [SCUtilities currentTabBarController];
+    if (!tabBarVc) {
         return nil;
     }
     
-    return navVc.topViewController;
+    NSInteger currentIndex = tabBarVc.selectedIndex;
+    
+    UIViewController *vc = tabBarVc.viewControllers[currentIndex];
+    
+    if ([vc isKindOfClass:UINavigationController.class]) {
+        return ((UINavigationController *) vc).topViewController;
+        
+    }else {
+        return vc;
+    }
 }
 
 + (void)tapticEngineShake
@@ -570,11 +462,11 @@ DEF_SINGLETON(SCUtilities)
     NSString *time = [dateFormatter stringFromDate:[NSDate date]];
     NSString *netMode = [SCNetworkTool networkType];
     
-    NSDictionary *locationInfo = [SCCacheManager getCachedObjectWithKey:@"LocationInfo"];
-    NSString *lng = locationInfo[@"longitude"];
-    NSString *lat = locationInfo[@"latitude"];
-    NSString *poi = locationInfo[@"locationAddress"];
-    NSString *cityCode =  locationInfo[@"cityCode"];
+    SCLocationService *ls = [SCLocationService sharedInstance];
+    NSString *lng = ls.longitude;
+    NSString *lat = ls.latitude;
+    NSString *poi = ls.locationAddress;
+    NSString *cityCode = ls.cityCode;
     
     NSMutableString *temp = [loginMobile mutableCopy];
     if (![SCUtilities isValidString:temp])
@@ -629,7 +521,7 @@ DEF_SINGLETON(SCUtilities)
     [suffix appendFormat:@"platformExpland=%@&", [UIDevice machineModelName]];
 //    [suffix appendFormat:@"idfa=%@&", [self  IDFA]];
     [suffix appendFormat:@"%@", [SCUtilities headjointparam:[NSString stringWithFormat:@"idfaMd5=%@&",[self IDFA] ] paramName:@"idfaMd5" currentUrl:requesturl]];
-    [suffix appendFormat:@"cmtokenid=%@&",[SCGetAuthToken cmtokenId]];// shareInstance].sessionId];
+    [suffix appendFormat:@"cmtokenid=%@&",[SCUserInfo currentUser].cmtokenid];// shareInstance].sessionId];
     [suffix appendFormat:@"sign=%@&", sign];
     [suffix appendFormat:@"sign2=%@&", sign2];
     [suffix appendFormat:@"sign3=%@", sign3];
@@ -819,6 +711,10 @@ DEF_SINGLETON(SCUtilities)
 //拨打电话
 + (void)call:(NSString *)phoneNum
 {
+    if (!VALID_STRING(phoneNum)) {
+        return;
+    }
+    
     UIWebView * callWebview = [[UIWebView alloc] init];
     
     NSString *phoneStr = [NSString stringWithFormat:@"tel:%@",phoneNum];
@@ -828,5 +724,18 @@ DEF_SINGLETON(SCUtilities)
     [[UIApplication sharedApplication].keyWindow addSubview:callWebview];
 
 }
+
+
++ (void)postLoginSuccessNotification //登录成功
+{
+//    [[NSNotificationCenter defaultCenter] postNotificationName:SCNOTI_LOGIN_SUCCESS object:nil];
+    //商城内部webView的通知H5登陆成功刷新页面，如果
+    [[NSNotificationCenter defaultCenter]postNotificationName:@"ocCallBackJsFunction" object:@{@"name":@"ztLoginCallBack"}];
+}
+
+//+ (void)postLoginOutNotification     //退出登录
+//{
+//    [[NSNotificationCenter defaultCenter] postNotificationName:SCNOTI_LOGIN_OUT object:nil];
+//}
 
 @end

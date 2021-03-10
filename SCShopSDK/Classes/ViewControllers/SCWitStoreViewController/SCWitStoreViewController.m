@@ -353,16 +353,16 @@
 - (void)pushToWebView:(NSString *)url title:(NSString *)title
 {
     [self hideNoNeedUI];
-    [[SCURLSerialization shareSerialization] gotoWebcustom:url title:@"" navigation:self.navigationController];
+    [SCURLSerialization gotoWebcustom:url title:@"" navigation:self.navigationController];
 }
 
 - (void)orderOnline:(SCWitStoreModel *)storeModel indexPath:(nullable NSIndexPath *)indexPath
 {
-    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     if (![SCUserInfo currentUser].isLogin) { //未登录，先登录
+        SCShoppingManager *manager = [SCShoppingManager sharedInstance];
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
             [manager.delegate scLoginWithNav:self.navigationController back:^(UIViewController * _Nonnull controller) {
-                [[NSNotificationCenter defaultCenter] postNotificationName:SC_LOGINED_NOTIFICATION object:nil];
+                [SCUtilities postLoginSuccessNotification];
                 [self requestOrder:storeModel indexPath:indexPath];
             }];
         }
@@ -416,7 +416,7 @@
         @weakify(self)
         [_notificationView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
             @strongify(self)
-            [[SCURLSerialization shareSerialization] gotoWebcustom:SC_ONE_HOUR_URL title:@"" navigation:self.navigationController];
+            [SCURLSerialization gotoWebcustom:SC_ONE_HOUR_URL title:@"" navigation:self.navigationController];
         }];
         
     }

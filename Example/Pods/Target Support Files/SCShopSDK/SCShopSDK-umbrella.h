@@ -13,7 +13,6 @@
 #import "SCShoppingManager.h"
 #import "SCURLSerialization.h"
 #import "SCShopSDK.h"
-#import "SCCustomAlertController.h"
 
 FOUNDATION_EXPORT double SCShopSDKVersionNumber;
 FOUNDATION_EXPORT const unsigned char SCShopSDKVersionString[];

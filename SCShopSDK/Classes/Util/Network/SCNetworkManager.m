@@ -150,11 +150,9 @@ static AFHTTPSessionManager *_sessionManager;
                    failure:(SCHttpRequestFailed)failure {
     
     NSMutableDictionary *param = [[SCRequestParams shareInstance]getParams];
+    
     if (VALID_DICTIONARY(parameters)) {
-        for (NSString *key in parameters.allKeys) {
-            id value = parameters[key];
-            param[key] = value;
-        }
+        [param addEntriesFromDictionary:parameters];
     }
     
 //    if ([URL containsString:@"order/queryMyOrders"]) {
@@ -175,12 +173,6 @@ static AFHTTPSessionManager *_sessionManager;
         cmtokenid = [NSString stringWithFormat:@"cmtokenid=%@",cmtokenid];
     }
     [_sessionManager.requestSerializer setValue:appPwd forHTTPHeaderField:@"appPwd"];
-    
-    //>>>>删
-    if ([SCUtilities isInShoppingDebug]) {
-        [_sessionManager.requestSerializer setValue:cmtokenid forHTTPHeaderField:@"Cookie"];
-    }
-
     
     NSURLSessionTask *sessionTask = [_sessionManager POST:URL parameters:param headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         

@@ -29,7 +29,7 @@ static SCRequestParams *params = nil;
 
 -(NSString *)sessionId{
     
-    _sessionId = [SCGetAuthToken cmtokenId];
+    _sessionId = [SCUserInfo currentUser].cmtokenid;
     return _sessionId;
 }
 

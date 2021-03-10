@@ -28,6 +28,10 @@
 
 - (void)setCategoryList:(NSArray<SCCategoryModel *> *)categoryList
 {
+    if (categoryList == _categoryList) {
+        return;
+    }
+    
     _categoryList = categoryList;
     
     //计算宽度

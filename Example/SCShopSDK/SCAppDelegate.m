@@ -7,12 +7,22 @@
 //
 
 #import "SCAppDelegate.h"
+#import "MainTabBarController.h"
+#import <SCShopSDK/SCShopSDK.h>
+#import "SCShopDelegateUtil.h"
+
 
 @implementation SCAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+    
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.window.rootViewController = [MainTabBarController new];
+    [self.window makeKeyAndVisible];
+    
+    [SCShoppingManager sharedInstance].delegate = [SCShopDelegateUtil sharedInstance];
+    
     return YES;
 }
 

@@ -2,8 +2,8 @@
 //  SCHomeViewController.h
 //  shopping
 //
-//  Created by gejunyu on 2020/7/3.
-//  Copyright © 2020 jsmcc. All rights reserved.
+//  Created by gejunyu on 2021/3/2.
+//  Copyright © 2021 jsmcc. All rights reserved.
 //
 
 #import "SCBaseViewController.h"

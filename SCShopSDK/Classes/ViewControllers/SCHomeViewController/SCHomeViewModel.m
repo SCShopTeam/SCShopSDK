@@ -2,192 +2,45 @@
 //  SCHomeViewModel.m
 //  shopping
 //
-//  Created by gejunyu on 2020/8/7.
-//  Copyright © 2020 jsmcc. All rights reserved.
+//  Created by gejunyu on 2021/3/2.
+//  Copyright © 2021 jsmcc. All rights reserved.
 //
 
 #import "SCHomeViewModel.h"
-#import "SCCategoryViewModel.h"
 #import "SCShoppingManager.h"
-#import "SCCacheManager.h"
-#import "SCLocationService.h"
 #import "SCPopupManager.h"
+#import "SCLocationService.h"
 
 @interface SCHomeViewModel ()
-@property (nonatomic, strong) NSArray <SCCategoryModel *> *categoryList;
+@property (nonatomic, assign) BOOL isTouchRequesting;
+@property (nonatomic, strong) NSArray <SCHomeTouchModel *> *topList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *bannerList;
-@property (nonatomic, strong) NSArray <SCHomeTouchModel *> *touchList;
+@property (nonatomic, strong) NSArray <SCHomeTouchModel *> *gridList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *adList;                     //广告
-@property (nonatomic, strong) SCHomeStoreModel *recommendStoreModel;                    //推荐门店
-@property (nonatomic, strong) NSArray <SCHomeStoreModel *> *goodStoreList;              //发现好店
 @property (nonatomic, strong) NSDictionary <NSNumber *, SCHomeTouchModel *> *popupDict; //弹窗
 
 @property (nonatomic, assign) BOOL isStoreRequesting;
-//@property (nonatomic, weak) SCHomeCacheModel *currentCacheModel;                      //商品列表缓存
-@property (nonatomic, strong) NSMutableDictionary <NSNumber *, SCHomeCacheModel *> *commodityDict;
+@property (nonatomic, strong) SCHomeStoreModel *recommendStoreModel;                    //推荐门店
+@property (nonatomic, strong) NSArray <SCHomeStoreModel *> *goodStoreList;              //发现好店
 
-@property (nonatomic, assign) BOOL isCategoryRequesting; //是否正在请求商品
+@property (nonatomic, assign) BOOL isCategoryRequesting; //是否正在请求分类
+@property (nonatomic, strong) NSArray <SCCategoryModel *> *categoryList;                //分类
 
-@property (nonatomic, assign) BOOL hasShowedTouch; //是否已经成功展示过触点
+@property (nonatomic, assign) BOOL isCommodityRequesting;
+@property (nonatomic, strong) NSMutableArray<SCCommodityModel *> *commodityList;
+@property (nonatomic, assign) BOOL hasNoData;
+
 
 @end
 
 @implementation SCHomeViewModel
 
-- (void)clear
-{
-    self.recommendStoreModel = nil;
-    self.goodStoreList = nil;
-    [self.commodityDict removeAllObjects];
-}
-
-- (void)requestCategoryList:(SCHttpRequestCompletion)completion
-{
-    self.isCategoryRequesting = YES;
-    [SCCategoryViewModel requestCategory:^(NSArray<SCCategoryModel *> * _Nonnull categoryList) {
-        categoryList.firstObject.selected = YES;  //默认第一个选中
-        self.categoryList = categoryList;
-        [self.commodityDict removeAllObjects];
-        
-        if (completion) {
-            completion(nil);
-        }
-  
-    } failure:^(NSString * _Nullable errorMsg) {
-        self.isCategoryRequesting = NO;
-        if (completion) {
-            completion(errorMsg);
-        }
-    }];
-}
-
-
-- (void)getCommodityList:(NSInteger)pageNum showCache:(BOOL)showCache completion:(SCHttpRequestCompletion)completion
-{
-    __block NSInteger index = 0;
-    [self.categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull cModel, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (cModel.selected) {
-            index = idx;
-            *stop = YES;
-        }
-    }];
-    
-    SCHomeCacheModel *cacheModel = self.commodityDict[@(index)];
-    
-    if (showCache && cacheModel) {
-        self.currentCacheModel = cacheModel;
-        if (completion) {
-            completion(nil);
-        }
-        self.isCategoryRequesting = NO;
-        
-    }else {
-        [self requestCommodityListData:pageNum index:index completion:completion];
-    }
-    
-    //同时提前请求并缓存下一个和前一个index的数据
-    [self cacheDataLast:index-1 next:index+1 completion:nil];
-
-}
-
-- (void)cacheDataLast:(NSInteger)lastIndex next:(NSInteger)nextIndex completion:(SCHttpRequestCompletion)completion
-{
-    if (lastIndex >= 0) {
-        SCHomeCacheModel *lastModel = self.commodityDict[@(lastIndex)];
-        if (!lastModel) {
-            [self requestCommodityListData:1 index:lastIndex completion:completion];
-        }
-    }
-    
-    if (nextIndex < self.categoryList.count) {
-        SCHomeCacheModel *nextModel = self.commodityDict[@(nextIndex)];
-        if (!nextModel) {
-            [self requestCommodityListData:1 index:nextIndex completion:completion];
-        }
-    }
-}
-
-- (void)requestCommodityListData:(NSInteger)pageNum index:(NSInteger)index completion:(SCHttpRequestCompletion)completion
-{
-
-    SCCategoryModel *categoryModel = self.categoryList[index];
-    NSString *typeNum = categoryModel.typeNum ?: @"";
-
-    [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
-        SCHomeCacheModel *cacheModel = self.commodityDict[@(index)];
-        if (!cacheModel) {
-            cacheModel = [SCHomeCacheModel new];
-            self.commodityDict[@(index)] = cacheModel;
-        }
-        
-        if (pageNum == 1) {
-            [cacheModel.commodityList removeAllObjects];
-        }
-        
-        [cacheModel.commodityList addObjectsFromArray:commodityList];
-        cacheModel.hasMoreData = commodityList.count >= kCountCurPage;
-        cacheModel.page = pageNum;
-        
-        if (categoryModel.selected) {
-            self.currentCacheModel = cacheModel;
-            if (completion) {
-                completion(nil);
-            }
-        }
-        self.isCategoryRequesting = NO;
-
-    } failure:^(NSString * _Nullable errorMsg) {
-        if (categoryModel.selected) {
-            self.currentCacheModel = nil;
-        }
-        
-        if (completion) {
-            completion(errorMsg);
-        }
-        self.isCategoryRequesting = NO;
-    }];
-    
-}
-
-- (SCHomeCacheModel *)getCacheModel:(NSInteger)index
-{
-    SCHomeCacheModel *model = self.commodityDict[@(index)];
-    return model;
-}
-
+#pragma mark -触点相关
 - (void)requestTouchData:(UIViewController *)viewController success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
-    if (self.hasShowedTouch) { //本次启动商城展示过触点后，不再请求触点数据
+    if (_isTouchRequesting) {
         return;
     }
-    
-        //>>>>删
-    if ([SCUtilities isInShoppingDebug]) {
-        NSDictionary *dict = @{@"SCDBBANNER_I":@{@"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/30725ab5dee54dc291439844f2e03641.png"},@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/77a9a0373014428e85bf6d30accabcf5.png"},@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/ca31256176734973b5915db2ce2bdd9a.jpg"}]
-                                                 
-        },
-                               @"SCSYCBLFC_I" : @{@"contactName" : @"商城首页侧边栏浮层",
-                                                  @"periodCount": @99,
-                                                  @"periodType":@"MONTH",
-                                                  @"cpmMax": @3,
-                                                  @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"nlasretyrefds,d"}]},
-                               @"SCSYZXDC_I" : @{@"contactName" : @"商城首页中心弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @5,
-                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"sddskghjdddddmghj31"}]},
-                               @"SCSYDBYXDC_I" : @{@"contactName" : @"商城首页底部异形弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @5,
-                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"sdfsdyjuserfgfdgfasaa12131"}]},
-                               @"SCSYDBGG_I":@{@"contactName":@"商城首页第八宫格",
-                                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",@"txt":@"话费购"}]
-                               }
-        };
-        
-
-        [self parsingTouchData:dict];
-        self.hasShowedTouch = YES;
-        success(nil);
-        
-        return;
-    }
-
     
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
 
@@ -197,8 +50,12 @@
         }
         return;
     }
+    
+    _isTouchRequesting = YES;
 
     [manager.delegate scADTouchDataFrom:viewController backData:^(id  _Nonnull touchData) {
+        self.isTouchRequesting = NO;
+        
         if (!VALID_DICTIONARY(touchData)) {
             if (failure) {
                 failure(@"get touch failure");
@@ -206,7 +63,6 @@
 
         }else {
             [self parsingTouchData:touchData];
-            self.hasShowedTouch = YES;
             if (success) {
                 success(nil);
             }
@@ -218,11 +74,23 @@
 
 - (void)parsingTouchData:(NSDictionary *)result
 {
-    //触点  排序
-    NSArray *touchIds = @[@"SCSYDYGG_I", @"SCSYDEGG_I", @"SCSYDSGG_I", @"SCSYDSGG1_I", @"SCSYDWGG_I", @"SCSYDLGG_I", @"SCSYDQGG_I", @"SCSYDBGG_I"];
-    NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:touchIds.count];
+    //顶部按钮
+    NSArray *topIds = @[@"DBBQLFL", @"DBBQLHD"];
+    NSMutableArray *tempTops = [NSMutableArray arrayWithCapacity:topIds.count];
     
-    for (NSString *touchId in touchIds) {
+    for (NSString *topId in topIds) {
+        NSMutableArray *models = [SCHomeTouchModel createModelsWithDict:result[topId]];
+        if (models.count > 0) {
+            [tempTops addObject:models.firstObject];
+        }
+    }
+    self.topList = tempTops.copy;
+    
+    //宫格
+    NSArray *gridIds = @[@"SCSYDYGG_I", @"SCSYDEGG_I", @"SCSYDSGG_I", @"SCSYDSGG1_I", @"SCSYDWGG_I", @"SCSYDLGG_I", @"SCSYDQGG_I", @"SCSYDBGG_I"];
+    NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:gridIds.count];
+    
+    for (NSString *touchId in gridIds) {
         NSMutableArray *models = [SCHomeTouchModel createModelsWithDict:result[touchId]];
         if (models.count > 0) {
             [mulArr addObject:models.firstObject];
@@ -230,7 +98,7 @@
 
     }
     
-    self.touchList = mulArr.copy;
+    self.gridList = mulArr.copy;
     
     //banner
     NSMutableArray *bannerModels = [SCHomeTouchModel createModelsWithDict:result[@"SCDBBANNER_I"]];
@@ -240,7 +108,7 @@
             [bannerModels removeObject:obj];
         }
     }];
-    self.bannerList = bannerModels;
+    self.bannerList = bannerModels.copy;
     
     //广告
     NSArray *adIds = @[@"SCSYHDWY_I", @"SCSYHDWE_I"];
@@ -279,7 +147,7 @@
     
 }
 
-
+#pragma mark -店铺
 - (void)requestStoreList:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
     if (self.isStoreRequesting) {
@@ -289,8 +157,6 @@
     [[SCLocationService sharedInstance] startLocation:^(NSString * _Nullable longitude, NSString * _Nullable latitude) {
         [self requestStoreDataWithLongitude:longitude latitude:latitude success:success failure:failure];
     }];
-    
-
     
 }
 
@@ -343,15 +209,7 @@
     }];
 }
 
-- (NSMutableDictionary<NSNumber *,SCHomeCacheModel *> *)commodityDict
-{
-    if (!_commodityDict) {
-        _commodityDict = [NSMutableDictionary dictionary];
-    }
-    return _commodityDict;
-}
-
-
+#pragma mark -弹窗触点
 //触点展示
 - (void)touchShow:(SCHomeTouchModel *)model
 {
@@ -368,17 +226,72 @@
 {
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     
-    if ([manager.delegate respondsToSelector:@selector(scADTouchClick:back:)]) {
+    if ([manager.delegate respondsToSelector:@selector(scADTouchClick:)]) {
         NSDictionary *dict = [model getParams];
-        [manager.delegate scADTouchClick:dict back:^{}];
+        [manager.delegate scADTouchClick:dict];
     }
 }
 
-@end
+#pragma mark -分类
+- (void)requestCategoryList:(SCHttpRequestCompletion)completion
+{
+    self.isCategoryRequesting = YES;
+    [SCRequest requestCategory:^(NSArray<SCCategoryModel *> * _Nonnull categoryList) {
+        self.isCategoryRequesting = YES;
+        
+        self.categoryList = categoryList;
+        
+        if (categoryList.count > 0) {
+            self.categoryList.firstObject.selected = YES; //默认第一个选中
+            
+        }
 
+        
+        if (completion) {
+            completion(nil);
+        }
+        
+    } failure:^(NSString * _Nullable errorMsg) {
+        self.isCategoryRequesting = NO;
+        if (completion) {
+            completion(errorMsg);
+        }
+    }];
+    
+}
 
-
-@implementation SCHomeCacheModel
+#pragma mark -商品
+- (void)requestCommodityListData:(NSString *)typeNum pageNum:(NSInteger)pageNum completion:(SCHttpRequestCompletion)completion
+{
+    if (_isCommodityRequesting) {
+        return;
+    }
+    
+    _isCommodityRequesting = YES;
+    
+    [SCRequest requestCommoditiesWithTypeNum:(typeNum?:@"") brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList) {
+        self.isCommodityRequesting = NO;
+        
+        if (pageNum == 1) {
+            [self.commodityList removeAllObjects];
+        }
+        
+        [self.commodityList addObjectsFromArray:commodityList];
+        self.hasNoData = commodityList.count < kCountCurPage;
+        
+        if (completion) {
+            completion(nil);
+        }
+        
+        
+    } failure:^(NSString * _Nullable errorMsg) {
+        self.isCommodityRequesting = NO;
+        
+        if (completion) {
+            completion(errorMsg);
+        }
+    }];
+}
 
 - (NSMutableArray<SCCommodityModel *> *)commodityList
 {

@@ -9,111 +9,68 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
-typedef NS_ENUM(NSInteger, SCShopPageType) {
-    SCShopPageTypeHome,      //首页
-    SCShopPageTypeCategory,  //分类
-    SCShopPageTypeCart,      //购物车
-    SCShopPageTypeMyOrder    //我的订单
+typedef NS_ENUM(NSInteger, SCShopMoreType) {
+    SCShopMoreTypeMessage, //消息
+    SCShopMoreTypeSuggest, //意见
 };
 
-typedef void(^SC_webViewBlock)(UINavigationController *nav, NSString *url);
+NS_ASSUME_NONNULL_BEGIN
 
-/**
- 登录回掉接口
- 
- @param controller 掌厅侧实现登录接口
- */
+//登录回调接口  controller 掌厅登录页
 typedef void (^SC_loginWithBlock)(UIViewController *controller);
-
-/**
-UserAgent回掉接口
-
- @param userAgent 掌厅ua信息
-*/
-typedef void(^SC_userAgentBlock)(NSString* userAgent);
-
-/**
- 赋值给商城scshoppingmanager的userInfo，主要用于掌厅短地址跳转商城,success返回为true才跳转
-*/
-typedef void(^SC_getUserInfo)(BOOL success);
-/**
- 外部设置 cookie
- */
-typedef void (^SC_configCookies)(BOOL success);
-
-/**
-首页触点数据回掉
-*/
-typedef void(^SC_ADTouchDataBlock)(id touchData);
-
-/**
-首页触点点击回掉接口
-*/
-typedef void(^SC_ADTouchClickBlock)(void);
-
-/**
-搜索回调接口
-*/
-typedef void(^SC_SearchBlock)( NSDictionary * _Nullable result,  NSString * _Nullable errorMsg);
-
-/**
- *web外用
- */
-typedef void(^SC_WebBlock)(void);
+//首页触点数据回调
+typedef void (^SC_ADTouchDataBlock)(id touchData);
+//搜索回调接口
+typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nullable errorMsg);
 
 
 @protocol SCShoppingDelegate <NSObject>
-//登陆成功必须回调返回
--(void)scLoginWithNav:(UINavigationController *)nav back:(SC_loginWithBlock)callBack;
--(void)scUserAgentWithUrl:(NSString *)url back:(SC_userAgentBlock)callBack;
--(void)scConfigCookiesWithUrl:(NSMutableURLRequest *)request wkweb:(WKWebView *)web back:(SC_configCookies)callBack;
--(void)scGetUserInfo:(SC_getUserInfo)callBack;
-//大数据插码回调
--(void)scXWMobStatMgrStr:(NSString *)coding url:(NSString *)url inPage:(NSString *)className;
 
+@optional
+//登录
+- (void)scLoginWithNav:(UINavigationController *)nav back:(SC_loginWithBlock)callBack;
+//配置cookie
+- (void)scConfigCookiesWithUrl:(NSMutableURLRequest *)request wkweb:(WKWebView *)web;
+//大数据插码
+- (void)scXWMobStatMgrStr:(NSString *)coding url:(NSString *)url inPage:(NSString *)className;
 
 //触点
 //获取触点数据
 -(void)scADTouchDataFrom:(UIViewController *)viewController backData:(SC_ADTouchDataBlock)callBack;
 //处理触点点击
--(void)scADTouchClick:(NSDictionary *)dic back:(SC_ADTouchClickBlock)callback;
+-(void)scADTouchClick:(NSDictionary *)dic;
 //触点曝光处理
 -(void)scADTouchShow:(NSDictionary *)dic;
+
 //搜索
 - (void)scSearch:(NSString *)text backData:(SC_SearchBlock)callBack;
-
 //web
--(void)scWebWithUrl:(NSString *)urlStr title:(NSString *)title nav:(UINavigationController *)nav back:(SC_WebBlock)callBack;
+- (void)scWebWithUrl:(NSString *)urlStr title:(NSString *)title nav:(UINavigationController *)nav;
+//更多选项
+- (void)scMoreSelect:(SCShopMoreType)type nav:(UINavigationController *)nav;
 
+@required
+//获取用户信息
+- (NSDictionary *)scGetUserInfo;
+//获取定位
+- (NSDictionary *)scGetLocationInfo;
 
 
 @end
 
 @interface SCShoppingManager : NSObject
 
-
-@property(nonatomic,assign)id <SCShoppingDelegate> delegate;
-
-@property(nonatomic,strong)NSDictionary *userInfo;  //掌厅个人信息 赋值给 商城个人信息
-//@property(nonatomic,strong)NSString *authToken;  //cmtokenid
-@property (nonatomic, strong) NSDictionary *locationInfo; //定位信息
+@property (nonatomic, weak) id <SCShoppingDelegate> delegate;
 
 + (instancetype)sharedInstance;
 
+//首页
++ (UINavigationController *)homePage;
 
-//跳转商城
-+ (void)showMallPageFrom:(UIViewController *)vc;
-+ (void)showMallPageFrom:(UIViewController *)vc pageType:(SCShopPageType)pageType;
 
-//打开接口日志打印 默认关闭
+//打开接口日志打印 默认关闭 只测试用
 + (void)openNetworkLog;
 
-//登录之后判断是异网，弹框
-+(void)showDiffNetAlert:(UINavigationController *)nav;
-//退出商城
-+ (void)dissmissMallPage;
 
 
 @end

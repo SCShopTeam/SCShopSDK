@@ -15,7 +15,7 @@
 @property (nonatomic, strong) SCLifeViewModel *viewModel;
 @property (nonatomic, strong) SCTagView *tagView;
 @property (nonatomic, strong) UICollectionView *collectionView;
-@property (nonatomic, strong) NSMutableArray <NSString *> *idList;
+
 @end
 
 @implementation SCLifeViewController
@@ -32,7 +32,9 @@
 #pragma mark -requset
 - (void)requestCategoryList
 {
+    [self showLoading];
     [self.viewModel requestCategoryList:self.paramDic success:^(id  _Nullable responseObject) {
+        [self stopLoading];
         //标签
         self.tagView.categoryList = self.viewModel.categoryList;
         //scrollview
@@ -41,6 +43,7 @@
 
         
     } failure:^(NSString * _Nullable errorMsg) {
+        [self stopLoading];
         [self showWithStatus:errorMsg];
     }];
 
@@ -50,14 +53,23 @@
 {
     __block NSInteger selectedIndex = 0;
     [self.viewModel.categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull model, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (model.selected) {
+        if (model.selected) {  //
             selectedIndex = idx;
-            *stop = YES;
         }
+        
+        //注册cell
+        NSString *cellId= [self cellId:idx];
+        [self.collectionView registerClass:SCLifeCell.class forCellWithReuseIdentifier:cellId]; //这样做事为了让cell不复用
+        
     }];
     [self.collectionView reloadData];
     
     [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:selectedIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+}
+
+- (NSString *)cellId:(NSInteger)index
+{
+    return [NSString stringWithFormat:@"lifecellid:%li",index];
 }
 
 #pragma mark -UICollectionViewDelegate, UICollectionViewDataSource
@@ -68,14 +80,9 @@
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *ri = [NSString stringWithFormat:@"lifecellid:%li",indexPath.row];
-    
-    if (![self.idList containsObject:ri]) { //这里是为了不让cell复用
-        [collectionView registerClass:SCLifeCell.class forCellWithReuseIdentifier:ri];
-        [self.idList addObject:ri];
-    }
-    
-    SCLifeCell *cell = (SCLifeCell *)[collectionView dequeueReusableCellWithReuseIdentifier:ri forIndexPath:indexPath];
+    NSString *cellId = [self cellId:indexPath.row];
+
+    SCLifeCell *cell = (SCLifeCell *)[collectionView dequeueReusableCellWithReuseIdentifier:cellId forIndexPath:indexPath];
     
     if (indexPath.row < self.viewModel.categoryList.count) {
         SCCategoryModel *model = self.viewModel.categoryList[indexPath.row];
@@ -118,10 +125,12 @@
         CGFloat y = self.tagView.bottom;
         CGFloat h = SCREEN_HEIGHT - NAV_BAR_HEIGHT - y;
         UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
-        layout.itemSize                = CGSizeMake(self.view.width, h);
+        layout.itemSize                = CGSizeMake(SCREEN_WIDTH, h);
         layout.scrollDirection         = UICollectionViewScrollDirectionHorizontal;
+        layout.minimumLineSpacing      = 0;
+        layout.minimumInteritemSpacing = 0;
         
-        _collectionView = [[SCCollectionView alloc] initWithFrame:CGRectMake(0, y, SCREEN_WIDTH, h) collectionViewLayout:layout];
+        _collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, y, SCREEN_WIDTH, h) collectionViewLayout:layout];
         _collectionView.backgroundColor = [UIColor whiteColor];
         _collectionView.delegate        = self;
         _collectionView.dataSource      = self;
@@ -141,14 +150,6 @@
         _viewModel = [SCLifeViewModel new];
     }
     return _viewModel;
-}
-
-- (NSMutableArray<NSString *> *)idList
-{
-    if (!_idList) {
-        _idList = [NSMutableArray array];
-    }
-    return _idList;
 }
 
 @end

@@ -396,10 +396,10 @@
     if (!_btnList) {
         NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:3];
         CGFloat w = self.contentView.width/3;
-        CGFloat h = SCREEN_FIX(107.5);
+        CGFloat h = SCREEN_FIX(112);
         for (int i=0; i<3; i++) {
             SCWSHeaderButton *btn = [[SCWSHeaderButton alloc] initWithFrame:CGRectMake(w*i, 0, w, h)];
-            btn.bottom = self.contentView.height - SCREEN_FIX(18);
+            btn.bottom = self.contentView.height - SCREEN_FIX(6);
             [btn addTarget:self action:@selector(goodSelected:) forControlEvents:UIControlEventTouchUpInside];
             [self.contentView addSubview:btn];
             [self.contentView sendSubviewToBack:btn];

@@ -15,41 +15,7 @@ typedef NS_ENUM(NSInteger, SCNetApiType) {
     SCNetApiTypeApollo
 };
 
-
-static NSString *kSCEnvironmentChangeKey = @"SCEnvironmentChangeKey";
-
-@interface SCNetworkTool ()
-AS_SINGLETON(SCNetworkTool)
-@property (nonatomic, assign) BOOL isRelease;
-@end
-
 @implementation SCNetworkTool
-DEF_SINGLETON(SCNetworkTool)
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        if (SC_CAN_CHANGE_ENVIRONMENT) { //可以切换环境
-            NSInteger key = [[NSUserDefaults standardUserDefaults] integerForKey:kSCEnvironmentChangeKey];
-            if (key == SCEnvitonmentKeyTest) {
-                self.isRelease = NO;
-                
-            }else if (key == SCEnvitonmentKeyRelease) {
-                self.isRelease = YES;
-                
-            }else { //首次加载，默认情况下的环境
-                self.isRelease = (kDefaultEnvironmentKey == SCEnvitonmentKeyRelease);
-            }
-            
-        }else { //无法切换，直接使用默认环境
-            self.isRelease = kDefaultEnvironmentKey;
-        }
-        
-
-        
-    }
-    return self;
-}
 
 //数据验证
 + (BOOL)checkCode:(id)responseObject failure:(nullable SCHttpRequestFailed)failure completion:(SCHttpRequestCompletion)completion
@@ -237,24 +203,6 @@ DEF_SINGLETON(SCNetworkTool)
     }else{
         return @"0";
     }
-}
-
-//切换环境 临时测试用
-+ (BOOL)isRelease
-{
-    BOOL isRelease = [self sharedInstance].isRelease;
-    return isRelease;
-}
-
-+ (void)changeRelease
-{
-    BOOL newIsRelease = ![self isRelease];
-    [[NSUserDefaults standardUserDefaults] setInteger:(newIsRelease?SCEnvitonmentKeyRelease:SCEnvitonmentKeyTest) forKey:kSCEnvironmentChangeKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    [self sharedInstance].isRelease = newIsRelease;
-    
-    NSString *message = [NSString stringWithFormat:@"%@",newIsRelease?@"正式环境":@"测试环境"];
-    [self showWithStatus:message];
 }
 
 @end

@@ -7,7 +7,7 @@
 //
 
 /***
- version : 1.9.5
+ version : 2.0.0
  */
 
 #ifndef SCShopSDK_h
@@ -15,6 +15,5 @@
 
 #import "SCShoppingManager.h"
 #import "SCURLSerialization.h"
-#import "SCCustomAlertController.h"
 
 #endif /* SCShopSDK_h */

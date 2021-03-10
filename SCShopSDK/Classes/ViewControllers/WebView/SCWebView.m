@@ -508,10 +508,8 @@
     
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     
-    if (manager.delegate && [manager.delegate respondsToSelector:@selector(scConfigCookiesWithUrl:wkweb:back:)]) {
-        [manager.delegate scConfigCookiesWithUrl:requestNew  wkweb:self.realWebView back:^(BOOL success) {
-            NSLog(@"%@",@"--sc-- 代理设置cookie成功回调");
-        }];
+    if (manager.delegate && [manager.delegate respondsToSelector:@selector(scConfigCookiesWithUrl:wkweb:)]) {
+        [manager.delegate scConfigCookiesWithUrl:requestNew wkweb:self.realWebView];
     }
 //    NSString *s = request.URL.absoluteString;
     if (ISIOS11 )
@@ -574,7 +572,10 @@
         
         NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
         
-        NSString* cmtokenid = [SCGetAuthToken cmtokenId];
+        SCUserInfo *userInfo = [SCUserInfo currentUser];
+        
+        NSString* cmtokenid = userInfo.cmtokenid;
+
         if([SCUtilities isValidString:cmtokenid])
         {
             NSDictionary *properties = [[NSMutableDictionary alloc] init];
@@ -595,11 +596,8 @@
             }
             
             
-            NSString* userAreaNum = [SCGetAuthToken userAreaNum];
-            if(![SCUtilities isValidString:userAreaNum])
-            {
-                userAreaNum = [SCUserInfo currentUser].uan;
-            }
+            NSString* userAreaNum = userInfo.uan ?: @"";
+
             NSDictionary *properties1 = [[NSMutableDictionary alloc] init];
             [properties1 setValue:userAreaNum forKey:NSHTTPCookieValue];
             [properties1 setValue:@"userAreaNum" forKey:NSHTTPCookieName];

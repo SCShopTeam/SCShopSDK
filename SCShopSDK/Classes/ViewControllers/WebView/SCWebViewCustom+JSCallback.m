@@ -223,9 +223,9 @@
         NSString *title = [NSString stringWithFormat:@"%@",feedbackInfo[@"title"]];
         if ([SCUtilities isValidString:url] && [SCUtilities isValidString:title])
         {
-//            [self.myWebView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"getUrl('%@','%@')",title,url]];
+            //            [self.myWebView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"getUrl('%@','%@')",title,url]];
             [self.myWebView evaluateJavaScript:[NSString stringWithFormat:@"getUrl('%@','%@')",title,url] completionHandler:^(id _Nullable result, NSError *error) {
-                                          }];
+            }];
         }
     }
 

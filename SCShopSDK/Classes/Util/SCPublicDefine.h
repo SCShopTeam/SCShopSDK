@@ -33,9 +33,6 @@
 #define IsIPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
 
 #pragma mark - 常用
-//弱引用
-//使用YYKit的 @weakify(self) 和 @strongify(self)
-
 //默认图片
 #define  IMG_PLACE_HOLDER   SCIMAGE(@"home_localLife_newsDefault")
 
@@ -131,7 +128,11 @@
 
 
 //通知
-#define SC_LOGINED_NOTIFICATION @"SC_LOGINED_NOTIFICATION"
-
+#define SCNOTI_LOGIN_SUCCESS            @"SCNOTI_LOGIN_SUCCESS"
+#define SCNOTI_LOGIN_OUT                @"SCNOTI_LOGIN_OUT"
+#define SCNOTI_HOME_CELL_CAN_SCROLL     @"SCNOTI_HOME_CELL_CAN_SCROLL"
+#define SCNOTI_HOME_TABLE_CAN_SCROLL    @"SCNOTI_HOME_TABLE_CAN_SCROLL"
+#define SCNOTI_STORE_SCROLL_CAN_SCROLL  @"SCNOTI_STORE_SCROLL_CAN_SCROLL"
+#define SCNOTI_STORE_CELL_CAN_SCROLL    @"SCNOTI_STORE_CELL_CAN_SCROLL"
 
 #endif /* SCPublicDefine_h */

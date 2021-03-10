@@ -8,17 +8,10 @@
 
 #import "SCSiftView.h"
 
-@interface SiftItem : NSObject
-@property (nonatomic, strong) NSString *name;
-@property (nonatomic, assign) BOOL sort;      //是否有排序
-@property (nonatomic, assign) BOOL selected;  //是否被选中
-@property (nonatomic, assign) BOOL isAscend;  //是否是升序
-@property (nonatomic, assign) SCCategorySortKey sortKey;
 
-@end
 
 @interface SiftCell : UICollectionViewCell
-@property (nonatomic, strong) SiftItem *item;
+@property (nonatomic, strong) SCSiftItem *item;
 @property (nonatomic, strong) UILabel *titleLabel;      //标题
 @property (nonatomic, strong) UIImageView *ascendIcon;   //升序按钮
 @property (nonatomic, strong) UIImageView *descendIcon;  //降序按钮
@@ -28,7 +21,8 @@
 
 @interface SCSiftView () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) UICollectionView *collectionView;
-@property (nonatomic, strong) NSArray <SiftItem *>*itemList;
+@property (nonatomic, strong) NSArray <SCSiftItem *>*itemList;
+
 @end
 
 @implementation SCSiftView
@@ -37,9 +31,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        SiftItem *item = self.itemList.firstObject;
-        _currentSortKey  = item.sortKey;
-        _currentSortType = item.isAscend ? SCCategorySortTypeAsc : SCCategorySortTypeDesc;
         
         [self collectionView];
         
@@ -47,11 +38,17 @@
     return self;
 }
 
+- (void)setCurrentIndex:(NSInteger)currentIndex
+{
+    if (currentIndex >= _itemList.count) {
+        return;
+    }
+    
+    [self collectionView:self.collectionView didSelectItemAtIndexPath:[NSIndexPath indexPathForRow:currentIndex inSection:0]];
+}
+
 #pragma mark -UICollectionViewDelegate, UICollectionViewDataSource
-//- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-//{
-//
-//}
+
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     return _itemList.count;
@@ -61,7 +58,7 @@
 {
     SiftCell *cell = (SiftCell *)[collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(SiftCell.class) forIndexPath:indexPath];
     
-    SiftItem *item = self.itemList[indexPath.row];
+    SCSiftItem *item = self.itemList[indexPath.row];
     cell.item = item;
     
     return cell;
@@ -70,7 +67,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
 
-    SiftItem *item = self.itemList[indexPath.row];
+    SCSiftItem *item = self.itemList[indexPath.row];
     
     //先判断点击的是否是当前选中的
     if (item.selected) { //如果就是当前选中的，判断是否需要排序
@@ -80,19 +77,16 @@
         
         
     }else {  //不是当前的，则改变选中状态
-        [self.itemList enumerateObjectsUsingBlock:^(SiftItem * _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.itemList enumerateObjectsUsingBlock:^(SCSiftItem * _Nonnull item, NSUInteger idx, BOOL * _Nonnull stop) {
             item.selected = idx == indexPath.row;
         }];
 
     }
     
     [collectionView reloadData];
-    
-    _currentSortKey = item.sortKey;
-    _currentSortType = item.isAscend ? SCCategorySortTypeAsc : SCCategorySortTypeDesc;
-    
+
     if (_selectBlock) {
-        _selectBlock();
+        _selectBlock(indexPath.row);
     }
 
 }
@@ -121,25 +115,25 @@
     return _collectionView;
 }
 
-- (NSArray<SiftItem *> *)itemList
+- (NSArray<SCSiftItem *> *)itemList
 {
     if (!_itemList) {
-        SiftItem *recommend = [SiftItem new];
+        SCSiftItem *recommend = [SCSiftItem new];
         recommend.name     = @"店铺推荐";
         recommend.selected = YES;
         recommend.sortKey  = SCCategorySortKeyRecommand;
         
-        SiftItem *new = [SiftItem new];
+        SCSiftItem *new = [SCSiftItem new];
         new.name    = @"上新";
         new.sortKey = SCCategorySortKeyTime;
         
-        SiftItem *price = [SiftItem new];
+        SCSiftItem *price = [SCSiftItem new];
         price.name     = @"价格";
         price.sort     = YES;
         price.isAscend = YES;
         price.sortKey  = SCCategorySortKeyPrice;
         
-        SiftItem *sale = [SiftItem new];
+        SCSiftItem *sale = [SCSiftItem new];
         sale.name    = @"销量";
         sale.sortKey = SCCategorySortKeySale;
         
@@ -152,7 +146,21 @@
 @end
 
 
-@implementation SiftItem
+@implementation SCSiftItem
+- (void)setIsAscend:(BOOL)isAscend
+{
+    if (isAscend == _isAscend) {
+        return;
+    }
+
+    _isAscend = isAscend;
+    
+    if (_updateTypeBlock) {
+        _updateTypeBlock();
+    }
+    
+
+}
 
 @end
 
@@ -168,7 +176,7 @@
     return self;
 }
 
-- (void)setItem:(SiftItem *)item
+- (void)setItem:(SCSiftItem *)item
 {
     _item = item;
     

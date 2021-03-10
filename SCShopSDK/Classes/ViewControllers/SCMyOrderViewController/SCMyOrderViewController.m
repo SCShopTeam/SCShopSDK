@@ -44,6 +44,9 @@
     }
 }
 
+/*
+ 状态栏字体颜色
+ 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
@@ -54,14 +57,15 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 
 }
+*/
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.pageNum = 1;
     [self prepareUI];
-    self.hideNavigationBar = YES;
-    
+//    self.hideNavigationBar = YES;
+    self.navigationItem.title = @"我的订单";
     [self sc_requestOrderListWithStatus:@"XSDD_DZF"];
 }
 
@@ -237,7 +241,7 @@
             
             if ([SCUtilities isValidString:url]) {
 
-                [[SCURLSerialization shareSerialization]gotoWebcustom:url title:@"" navigation:self.navigationController];
+                [SCURLSerialization gotoWebcustom:url title:@"" navigation:self.navigationController];
             }
             
            
@@ -378,7 +382,7 @@
     
     if ([SCUtilities isValidString:url]) {
         
-        [[SCURLSerialization shareSerialization]gotoWebcustom:url title:@"" navigation:self.navigationController];
+        [SCURLSerialization gotoWebcustom:url title:@"" navigation:self.navigationController];
     }
 }
 
@@ -404,7 +408,7 @@
         case itemCouponType:
         {
             NSString *URL = SC_MYCOUPON_URL;
-            [[SCURLSerialization shareSerialization]gotoWebcustom:URL title:@"" navigation:self.navigationController];
+            [SCURLSerialization gotoWebcustom:URL title:@"" navigation:self.navigationController];
                   
 //            SCWebViewCustom *web = [[SCWebViewCustom alloc]init];
 //            web.urlString = URL;
@@ -426,7 +430,7 @@
             NSString *param = [NSString stringWithFormat:@"phoneNum=%@&tenantId=1&skillId=1&requestSource=2",userInfo.phoneNumber];
             NSString *base64Param = [NSString base64StringFromText:param];
             NSString *fullUrl = [NSString stringWithFormat:@"%@%@",SC_KEFU_URL,base64Param];
-            [[SCURLSerialization shareSerialization]gotoWebcustom:fullUrl title:@"" navigation:self.navigationController];
+            [SCURLSerialization gotoWebcustom:fullUrl title:@"" navigation:self.navigationController];
                   
 //            SCWebViewCustom *web = [[SCWebViewCustom alloc]init];
 //            web.urlString = fullUrl;

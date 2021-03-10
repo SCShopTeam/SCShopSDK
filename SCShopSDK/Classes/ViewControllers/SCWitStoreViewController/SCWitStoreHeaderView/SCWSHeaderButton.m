@@ -15,6 +15,7 @@
 @property (nonatomic, strong) UILabel *priceLabel;
 @property (nonatomic, strong) UIImageView *qiangIcon;
 @property (nonatomic, strong) UILabel *yuanLabel;
+@property (nonatomic, strong) UILabel *oldPriceLabel;
 
 @end
 
@@ -40,6 +41,34 @@
     self.priceLabel.width   = MIN(maxWidth, self.priceLabel.width);
     self.priceLabel.centerX = self.width/2;
     self.priceLabel.centerY = self.qiangIcon.centerY;
+    
+//
+    
+    self.yuanLabel.right  = self.priceLabel.left;
+    self.yuanLabel.bottom = self.priceLabel.bottom;
+}
+
+- (void)getData
+{
+    //图片
+    self.icon.image = IMG_PLACE_HOLDER;
+    
+    //标题
+    self.titleLabel.text = @"小米手机";
+    
+    //划线价
+    self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:2009 font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
+    
+    //价格
+    CGFloat price = 1799000/1000*1.f;
+    self.priceLabel.text = [SCUtilities removeFloatSuffix:price];
+    [self.priceLabel sizeToFit];
+    
+    CGFloat edge = self.width - self.qiangIcon.left;
+    CGFloat maxWidth = self.width - edge*2;
+    self.priceLabel.width   = MIN(maxWidth, self.priceLabel.width);
+    self.priceLabel.centerX = self.width/2;
+    self.priceLabel.bottom = self.oldPriceLabel.top - SCREEN_FIX(3);
     
     self.yuanLabel.right  = self.priceLabel.left;
     self.yuanLabel.bottom = self.priceLabel.bottom;
@@ -74,7 +103,7 @@
     if (!_qiangIcon) { //sc_wit_qiang
         CGFloat w = SCREEN_FIX(28);
         CGFloat h = SCREEN_FIX(27.5);
-        _qiangIcon = [[UIImageView alloc] initWithFrame:CGRectMake(self.width - SCREEN_FIX(7.5) - w, self.titleLabel.bottom+SCREEN_FIX(2), w, h)];
+        _qiangIcon = [[UIImageView alloc] initWithFrame:CGRectMake(self.width - SCREEN_FIX(7.5) - w, self.height - SCREEN_FIX(3) - h, w, h)];
         _qiangIcon.image = SCIMAGE(@"sc_wit_qiang");
         [self addSubview:_qiangIcon];
     }
@@ -97,13 +126,27 @@
 {
     if (!_yuanLabel) {
         _yuanLabel = [UILabel new];
-        _yuanLabel.font = SCFONT_SIZED(10);
+        _yuanLabel.font = SCFONT_SIZED_FIX(10);
         _yuanLabel.textColor = self.priceLabel.textColor;
         _yuanLabel.text = @"¥ ";
         [_yuanLabel sizeToFit];
         [self addSubview:_yuanLabel];
     }
     return _yuanLabel;
+}
+
+- (UILabel *)oldPriceLabel
+{
+    if (!_oldPriceLabel) {
+        CGFloat h = SCREEN_FIX(9);
+        _oldPriceLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, self.height - h, SCREEN_FIX(60), h)];
+        _oldPriceLabel.centerX = self.width/2;
+        _oldPriceLabel.textAlignment = NSTextAlignmentCenter;
+        _oldPriceLabel.font = SCFONT_SIZED_FIX(9);
+        _oldPriceLabel.textColor = HEX_RGB(@"#8D8D8D");
+        [self addSubview:_oldPriceLabel];
+    }
+    return _oldPriceLabel;
 }
 
 @end

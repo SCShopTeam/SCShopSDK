@@ -7,10 +7,10 @@
 //
 
 #import "SCLifeViewModel.h"
-#import "SCCategoryViewModel.h"
+
 
 @interface SCLifeViewModel ()
-@property (nonatomic, assign) BOOL hasMoreData;
+@property (nonatomic, assign) BOOL hasNoData;
 @property (nonatomic, strong) NSArray <SCCategoryModel *> *categoryList;
 @property (nonatomic, strong) NSMutableArray <SCCommodityModel *> *commodityList;
 @property (nonatomic, assign) BOOL isRequesting;
@@ -21,14 +21,21 @@
 
 - (void)requestCategoryList:(NSDictionary *)paramDic success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
-    [SCCategoryViewModel requestCategory:^(NSArray<SCCategoryModel *> * _Nonnull categoryList) {
+    [SCRequest requestCategory:^(NSArray<SCCategoryModel *> * _Nonnull categoryList) {
         self.categoryList = categoryList;
-        [self setModelSelected:paramDic];
         
+        if (categoryList.count > 0) {
+            [self setModelSelected:paramDic];
+            
+        }else {
+            [self showWithStatus:@"暂无数据"];
+        }
+        
+
         if (success) {
             success(nil);
         }
-        
+            
     } failure:^(NSString * _Nullable errorMsg) {
         if (failure) {
             failure(errorMsg);
@@ -49,26 +56,29 @@
     if (!_commodityList) {
         _commodityList = [NSMutableArray array];
         
-    }else if (page == 1) {
-        [self.commodityList removeAllObjects];
     }
     
-    [SCCategoryViewModel requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:page success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
+    [SCRequest requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:page success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList) {
+        self.isRequesting = NO;
+        
+        if (page == 1) {
+            [self.commodityList removeAllObjects];
+        }
+        
         [self.commodityList addObjectsFromArray:commodityList];
-        self.hasMoreData = commodityList.count >= kCountCurPage;
+        self.hasNoData = commodityList.count < kCountCurPage;
         
         if (completion) {
             completion(nil);
         }
-        self.isRequesting = NO;
         
     } failure:^(NSString * _Nullable errorMsg) {
+        self.isRequesting = NO;
         if (completion) {
             completion(errorMsg);
         }
-        self.isRequesting = NO;
     }];
-    
+
 }
 
 - (void)setModelSelected:(NSDictionary *)paramDic
@@ -115,6 +125,5 @@
     
     
 }
-
 
 @end

@@ -40,23 +40,23 @@ DEF_SINGLETON(SCLocationService)
 - (void)startLocation:(SCLocationBlock)callBack;
 {
     self.locationBlock = callBack;
-
-    if (VALID_STRING(self.longitude) && VALID_STRING(self.latitude)) {
-        [self callBack];
-        return;
-    }
     
     //从掌厅获取定位
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
-    if (VALID_DICTIONARY(manager.locationInfo)) {
-        self.longitude = NSStringFormat(@"%@", manager.locationInfo[@"longitude"]);
-        self.latitude  = NSStringFormat(@"%@", manager.locationInfo[@"latitude"]);
-        self.cityCode  = NSStringFormat(@"%@", manager.locationInfo[@"cityCode"]);
-        self.city      = NSStringFormat(@"%@", manager.locationInfo[@"City"]);
-        [self callBack];
-        return;
+    if ([manager.delegate respondsToSelector:@selector(scGetLocationInfo)]) {
+        NSDictionary *locationInfo = [manager.delegate scGetLocationInfo];
+        if (VALID_DICTIONARY(locationInfo)) {
+            self.longitude       = NSStringFormat(@"%@", locationInfo[@"longitude"]);
+            self.latitude        = NSStringFormat(@"%@", locationInfo[@"latitude"]);
+            self.cityCode        = NSStringFormat(@"%@", locationInfo[@"cityCode"]);
+            self.city            = NSStringFormat(@"%@", locationInfo[@"City"]);
+            self.locationAddress = NSStringFormat(@"%@", locationInfo[@"locationAddress"]);
+            [self callBack];
+            
+            return;
+        }
     }
-    
+
     //代理没有获取到则本地获取
     [self startLocation];
 }
@@ -106,12 +106,28 @@ DEF_SINGLETON(SCLocationService)
     self.latitude  = NSStringFormat(@"%f",gcjPt.latitude);
     
     [self.geocoder reverseGeocodeLocation:location completionHandler:^(NSArray<CLPlacemark *> * _Nullable placemarks, NSError * _Nullable error) {
-        CLPlacemark *mark = placemarks.firstObject;
-        NSString *city = mark.addressDictionary[@"City"];
-        self.city = city;
+        
+        if (placemarks.count > 0) {
+            CLPlacemark *mark = placemarks.firstObject;
+            
+            //城市
+            NSString *city = mark.addressDictionary[@"City"];
+            self.city = city;
+            
+            //详细地址
+            NSString *state       = mark.addressDictionary[@"State"];
+            NSString *subLocality = mark.addressDictionary[@"SubLocality"];
+            NSString *street      = mark.addressDictionary[@"Street"];
+            NSString *name        = mark.addressDictionary[@"Name"];
+            
+            NSString *locationAddress = [NSString stringWithFormat:@"%@%@%@%@%@",state,city,subLocality,street,name];
+            self.locationAddress = locationAddress;
+        }
+
+        
     }];
     
-    [self callBack];
+    [self callBack]; //目前只回调经纬度
     
     [self.locationManager stopUpdatingLocation];
 }
@@ -139,6 +155,17 @@ DEF_SINGLETON(SCLocationService)
     }
 }
 
+- (void)setCity:(NSString *)city
+{
+    NSMutableString *temp = city.mutableCopy;
+    
+    if ([temp hasSuffix:@"市"]) {
+        [temp deleteCharactersInRange:NSMakeRange(temp.length-1, 1)];
+    }
+    
+    _city = temp.copy;
+}
+
 - (void)callBack
 {
     if (_locationBlock) {
@@ -149,10 +176,11 @@ DEF_SINGLETON(SCLocationService)
 
 - (void)cleanData
 {
-    _longitude = nil;
-    _latitude  = nil;
-    _cityCode  = nil;
-    _city      = nil;
+    _longitude       = nil;
+    _latitude        = nil;
+    _cityCode        = nil;
+    _city            = nil;
+    _locationAddress = nil;
 }
 
 + (CLLocationCoordinate2D)gcj02Encrypt:(double)ggLat bdLon:(double)ggLon

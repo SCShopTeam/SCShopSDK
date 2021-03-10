@@ -7,7 +7,6 @@
 //
 
 #import "SCCartViewModel.h"
-#import "SCCategoryViewModel.h"
 
 NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
 
@@ -47,12 +46,11 @@ NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
 
 - (void)requestRecommend:(SCHttpRequestCompletion)completion
 {
-    [SCCategoryViewModel requestRecommend:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
+    [SCRequest requestRecommend:^(NSArray<SCCommodityModel *> * _Nonnull commodityList) {
         self.recommendList = commodityList;
         if (completion) {
             completion(nil);
         }
-        
     } failure:^(NSString * _Nullable errorMsg) {
         if (completion) {
             completion(errorMsg);

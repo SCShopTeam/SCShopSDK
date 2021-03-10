@@ -57,7 +57,6 @@
 #import "Masonry.h"
 #import "SDWebImage.h"
 
-#import "SCGetAuthToken.h"
 #endif /* CommonPrefix_pch */
 
 

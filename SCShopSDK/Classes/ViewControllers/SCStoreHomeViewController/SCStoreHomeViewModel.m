@@ -2,8 +2,8 @@
 //  SCStoreHomeViewModel.m
 //  shopping
 //
-//  Created by gejunyu on 2020/8/13.
-//  Copyright © 2020 jsmcc. All rights reserved.
+//  Created by gejunyu on 2021/3/8.
+//  Copyright © 2021 jsmcc. All rights reserved.
 //
 
 #import "SCStoreHomeViewModel.h"
@@ -11,14 +11,12 @@
 
 @interface SCStoreHomeViewModel ()
 @property (nonatomic, strong) SCTenantInfoModel *tenantInfo;
-@property (nonatomic, strong) NSMutableDictionary <NSString *, SCStoreHomeCacheModel *> *commodityDict;
-@property (nonatomic, weak) SCStoreHomeCacheModel *currentCacheModel;
-@property (nonatomic, copy) NSString *currentKey;
+@property (nonatomic, strong) NSMutableArray<SCCommodityModel *> * commodityList;
+@property (nonatomic, assign) BOOL hasNoData;
 
 @end
 
 @implementation SCStoreHomeViewModel
-
 
 - (void)requestTenantInfo:(NSString *)tenantNum completion:(nonnull SCHttpRequestCompletion)completion
 {
@@ -48,73 +46,30 @@
     }];
 }
 
-- (NSString *)getCacheKeyFromSort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType
-{
-    NSString *key = [NSString stringWithFormat:@"%li-%li",sort, sortType];
-    return key;
-}
 
-- (void)getCommodityList:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum showCache:(BOOL)showCache showHud:(BOOL)showHud completion:(SCHttpRequestCompletion)completion
+- (void)requestCommodityList:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum completion:(nonnull SCHttpRequestCompletion)completion
 {
-    NSString *key = [self getCacheKeyFromSort:sort sortType:sortType];
-    self.currentKey = key;
-    
-    SCStoreHomeCacheModel *cacheModel = self.commodityDict[key];
-    
-    if (showCache && cacheModel) {
-        self.currentCacheModel = cacheModel;
+    [SCRequest requestCommoditiesWithTypeNum:nil brandNum:nil tenantNum:tenantNum categoryName:nil cityNum:nil isPreSale:NO sort:sort sortType:sortType pageNum:pageNum success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList) {
+        if (pageNum == 1) {
+            [self.commodityList removeAllObjects];
+        }
+        
+        [self.commodityList addObjectsFromArray:commodityList];
+        
+        self.hasNoData = commodityList.count < kCountCurPage;
+        
         if (completion) {
             completion(nil);
         }
-    }else {
-        [self requestCommodityListData:tenantNum sort:sort sortType:sortType pageNum:pageNum showHud:showHud  completion:completion];
-    }
-
-}
-
-- (void)requestCommodityListData:(NSString *)tenantNum sort:(SCCategorySortKey)sort sortType:(SCCategorySortType)sortType pageNum:(NSInteger)pageNum showHud:(BOOL)showHud completion:(nonnull SCHttpRequestCompletion)completion
-{
-    NSString *key = [self getCacheKeyFromSort:sort sortType:sortType];
-    
-    if (showHud) {
-        UIViewController *vc = [SCUtilities currentViewController];
-        [vc showLoading];
-    }
-    
-    [SCCategoryViewModel requestCommoditiesWithTypeNum:nil brandNum:nil tenantNum:tenantNum categoryName:nil cityNum:nil isPreSale:NO sort:sort sortType:sortType pageNum:pageNum success:^(NSMutableArray<SCCommodityModel *> * _Nonnull commodityList) {
-        SCStoreHomeCacheModel *cacheModel = self.commodityDict[key];
-        
-        if (!cacheModel) {
-            cacheModel = [SCStoreHomeCacheModel new];
-            self.commodityDict[key] = cacheModel;
-        }
-        
-        
-        if (pageNum == 1) {
-            [cacheModel.commodityList removeAllObjects];
-        }
-        
-        [cacheModel.commodityList addObjectsFromArray:commodityList];
-        cacheModel.hasMoreData = commodityList.count >= kCountCurPage;
-        cacheModel.page = pageNum;
-        
-        if ([self.currentKey isEqualToString:key]) {
-            self.currentCacheModel = cacheModel;
-            if (completion) {
-                completion(nil);
-            }
-        }
         
     } failure:^(NSString * _Nullable errorMsg) {
-        if ([self.currentKey isEqualToString:key]) {
-            self.currentCacheModel = nil;
-        }
-        
         if (completion) {
             completion(errorMsg);
         }
     }];
+    
 }
+
 
 - (NSString *)getOnlineServiceUrl:(NSString *)tenantNum
 {
@@ -140,19 +95,6 @@
     
     return url;
 }
-
-- (NSMutableDictionary<NSString *,SCStoreHomeCacheModel *> *)commodityDict
-{
-    if (!_commodityDict) {
-        _commodityDict = [NSMutableDictionary dictionary];
-    }
-    return _commodityDict;
-}
-
-@end
-
-
-@implementation SCStoreHomeCacheModel
 
 - (NSMutableArray<SCCommodityModel *> *)commodityList
 {

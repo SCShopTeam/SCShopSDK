@@ -8,18 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, SCEnvitonmentKey) {
-    SCEnvitonmentKeyNone,      //未知
-    SCEnvitonmentKeyTest,      //测试环境
-    SCEnvitonmentKeyRelease    //正式环境
-};
-
-//是否可以切换环境   测试时为yes  上线关闭
-static BOOL SC_CAN_CHANGE_ENVIRONMENT = NO;
-//默认正式环境
-static SCEnvitonmentKey kDefaultEnvironmentKey = SCEnvitonmentKeyRelease;
-
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCNetworkTool : NSObject
@@ -33,11 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 //网络状态
 + (NSString *)networkType;
-
-
-//切换环境 临时测试用
-+ (BOOL)isRelease;
-+ (void)changeRelease;
 
 
 @end

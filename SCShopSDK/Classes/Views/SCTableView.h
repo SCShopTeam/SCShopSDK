@@ -20,6 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) void (^refreshingBlock)(NSInteger page);
 
 /**
+ *和scrollView嵌套联动用的属性，默认NO
+ */
+@property (nonatomic, assign) BOOL shouldRecognizeSimultaneouslyWithOtherGestureRecognizer;
+
+/**
  *  显示下拉刷新控件
  */
 - (void)showsRefreshHeader;
@@ -60,6 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
  *  自动下拉刷新
  */
 - (void)autoRefreshing;
+
+
 
 @end
 

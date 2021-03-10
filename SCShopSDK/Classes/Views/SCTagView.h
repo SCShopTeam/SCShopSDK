@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCTagView : UICollectionReusableView
+@interface SCTagView : UIView
 
 @property (nonatomic, strong) NSArray <SCCategoryModel *> *categoryList;
 
