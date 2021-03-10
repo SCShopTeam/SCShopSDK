@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSMutableArray<SCCommodityModel *> *commodityList; //商品
 @property (nonatomic, assign, readonly) BOOL hasNoData;
 
+//检测登录用户是否发生变化
+- (BOOL)userHasChanged;
+
 //触点
 - (void)requestTouchData:(UIViewController *)viewController success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
 

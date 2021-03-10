@@ -40,15 +40,33 @@
     [super viewWillDisappear:animated];
     
     if (self.hideNavigationBar) {
-        if (_isChangingTab) {
-            _isChangingTab = NO;
-        }else {
-            [self.navigationController setNavigationBarHidden:NO animated:YES];
-        }
-        
+        [self.navigationController setNavigationBarHidden:NO animated:YES];
     }
     
 }
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    if (!_isMainTabVC) {
+        return;
+    }
+    
+    //修复切换tab导航栏闪的bug
+    UITabBarController *tab = [SCUtilities currentTabBarController];
+    
+    if (!tab || ![tab.viewControllers containsObject:self.navigationController]) {
+        return;
+    }
+    
+    NSInteger selfIndex = [tab.viewControllers indexOfObject:self.navigationController];
+    if (selfIndex != tab.selectedIndex) {
+        [self.navigationController setNavigationBarHidden:YES animated:YES];
+    }
+
+}
+
 
 
 - (void)initView

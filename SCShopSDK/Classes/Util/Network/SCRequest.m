@@ -436,18 +436,10 @@
 
         NSArray *records = responseObject[B_RESULT][key];
         
-        NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:records.count];
-        
-        for (NSDictionary *dict in records) {
-            if (VALID_DICTIONARY(dict)) {
-                SCCommodityModel *model = [SCCommodityModel yy_modelWithDictionary:dict];
-                [mulArr addObject:model];
-                
-            }
-        }
+        NSArray *models = [SCCommodityModel getModelsFrom:records];
         
         if (successBlock) {
-            successBlock(mulArr.copy);
+            successBlock(models, records);
         }
         
     } failure:^(NSString * _Nullable errorMsg) {
@@ -460,7 +452,38 @@
 //为你推荐
 + (void)requestRecommend:(SCCommodityBlock)successBlock failure:(SCHttpRequestFailed)failureBlock
 {
-    [self requestCommoditiesWithTypeNum:nil brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:1 success:successBlock failure:failureBlock];
+    SCUserInfo *userInfo = [SCUserInfo currentUser];
+    
+    //先找缓存
+    NSString *cacheKey = @"SC_RECOMMEND_CACHE";
+    NSDictionary *caches = [SCCacheManager getCachedObjectWithKey:cacheKey];
+    
+    NSMutableDictionary *temp = VALID_DICTIONARY(caches) ? caches.mutableCopy : [NSMutableDictionary dictionary];
+    
+    NSArray *datas = temp[userInfo.phoneNumber];
+    
+    if (datas) {
+        NSArray *models = [SCCommodityModel getModelsFrom:datas];
+        if (successBlock) {
+            successBlock(models, @[]);
+        }
+        
+        return;
+    }
+    
+    [self requestCommoditiesWithTypeNum:nil brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:1 success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, NSArray * _Nonnull originDatas) {
+        NSArray *cacheDatas = originDatas ?: @[];
+        
+        temp[userInfo.phoneNumber] = cacheDatas;
+        
+        [SCCacheManager cacheObject:temp forKey:cacheKey];
+        
+        if (successBlock) {
+            successBlock(commodityList, originDatas);
+        }
+        
+        
+    } failure:failureBlock];
 }
 
 +(void)scMyOrderList_scParam:(NSDictionary *)param block:(void (^)(BOOL, NSDictionary * _Nullable, NSString * _Nullable))callBack{

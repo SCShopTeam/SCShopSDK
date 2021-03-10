@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign) BOOL isMainTabVC;        //是否是首页tab
 @property (nonatomic, assign) BOOL hideNavigationBar;  //隐藏导航栏，同时防止闪黑
-@property (nonatomic, assign) BOOL isChangingTab;
 
 @end
 

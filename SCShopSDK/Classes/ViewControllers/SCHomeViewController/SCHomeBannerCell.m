@@ -132,7 +132,8 @@
         _defaultImageView = [[UIImageView alloc] initWithFrame:self.cycleView.frame];
         _defaultImageView.layer.cornerRadius = 5;
         _defaultImageView.layer.masksToBounds = YES;
-        _defaultImageView.image = SCIMAGE(@"sc_home_banner");
+//        _defaultImageView.image = SCIMAGE(@"sc_home_banner");
+        _defaultImageView.image = IMG_PLACE_HOLDER;
         [self.contentView addSubview:_defaultImageView];
     }
     return _defaultImageView;

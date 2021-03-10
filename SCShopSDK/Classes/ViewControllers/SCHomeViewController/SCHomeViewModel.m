@@ -12,6 +12,8 @@
 #import "SCLocationService.h"
 
 @interface SCHomeViewModel ()
+@property (nonatomic, strong) SCUserInfo *lastUserInfo;
+
 @property (nonatomic, assign) BOOL isTouchRequesting;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *topList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *bannerList;
@@ -34,6 +36,22 @@
 @end
 
 @implementation SCHomeViewModel
+
+#pragma mark -检测用户是否发生变化
+- (BOOL)userHasChanged
+{
+    SCUserInfo *currentUser = [SCUserInfo currentUser];
+    if (!_lastUserInfo || !currentUser) {
+        _lastUserInfo = currentUser;
+        return NO;
+    }
+    
+    BOOL hasChanged = currentUser.phoneNumber != _lastUserInfo.phoneNumber || currentUser.isLogin != _lastUserInfo.isLogin;
+    
+    return hasChanged;
+    
+    
+}
 
 #pragma mark -触点相关
 - (void)requestTouchData:(UIViewController *)viewController success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
@@ -269,7 +287,7 @@
     
     _isCommodityRequesting = YES;
     
-    [SCRequest requestCommoditiesWithTypeNum:(typeNum?:@"") brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList) {
+    [SCRequest requestCommoditiesWithTypeNum:(typeNum?:@"") brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, NSArray * _Nonnull originDatas) {
         self.isCommodityRequesting = NO;
         
         if (pageNum == 1) {

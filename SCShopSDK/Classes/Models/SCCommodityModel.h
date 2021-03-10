@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 //自定义
 @property (nonatomic, copy) NSString *tenantTypeStr;
 
++ (NSArray <SCCommodityModel *> *)getModelsFrom:(NSArray *)datas;
+
 @end
 
 NS_ASSUME_NONNULL_END

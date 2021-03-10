@@ -46,7 +46,7 @@ NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
 
 - (void)requestRecommend:(SCHttpRequestCompletion)completion
 {
-    [SCRequest requestRecommend:^(NSArray<SCCommodityModel *> * _Nonnull commodityList) {
+    [SCRequest requestRecommend:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, NSArray * _Nonnull originDatas) {
         self.recommendList = commodityList;
         if (completion) {
             completion(nil);

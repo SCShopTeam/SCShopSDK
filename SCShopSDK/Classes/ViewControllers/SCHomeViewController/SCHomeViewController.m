@@ -59,16 +59,16 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 
 @implementation SCHomeViewController
 
-//-(void)viewDidAppear:(BOOL)animated{
-//    [super viewDidAppear:animated];
-//    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
-//}
-//
-//-(void)viewWillDisappear:(BOOL)animated{
-//    [super viewWillDisappear:animated];
-//    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-//
-//}
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+}
+
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+
+}
 
 
 - (void)viewDidLoad {
@@ -88,8 +88,18 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     
     //请求数据
     [self requestData];
-    
+
 }
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    //每次进入页面判断用户是否变化，比如登录，或者退出登录，发生变化需要刷新当前页数据
+    if (self.viewModel.userHasChanged) {
+        [self refreshCurrentPage];
+    }
+}
+
 
 #pragma mark -request
 - (void)requestData
@@ -136,6 +146,12 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         self.itemsView.categoryList = self.viewModel.categoryList;
         [self.tableView reloadData];
     }];
+}
+
+- (void)refreshCurrentPage  //刷新当前页数据
+{
+    [self requestStoreData];
+    [self.itemsView refresh];
 }
 
 #pragma mark -UITableViewDelegate, UITableViewDataSource
@@ -566,8 +582,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         _moreView.selectBlock = ^(SCShopMoreType type) {
           @strongify(self)
             if (type > 1) { //刷新
-                [self requestStoreData];
-                [self.itemsView refresh];
+                [self refreshCurrentPage];
                 
             }else { //消息，意见
                 SCShoppingManager *manager = [SCShoppingManager sharedInstance];

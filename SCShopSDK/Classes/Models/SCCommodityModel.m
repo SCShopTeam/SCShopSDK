@@ -22,5 +22,20 @@
     return YES;
 }
 
++ (NSArray <SCCommodityModel *> *)getModelsFrom:(NSArray *)datas
+{
+    NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:datas.count];
+    
+    for (NSDictionary *dict in datas) {
+        if (VALID_DICTIONARY(dict)) {
+            SCCommodityModel *model = [SCCommodityModel yy_modelWithDictionary:dict];
+            [mulArr addObject:model];
+            
+        }
+    }
+    
+    return mulArr.copy;
+}
+
 
 @end
