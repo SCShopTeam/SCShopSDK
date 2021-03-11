@@ -26,15 +26,17 @@
 }
 
 //登录
-- (void)scLoginWithNav:(UINavigationController *)nav back:(SC_loginWithBlock)callBack
+- (void)scLoginWithNav:(UINavigationController *)nav back:(nonnull void (^)(void))callBack
 {
     SCTestViewController *vc = [SCTestViewController new];
     vc.title = @"需要登录";
     [nav pushViewController:vc animated:YES];
     
-    __weak typeof(vc) weakVc = vc;
+    
     vc.loginSuccessBlock = ^{
-        callBack(weakVc);
+        if (callBack) {
+            callBack();
+        }
     };
 
 }

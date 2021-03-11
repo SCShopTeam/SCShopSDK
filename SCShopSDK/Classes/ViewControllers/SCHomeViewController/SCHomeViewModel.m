@@ -41,12 +41,13 @@
 - (BOOL)userHasChanged
 {
     SCUserInfo *currentUser = [SCUserInfo currentUser];
-    if (!_lastUserInfo || !currentUser) {
-        _lastUserInfo = currentUser;
-        return NO;
-    }
     
-    BOOL hasChanged = currentUser.phoneNumber != _lastUserInfo.phoneNumber || currentUser.isLogin != _lastUserInfo.isLogin;
+    NSString *cuPhone = currentUser.phoneNumber;
+    BOOL cuLogin = currentUser.isLogin;
+    
+    BOOL hasChanged =  _lastUserInfo && (currentUser.phoneNumber != _lastUserInfo.phoneNumber || currentUser.isLogin != _lastUserInfo.isLogin);
+    
+    _lastUserInfo = currentUser;
     
     return hasChanged;
     

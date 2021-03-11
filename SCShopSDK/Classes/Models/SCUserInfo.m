@@ -13,20 +13,25 @@
 
 + (instancetype)currentUser
 {
+    SCUserInfo *userInfo;
+    
     if ([[SCShoppingManager sharedInstance].delegate respondsToSelector:@selector(scGetUserInfo)]) {
-        NSDictionary *uiDict = [[SCShoppingManager sharedInstance].delegate scGetUserInfo];
         
-        if (VALID_DICTIONARY(uiDict)) {
-            SCUserInfo *userInfo = [SCUserInfo yy_modelWithDictionary:uiDict];
-            
-            userInfo.isJSMobile = [uiDict[@"isJSMobile"] integerValue];
-            userInfo.isLogin    = [uiDict[@"isLogin"] integerValue];
-            
-            return userInfo;
-        }
+        NSDictionary *dict = [[SCShoppingManager sharedInstance].delegate scGetUserInfo];
+        
+        userInfo = [SCUserInfo yy_modelWithDictionary:dict];
+
     }
     
-    return [SCUserInfo new];
+    return userInfo ?: [SCUserInfo new];
+}
+
+- (BOOL)modelCustomTransformFromDictionary:(NSDictionary *)dic
+{
+    self.isJSMobile = [dic[@"isJSMobile"] integerValue];
+    self.isLogin    = [dic[@"isLogin"] integerValue];
+    
+    return YES;
 }
 
 - (NSString *)brandBusiNum

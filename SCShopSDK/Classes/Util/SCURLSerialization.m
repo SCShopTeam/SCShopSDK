@@ -119,15 +119,8 @@
             SCShoppingManager *manager = [SCShoppingManager sharedInstance];
             
             if (manager.delegate && [manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
-                [manager.delegate scLoginWithNav:nav back:^(UIViewController * _Nonnull controller) {
-                    //                    SCUserInfo *userInfo = [SCUserInfo currentUser];
-                    //                    if (!userInfo.isJSMobile && userInfo.isLogin) {
-                    //                        [SCShoppingManager showDiffNetAlert:nav];
-                    //
-                    //                    }else{
+                [manager.delegate scLoginWithNav:nav back:^ {
                     [SCUtilities postLoginSuccessNotification];
-                    //                    }
-                    
                     
                 }];
                 
@@ -181,9 +174,9 @@
     if ((code == SCJsmccCodeTabCart || code == SCJsmccCodeCart || SCJsmccCodeOrder) && ![SCUserInfo currentUser].isLogin) {
         SCShoppingManager *manager = [SCShoppingManager sharedInstance];
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
-            [manager.delegate scLoginWithNav:nav back:^(UIViewController * _Nonnull controller) {
+            [manager.delegate scLoginWithNav:nav back:^ {
                 [SCUtilities postLoginSuccessNotification];
-                [self gotoJsmcc:cmd navigation:nav paramDic:paramDic];
+//                [self gotoJsmcc:cmd navigation:nav paramDic:paramDic]; //>>标记  掌厅登录代理有bug，暂不执行
             }];
         }
         

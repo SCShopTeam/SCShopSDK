@@ -9,10 +9,10 @@
 /* Begin PBXBuildFile section */
 		21D3AB0BAA3DFD28F7B30862 /* Pods_SCShopSDK_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E3AB4DB00298C04A76AC045 /* Pods_SCShopSDK_Example.framework */; };
 		4D51F5A725F8A48500544AFA /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D51F5A625F8A48500544AFA /* MainTabBarController.m */; };
-		4D51F5AF25F8A49700544AFA /* SCShopResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4D51F5AE25F8A49700544AFA /* SCShopResource.bundle */; };
 		4D51F5B925F8A4B200544AFA /* SCTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D51F5B625F8A4B100544AFA /* SCTestViewController.m */; };
 		4D51F5BA25F8A4B200544AFA /* SCTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4D51F5B725F8A4B100544AFA /* SCTestViewController.xib */; };
 		4D51F5BB25F8A4B200544AFA /* SCShopDelegateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D51F5B825F8A4B200544AFA /* SCShopDelegateUtil.m */; };
+		4D51F7AF25FA1BD000544AFA /* SCShopResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4D51F7AE25FA1BD000544AFA /* SCShopResource.bundle */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -46,12 +46,12 @@
 		381557D78EBB8128CBFA9AE2 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		4D51F5A525F8A48400544AFA /* MainTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTabBarController.h; sourceTree = "<group>"; };
 		4D51F5A625F8A48500544AFA /* MainTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTabBarController.m; sourceTree = "<group>"; };
-		4D51F5AE25F8A49700544AFA /* SCShopResource.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SCShopResource.bundle; sourceTree = "<group>"; };
 		4D51F5B425F8A4B100544AFA /* SCShopDelegateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCShopDelegateUtil.h; sourceTree = "<group>"; };
 		4D51F5B525F8A4B100544AFA /* SCTestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCTestViewController.h; sourceTree = "<group>"; };
 		4D51F5B625F8A4B100544AFA /* SCTestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCTestViewController.m; sourceTree = "<group>"; };
 		4D51F5B725F8A4B100544AFA /* SCTestViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SCTestViewController.xib; sourceTree = "<group>"; };
 		4D51F5B825F8A4B200544AFA /* SCShopDelegateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCShopDelegateUtil.m; sourceTree = "<group>"; };
+		4D51F7AE25FA1BD000544AFA /* SCShopResource.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = SCShopResource.bundle; path = ../../SCShopResource.bundle; sourceTree = "<group>"; };
 		59B0C162934935B47495A613 /* Pods_SCShopSDK_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SCShopSDK_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58A195388D20070C39A /* SCShopSDK_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SCShopSDK_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -153,7 +153,7 @@
 		6003F593195388D20070C39A /* Example for SCShopSDK */ = {
 			isa = PBXGroup;
 			children = (
-				4D51F5AE25F8A49700544AFA /* SCShopResource.bundle */,
+				4D51F7AE25FA1BD000544AFA /* SCShopResource.bundle */,
 				6003F59C195388D20070C39A /* SCAppDelegate.h */,
 				6003F59D195388D20070C39A /* SCAppDelegate.m */,
 				873B8AEA1B1F5CCA007FD442 /* Main.storyboard */,
@@ -301,7 +301,7 @@
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 				4D51F5BA25F8A4B200544AFA /* SCTestViewController.xib in Resources */,
-				4D51F5AF25F8A49700544AFA /* SCShopResource.bundle in Resources */,
+				4D51F7AF25FA1BD000544AFA /* SCShopResource.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

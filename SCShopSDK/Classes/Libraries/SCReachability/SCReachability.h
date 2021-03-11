@@ -26,6 +26,7 @@ typedef NS_ENUM(NSUInteger, SCReachabilityWWANStatus) {
     SCReachabilityWWANStatus2G = 2, ///< Reachable via 2G (GPRS/EDGE)       10~100Kbps
     SCReachabilityWWANStatus3G = 3, ///< Reachable via 3G (WCDMA/HSDPA/...) 1~10Mbps
     SCReachabilityWWANStatus4G = 4, ///< Reachable via 4G (eHRPD/LTE)       100Mbps
+    SCReachabilityWWANStatus5G = 5
 };
 
 

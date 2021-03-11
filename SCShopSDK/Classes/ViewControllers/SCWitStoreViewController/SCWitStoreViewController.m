@@ -361,9 +361,9 @@
     if (![SCUserInfo currentUser].isLogin) { //未登录，先登录
         SCShoppingManager *manager = [SCShoppingManager sharedInstance];
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
-            [manager.delegate scLoginWithNav:self.navigationController back:^(UIViewController * _Nonnull controller) {
+            [manager.delegate scLoginWithNav:self.navigationController back:^{
                 [SCUtilities postLoginSuccessNotification];
-                [self requestOrder:storeModel indexPath:indexPath];
+//                [self requestOrder:storeModel indexPath:indexPath]; //>>标记  掌厅登录代理有bug,该方法暂不执行
             }];
         }
         

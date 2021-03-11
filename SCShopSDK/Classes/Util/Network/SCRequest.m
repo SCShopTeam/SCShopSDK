@@ -541,8 +541,8 @@
         UINavigationController *nav = [SCUtilities currentNavigationController];
         SCShoppingManager *manager = [SCShoppingManager sharedInstance];
         if (manager.delegate && [manager.delegate respondsToSelector:@selector(scLoginResultBlock:)]) {
-            [manager.delegate scLoginWithNav:nav back:^(UIViewController * _Nonnull controller) {
-                
+            [manager.delegate scLoginWithNav:nav back:^{
+                [SCUtilities postLoginSuccessNotification];
             }];
         }
     }

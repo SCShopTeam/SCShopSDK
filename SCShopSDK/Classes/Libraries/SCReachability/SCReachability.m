@@ -120,17 +120,27 @@ static void SCReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkRea
     static NSDictionary *dic;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        dic = @{CTRadioAccessTechnologyGPRS : @(SCReachabilityWWANStatus2G),  // 2.5G   171Kbps
-                CTRadioAccessTechnologyEdge : @(SCReachabilityWWANStatus2G),  // 2.75G  384Kbps
-                CTRadioAccessTechnologyWCDMA : @(SCReachabilityWWANStatus3G), // 3G     3.6Mbps/384Kbps
-                CTRadioAccessTechnologyHSDPA : @(SCReachabilityWWANStatus3G), // 3.5G   14.4Mbps/384Kbps
-                CTRadioAccessTechnologyHSUPA : @(SCReachabilityWWANStatus3G), // 3.75G  14.4Mbps/5.76Mbps
-                CTRadioAccessTechnologyCDMA1x : @(SCReachabilityWWANStatus3G), // 2.5G
-                CTRadioAccessTechnologyCDMAEVDORev0 : @(SCReachabilityWWANStatus3G),
-                CTRadioAccessTechnologyCDMAEVDORevA : @(SCReachabilityWWANStatus3G),
-                CTRadioAccessTechnologyCDMAEVDORevB : @(SCReachabilityWWANStatus3G),
-                CTRadioAccessTechnologyeHRPD : @(SCReachabilityWWANStatus3G),
-                CTRadioAccessTechnologyLTE : @(SCReachabilityWWANStatus4G)}; // LTE:3.9G 150M/75M  LTE-Advanced:4G 300M/150M
+        NSMutableDictionary *temp = @{CTRadioAccessTechnologyGPRS : @(SCReachabilityWWANStatus2G),  // 2.5G   171Kbps
+                                      CTRadioAccessTechnologyEdge : @(SCReachabilityWWANStatus2G),  // 2.75G  384Kbps
+                                      CTRadioAccessTechnologyWCDMA : @(SCReachabilityWWANStatus3G), // 3G     3.6Mbps/384Kbps
+                                      CTRadioAccessTechnologyHSDPA : @(SCReachabilityWWANStatus3G), // 3.5G   14.4Mbps/384Kbps
+                                      CTRadioAccessTechnologyHSUPA : @(SCReachabilityWWANStatus3G), // 3.75G  14.4Mbps/5.76Mbps
+                                      CTRadioAccessTechnologyCDMA1x : @(SCReachabilityWWANStatus3G), // 2.5G
+                                      CTRadioAccessTechnologyCDMAEVDORev0 : @(SCReachabilityWWANStatus3G),
+                                      CTRadioAccessTechnologyCDMAEVDORevA : @(SCReachabilityWWANStatus3G),
+                                      CTRadioAccessTechnologyCDMAEVDORevB : @(SCReachabilityWWANStatus3G),
+                                      CTRadioAccessTechnologyeHRPD : @(SCReachabilityWWANStatus3G),
+                                      CTRadioAccessTechnologyLTE : @(SCReachabilityWWANStatus4G)   //// LTE:3.9G 150M/75M  LTE-Advanced:4G 300M/150M
+        }.mutableCopy;
+        
+        if (@available(iOS 14.0, *)) {
+            temp[CTRadioAccessTechnologyNRNSA] = @(SCReachabilityWWANStatus5G);
+            temp[CTRadioAccessTechnologyNR] = @(SCReachabilityWWANStatus5G);
+        }
+        
+        dic = temp.copy;
+        
+
     });
     NSNumber *num = dic[status];
     if (num != nil) return num.unsignedIntegerValue;

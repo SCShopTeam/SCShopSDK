@@ -16,8 +16,6 @@ typedef NS_ENUM(NSInteger, SCShopMoreType) {
 
 NS_ASSUME_NONNULL_BEGIN
 
-//登录回调接口  controller 掌厅登录页
-typedef void (^SC_loginWithBlock)(UIViewController *controller);
 //首页触点数据回调
 typedef void (^SC_ADTouchDataBlock)(id touchData);
 //搜索回调接口
@@ -28,7 +26,7 @@ typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nul
 
 @optional
 //登录
-- (void)scLoginWithNav:(UINavigationController *)nav back:(SC_loginWithBlock)callBack;
+- (void)scLoginWithNav:(UINavigationController *)nav back:(void (^)(void))callBack;
 //配置cookie
 - (void)scConfigCookiesWithUrl:(NSMutableURLRequest *)request wkweb:(WKWebView *)web;
 //大数据插码

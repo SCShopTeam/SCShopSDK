@@ -444,9 +444,9 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     //判断是否登录
     if (model.isLogin.integerValue > 0 && ![SCUserInfo currentUser].isLogin) {
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
-            [manager.delegate scLoginWithNav:self.navigationController back:^(UIViewController * _Nonnull controller) {
+            [manager.delegate scLoginWithNav:self.navigationController back:^{
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self pushToNewPage:model.linkUrl title:model.contentName];
+//                    [self pushToNewPage:model.linkUrl title:model.contentName]; //>>标记  掌厅登录代理有bug,暂不执行该方法
                     [SCUtilities postLoginSuccessNotification];
                 });
                 

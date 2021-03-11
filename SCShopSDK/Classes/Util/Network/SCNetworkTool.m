@@ -195,6 +195,9 @@ typedef NS_ENUM(NSInteger, SCNetApiType) {
             case SCReachabilityWWANStatus4G:
                 return @"4";//@"4G";
                 break;
+            case SCReachabilityWWANStatus5G:
+                return @"5";//@"5G";
+                break;
             default:
                 return @"0";//@"WWAM";
                 break;
