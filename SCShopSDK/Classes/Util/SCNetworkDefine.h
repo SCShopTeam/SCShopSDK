@@ -10,7 +10,7 @@
 #define SCNetworkDefine_h
 
 //是否是正式环境
-#define IS_RELEASE_ENVIRONMENT   NO
+#define IS_RELEASE_ENVIRONMENT   YES
 //host
 #define BASE_WEB_URL (IS_RELEASE_ENVIRONMENT ? @"http://wap.js.10086.cn/ex" : @"http://wap.js.10086.cn/ex/test")
 #define BASE_HOST (IS_RELEASE_ENVIRONMENT ? @"http://wap.js.10086.cn/ex/mall/api/v1" : @"http://wap.js.10086.cn/ex/test/mall/api/v1")
