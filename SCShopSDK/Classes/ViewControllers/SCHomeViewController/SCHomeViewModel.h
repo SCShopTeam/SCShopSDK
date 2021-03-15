@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SCHomeTouchModel.h"
-#import "SCHomeStoreModel.h"
+#import "SCGoodStoreModel.h"
 #import "SCCategoryModel.h"
 #import "SCCommodityModel.h"
 
@@ -22,8 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *adList;                     //广告
 @property (nonatomic, strong, readonly) NSDictionary <NSNumber *, SCHomeTouchModel *> *popupDict; //弹窗
 
-@property (nonatomic, strong, readonly) SCHomeStoreModel *recommendStoreModel;                    //推荐门店
-@property (nonatomic, strong, readonly) NSArray <SCHomeStoreModel *> *goodStoreList;              //发现好店
+@property (nonatomic, strong, readonly) NSArray <SCGoodStoreModel *> *goodStoreList;              //发现好店
 
 @property (nonatomic, strong, readonly) NSArray <SCCategoryModel *> *categoryList;                //分类
 
@@ -36,8 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
 //触点
 - (void)requestTouchData:(UIViewController *)viewController success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
 
-//店铺
-- (void)requestStoreList:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
+//推荐门店
+- (void)requestRecommendStoreData:(SCHttpRequestCompletion)completion;
+
+//发现好店
+- (void)requestGoodStoreList:(SCHttpRequestCompletion)completion;
 
 //弹窗
 //触点展示

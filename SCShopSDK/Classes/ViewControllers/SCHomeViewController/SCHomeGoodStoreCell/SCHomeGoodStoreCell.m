@@ -36,7 +36,7 @@ static NSInteger kMaxGoodShopCount = 3;
     return self;
 }
 
-- (void)setGoodStoreList:(NSArray<SCHomeStoreModel *> *)goodStoreList
+- (void)setGoodStoreList:(NSArray<SCGoodStoreModel *> *)goodStoreList
 {
     if (goodStoreList == _goodStoreList || goodStoreList.count == 0) {
         return;
@@ -78,19 +78,19 @@ static NSInteger kMaxGoodShopCount = 3;
     
     NSInteger row = indexPath.row;
     if (row < self.goodStoreList.count) {
-        SCHomeStoreModel *model = self.goodStoreList[row];
+        SCGoodStoreModel *model = self.goodStoreList[row];
         cell.model = model;
     }
     
     @weakify(self)
-//    cell.enterShopBlock = ^(SCHShopInfoModel * _Nonnull shopModel) {
+//    cell.enterShopBlock = ^(SCGShopInfoModel * _Nonnull shopModel) {
 //        @strongify(self)
 //        if (self.enterShopBlock) {
 //            self.enterShopBlock(indexPath.row, shopModel);
 //        }
 //    };
     
-    cell.imgBlock = ^(NSInteger index, SCHActImageModel * _Nonnull imgModel) {
+    cell.imgBlock = ^(NSInteger index, SCGActImageModel * _Nonnull imgModel) {
         @strongify(self)
         if (self.imgBlock) {
             self.imgBlock(indexPath.row, index, imgModel);
@@ -102,7 +102,7 @@ static NSInteger kMaxGoodShopCount = 3;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SCHomeStoreModel *model = self.goodStoreList[indexPath.row];
+    SCGoodStoreModel *model = self.goodStoreList[indexPath.row];
     if (self.enterShopBlock) {
         self.enterShopBlock(indexPath.row, model.shopInfo);
     }

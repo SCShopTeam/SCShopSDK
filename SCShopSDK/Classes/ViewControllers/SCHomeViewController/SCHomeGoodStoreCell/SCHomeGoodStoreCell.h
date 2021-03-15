@@ -7,18 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SCHomeStoreModel.h"
+#import "SCGoodStoreModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCHomeGoodStoreCell : UITableViewCell
 
-@property (nonatomic, strong) NSArray <SCHomeStoreModel *> *goodStoreList;
+@property (nonatomic, strong) NSArray <SCGoodStoreModel *> *goodStoreList;
 
 //查看更多
 @property (nonatomic, copy) void (^moreBlock)(void);
-@property (nonatomic, copy) void (^enterShopBlock)(NSInteger row, SCHShopInfoModel *shopModel);
-@property (nonatomic, copy) void (^imgBlock)(NSInteger row, NSInteger index, SCHActImageModel *imgModel);
+@property (nonatomic, copy) void (^enterShopBlock)(NSInteger row, SCGShopInfoModel *shopModel);
+@property (nonatomic, copy) void (^imgBlock)(NSInteger row, NSInteger index, SCGActImageModel *imgModel);
 
 + (CGFloat)getRowHeight:(NSInteger)rowNum;
 

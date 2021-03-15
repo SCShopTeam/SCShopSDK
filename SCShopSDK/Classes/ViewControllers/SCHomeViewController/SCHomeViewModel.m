@@ -21,9 +21,10 @@
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *adList;                     //广告
 @property (nonatomic, strong) NSDictionary <NSNumber *, SCHomeTouchModel *> *popupDict; //弹窗
 
-@property (nonatomic, assign) BOOL isStoreRequesting;
-@property (nonatomic, strong) SCHomeStoreModel *recommendStoreModel;                    //推荐门店
-@property (nonatomic, strong) NSArray <SCHomeStoreModel *> *goodStoreList;              //发现好店
+@property (nonatomic, assign) BOOL isRecommendRequesting;
+
+@property (nonatomic, assign) BOOL isGoodStoreRequesting;
+@property (nonatomic, strong) NSArray <SCGoodStoreModel *> *goodStoreList;              //发现好店
 
 @property (nonatomic, assign) BOOL isCategoryRequesting; //是否正在请求分类
 @property (nonatomic, strong) NSArray <SCCategoryModel *> *categoryList;                //分类
@@ -41,10 +42,7 @@
 - (BOOL)userHasChanged
 {
     SCUserInfo *currentUser = [SCUserInfo currentUser];
-    
-    NSString *cuPhone = currentUser.phoneNumber;
-    BOOL cuLogin = currentUser.isLogin;
-    
+
     BOOL hasChanged =  _lastUserInfo && (currentUser.phoneNumber != _lastUserInfo.phoneNumber || currentUser.isLogin != _lastUserInfo.isLogin);
     
     _lastUserInfo = currentUser;
@@ -166,22 +164,71 @@
     
 }
 
-#pragma mark -店铺
-- (void)requestStoreList:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
+
+#pragma mark -推荐门店
+- (void)requestRecommendStoreData:(SCHttpRequestCompletion)completion
 {
-    if (self.isStoreRequesting) {
+    if (_isRecommendRequesting) {
+        return;
+    }
+    
+    SCUserInfo *userInfo = [SCUserInfo currentUser];
+    
+    if (!VALID_STRING(userInfo.phoneNumber)) {
+        //清除数据
+        
+        if (completion) {
+            completion(@"phone null");
+        }
+        
+        return;
+    }
+    
+    [[SCLocationService sharedInstance] startLocation:^(NSString * _Nullable longitude, NSString * _Nullable latitude) {
+        [self requestRecommendStoreDataWithLongitude:longitude latitude:latitude userInfo:userInfo completion:completion];
+    }];
+}
+
+- (void)requestRecommendStoreDataWithLongitude:(nullable NSString *)longitude latitude:(nullable NSString *)latitude userInfo:(SCUserInfo *)userInfo completion:(SCHttpRequestCompletion)completion
+{
+    self.isRecommendRequesting = YES;
+    
+    NSDictionary *param = @{@"longitude": longitude?:@"",
+                            @"latitude": latitude?:@"",
+                            @"areaNum": userInfo.uan,
+                            @"phoneNum": userInfo.phoneNumber};
+    
+    [SCRequestParams shareInstance].requestNum = @"apollo.queryFloorGoods";
+    
+    [SCNetworkManager POST:SC_STORE_FLOOR parameters:param success:^(id  _Nullable responseObject) {
+        self.isRecommendRequesting = NO;
+        
+    } failure:^(NSString * _Nullable errorMsg) {
+        self.isRecommendRequesting = NO;
+        //清除数据
+        if (completion) {
+            completion(errorMsg);
+        }
+        
+    }];
+}
+
+#pragma mark -发现好店
+- (void)requestGoodStoreList:(SCHttpRequestCompletion)completion
+{
+    if (self.isGoodStoreRequesting) {
         return;
     }
 
     [[SCLocationService sharedInstance] startLocation:^(NSString * _Nullable longitude, NSString * _Nullable latitude) {
-        [self requestStoreDataWithLongitude:longitude latitude:latitude success:success failure:failure];
+        [self requestGoodStoreDataWithLongitude:longitude latitude:latitude completion:completion];
     }];
     
 }
 
-- (void)requestStoreDataWithLongitude:(nullable NSString *)longitude latitude:(nullable NSString *)latitude success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
+- (void)requestGoodStoreDataWithLongitude:(nullable NSString *)longitude latitude:(nullable NSString *)latitude completion:(SCHttpRequestCompletion)completion
 {
-    self.isStoreRequesting = YES;
+    self.isGoodStoreRequesting = YES;
     
     NSDictionary *param = @{@"longitude": longitude?:@"",
                             @"latitude": latitude?:@""};
@@ -189,9 +236,9 @@
     [SCRequestParams shareInstance].requestNum = @"shop.recommend";
 
     [SCNetworkManager POST:SC_SHOP_RECOMMEND parameters:param success:^(id  _Nullable responseObject) {
-        self.isStoreRequesting = NO;
+        self.isGoodStoreRequesting = NO;
         NSString *key = @"shopList";
-        if (![SCNetworkTool checkResult:responseObject key:key forClass:NSArray.class failure:failure]) {
+        if (![SCNetworkTool checkResult:responseObject key:key forClass:NSArray.class completion:completion]) {
             return;
         }
         
@@ -203,27 +250,26 @@
             if (!VALID_DICTIONARY(dict)) {
                 continue;
             }
-            SCHomeStoreModel *model = [SCHomeStoreModel yy_modelWithDictionary:dict];
+            SCGoodStoreModel *model = [SCGoodStoreModel yy_modelWithDictionary:dict];
 
             if (model.shopInfo.isFindGood) {   //发现好店
                 [mulArr addObject:model];
                 
-            }else {   //附近门店
-                self.recommendStoreModel = model;
             }
+
         }
         
         self.goodStoreList = mulArr;
         
-        
-        if (success) {
-            success(nil);
+        if (completion) {
+            completion(nil);
         }
         
     } failure:^(NSString * _Nullable errorMsg) {
-        self.isStoreRequesting = NO;
-        if (failure) {
-            failure(errorMsg);
+        self.isGoodStoreRequesting = NO;
+        self.goodStoreList = nil;
+        if (completion) {
+            completion(errorMsg);
         }
     }];
 }

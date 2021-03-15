@@ -26,20 +26,32 @@
 
 @interface SCLocationService()<CLLocationManagerDelegate>
 
+@property (nonatomic, assign) BOOL isLocationing; //是否正在定位中
+
 @property (nonatomic, strong) CLLocationManager *locationManager;
 // 地理位置解码编码器
 @property (nonatomic,retain) CLGeocoder *geocoder;
 
-@property (nonatomic, copy, nullable) SCLocationBlock locationBlock;
+//@property (nonatomic, copy, nullable) SCLocationBlock locationBlock;
+@property (nonatomic, strong) NSMutableArray <SCLocationBlock> *blockList;
 
 @end
 
 @implementation SCLocationService
-DEF_SINGLETON(SCLocationService)
+
++ (instancetype)sharedInstance
+{
+    static SCLocationService *_s;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _s = [SCLocationService new];
+    });
+    return _s;
+}
 
 - (void)startLocation:(SCLocationBlock)callBack;
 {
-    self.locationBlock = callBack;
+    [self.blockList addObject:callBack];
     
     //从掌厅获取定位
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
@@ -51,7 +63,7 @@ DEF_SINGLETON(SCLocationService)
             self.cityCode        = NSStringFormat(@"%@", locationInfo[@"cityCode"]);
             self.city            = NSStringFormat(@"%@", locationInfo[@"City"]);
             self.locationAddress = NSStringFormat(@"%@", locationInfo[@"locationAddress"]);
-            [self callBack];
+            [self stopLocation];
             
             return;
         }
@@ -65,9 +77,13 @@ DEF_SINGLETON(SCLocationService)
 //开始定位
 - (void)startLocation
 {
+    if (_isLocationing) {
+        return;
+    }
+    
     //     判断定位服务是否可用
     if (![CLLocationManager locationServicesEnabled]) {
-        [self callBack];
+        [self stopLocation];
         return;
     }
     
@@ -90,6 +106,9 @@ DEF_SINGLETON(SCLocationService)
         }
         //            [_locationManager requestAlwaysAuthorization];
     }
+    
+    _isLocationing = YES;
+    
     //    开启定位
     [self.locationManager startUpdatingLocation];
 
@@ -127,15 +146,12 @@ DEF_SINGLETON(SCLocationService)
         
     }];
     
-    [self callBack]; //目前只回调经纬度
-    
-    [self.locationManager stopUpdatingLocation];
+    [self stopLocation]; //目前只回调经纬度
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    [self callBack];
-    [self.locationManager stopUpdatingLocation];
+    [self stopLocation];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
@@ -145,8 +161,7 @@ DEF_SINGLETON(SCLocationService)
         case kCLAuthorizationStatusRestricted:
         case kCLAuthorizationStatusDenied:
         {
-            [self callBack];
-            [self.locationManager stopUpdatingLocation];
+            [self stopLocation];
         }
             break;
             
@@ -166,12 +181,21 @@ DEF_SINGLETON(SCLocationService)
     _city = temp.copy;
 }
 
-- (void)callBack
+- (void)stopLocation
 {
-    if (_locationBlock) {
-        _locationBlock(self.longitude, self.latitude);
-        _locationBlock = nil;
+    _isLocationing = NO;
+    
+    if (_locationManager) {
+        [_locationManager stopUpdatingLocation];
     }
+    
+    for (SCLocationBlock block in self.blockList) {
+        block(self.longitude, self.latitude);
+    }
+    
+    [self.blockList removeAllObjects];
+
+    
 }
 
 - (void)cleanData
@@ -181,6 +205,14 @@ DEF_SINGLETON(SCLocationService)
     _cityCode        = nil;
     _city            = nil;
     _locationAddress = nil;
+}
+
+- (NSMutableArray<SCLocationBlock> *)blockList
+{
+    if (!_blockList) {
+        _blockList = [NSMutableArray array];
+    }
+    return _blockList;
 }
 
 + (CLLocationCoordinate2D)gcj02Encrypt:(double)ggLat bdLon:(double)ggLon

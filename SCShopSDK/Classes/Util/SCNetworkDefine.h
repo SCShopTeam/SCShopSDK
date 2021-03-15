@@ -10,7 +10,7 @@
 #define SCNetworkDefine_h
 
 //是否是正式环境
-#define IS_RELEASE_ENVIRONMENT   YES
+#define IS_RELEASE_ENVIRONMENT   NO
 //host
 #define BASE_WEB_URL (IS_RELEASE_ENVIRONMENT ? @"http://wap.js.10086.cn/ex" : @"http://wap.js.10086.cn/ex/test")
 #define BASE_HOST (IS_RELEASE_ENVIRONMENT ? @"http://wap.js.10086.cn/ex/mall/api/v1" : @"http://wap.js.10086.cn/ex/test/mall/api/v1")
@@ -77,8 +77,11 @@
 #define SC_FAVORITE_ADD             NSStringFormat(@"%@/user/favorite/add",BASE_HOST)
 //用户 收藏商品 删除
 #define SC_FAVORITE_DELETE          NSStringFormat(@"%@/user/favorite/delete",BASE_HOST)
-//推荐店铺
+//推荐店铺 (现发现好店)
 #define SC_SHOP_RECOMMEND           NSStringFormat(@"%@/user/shop/recommend",BASE_HOST)
+//推荐门店 (新) http://ip/mallb2c/api/v1/ apollo/queryStoreFloor
+#define SC_STORE_FLOOR             NSStringFormat(@"%@/user/apollo/queryStoreFloor",BASE_HOST)
+
 //地址列表EDIT
 #define SC_ADDRESS_LIST NSStringFormat(@"%@/user/address/list",BASE_HOST)
 //地址详情

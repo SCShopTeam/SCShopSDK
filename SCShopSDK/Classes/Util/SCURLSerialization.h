@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, SCJsmccCode) {
-    SCJsmccCodeHome      = 0,  //首页
+    SCJsmccCodeHome      = 1,  //首页
     SCJsmccCodeTabCart   = 3,  //tab位购物车 
     SCJsmccCodeOrder     = 4,  //我的订单
     SCJsmccCodeStoreInfo = 5,  //店铺详情

@@ -143,20 +143,20 @@
     
     //商城首页
     if (code == SCJsmccCodeHome) {
-        UITabBarController *tabBar = [SCUtilities currentTabBarController];
+        UITabBarController *tabBarVc = [SCUtilities currentTabBarController];
         
-        if (!tabBar) {
+        if (!tabBarVc) {
             return;
         }
         
         __block BOOL isTabVc;
         
-        [tabBar.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull tabVc, NSUInteger idx, BOOL * _Nonnull stop) {
+        [tabBarVc.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull tabVc, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([tabVc isKindOfClass:SCBaseNavigationController.class]) {
-                SCBaseNavigationController *nav = (SCBaseNavigationController *)tabVc;
-                if ([nav.viewControllers.firstObject isKindOfClass:SCHomeViewController.class]) {
-                    [nav popToRootViewControllerAnimated:NO];
-                    [tabBar setSelectedIndex:idx];
+                SCBaseNavigationController *tabNav = (SCBaseNavigationController *)tabVc;
+                if ([tabNav.viewControllers.firstObject isKindOfClass:SCHomeViewController.class]) {
+                    [tabNav popToRootViewControllerAnimated:NO];
+                    [tabBarVc setSelectedIndex:idx];
                     isTabVc = YES;
                     *stop = YES;
                 }
@@ -164,7 +164,7 @@
         }];
         
         if (!isTabVc) {
-            [nav pushViewController:[[SCBaseNavigationController alloc] initWithRootViewController:[SCHomeViewController new]] animated:YES];
+            [nav pushViewController:[SCHomeViewController new] animated:YES];
         }
         
         return;
@@ -176,7 +176,7 @@
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
             [manager.delegate scLoginWithNav:nav back:^ {
                 [SCUtilities postLoginSuccessNotification];
-//                [self gotoJsmcc:cmd navigation:nav paramDic:paramDic]; //>>标记  掌厅登录代理有bug，暂不执行
+                //                [self gotoJsmcc:cmd navigation:nav paramDic:paramDic]; //>>标记  掌厅登录代理有bug，暂不执行
             }];
         }
         
@@ -188,7 +188,7 @@
         SCMyOrderViewController *vc = [SCMyOrderViewController new];
         [nav pushViewController:vc animated:YES];
         
-//        [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_Z04" url:@"" inPage:NSStringFromClass(SCHomeViewController.class)];
+        [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_Z04" url:@"" inPage:NSStringFromClass(SCHomeViewController.class)];
         
     }else if (code == SCJsmccCodeStoreInfo) { //商铺详情
         NSString *num = paramDic[@"tenantNum"];
@@ -205,7 +205,7 @@
         SCCartViewController *cat = [[SCCartViewController alloc]init];
         [nav pushViewController:cat animated:YES];
         
-//        [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_Z03" url:@"" inPage:NSStringFromClass(SCHomeViewController.class)];
+        [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_Z03" url:@"" inPage:NSStringFromClass(SCHomeViewController.class)];
         
     }else if (code == SCJsmccCodeWitStore){ //智慧门店  原生
         SCWitStoreViewController *wit = [[SCWitStoreViewController alloc]init];

@@ -13,7 +13,7 @@ typedef void(^SCLocationBlock)(NSString * _Nullable longitude, NSString * _Nulla
 
 @interface SCLocationService : NSObject
 
-AS_SINGLETON(SCLocationService)
++ (instancetype)sharedInstance;
 
 @property (nonatomic, copy, nullable) NSString *cityCode;
 @property (nonatomic, copy, nullable) NSString *longitude;

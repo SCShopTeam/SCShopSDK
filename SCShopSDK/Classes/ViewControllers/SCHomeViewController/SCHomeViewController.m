@@ -104,14 +104,25 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 #pragma mark -request
 - (void)requestData
 {
+    //刷新
+    [self refreshCurrentPage];
+    
+    //下面数据只打开时请求一次
     //请求触点
     [self requestTouchData];
     
-    //请求店铺
-    [self requestStoreData];
-    
     //请求分类
     [self requestCategoryData];
+}
+
+- (void)refreshCurrentPage  //刷新当前页数据
+{
+    //推荐门店
+    [self requestRecommendStoreData];
+    //发现好店
+    [self requestGoodStoreData];
+    //商品
+    [_itemsView refresh];
 }
 
 - (void)requestTouchData
@@ -126,15 +137,19 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     }];
 }
 
-- (void)requestStoreData
+- (void)requestRecommendStoreData
 {
-    
-    [self.viewModel requestStoreList:^(id  _Nullable responseObject) {
-        [self.tableView reloadData];
-        
-    } failure:^(NSString * _Nullable errorMsg) {
-        
+    [self.viewModel requestRecommendStoreData:^(NSString * _Nullable errorMsg) {
+       
     }];
+}
+
+- (void)requestGoodStoreData
+{
+    [self.viewModel requestGoodStoreList:^(NSString * _Nullable errorMsg) {
+        [self.tableView reloadData];
+    }];
+
 }
 
 - (void)requestCategoryData
@@ -146,12 +161,6 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         self.itemsView.categoryList = self.viewModel.categoryList;
         [self.tableView reloadData];
     }];
-}
-
-- (void)refreshCurrentPage  //刷新当前页数据
-{
-    [self requestStoreData];
-    [self.itemsView refresh];
 }
 
 #pragma mark -UITableViewDelegate, UITableViewDataSource
@@ -333,13 +342,13 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
             [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_C09" url:@"" inPage:NSStringFromClass(self.class)];
         };
         
-        goodCell.enterShopBlock = ^(NSInteger row, SCHShopInfoModel * _Nonnull shopModel) {
+        goodCell.enterShopBlock = ^(NSInteger row, SCGShopInfoModel * _Nonnull shopModel) {
             @strongify(self)
             [self pushToNewPage:shopModel.link title:@""];
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_C%li",row*4+10) url:shopModel.link inPage:NSStringFromClass(self.class)];
         };
         
-        goodCell.imgBlock = ^(NSInteger row, NSInteger index, SCHActImageModel * _Nonnull imgModel) {
+        goodCell.imgBlock = ^(NSInteger row, NSInteger index, SCGActImageModel * _Nonnull imgModel) {
             @strongify(self)
             [self pushToNewPage:imgModel.actImageLink title:@""];
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_C%li",row*4+11+index) url:imgModel.actImageLink inPage:NSStringFromClass(self.class)];

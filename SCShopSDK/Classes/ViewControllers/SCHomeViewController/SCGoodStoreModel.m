@@ -1,25 +1,25 @@
 //
-//  SCHomeStoreModel.m
+//  SCGoodStoreModel.m
 //  shopping
 //
 //  Created by gejunyu on 2020/8/19.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCHomeStoreModel.h"
+#import "SCGoodStoreModel.h"
 
-@implementation SCHomeStoreModel
+@implementation SCGoodStoreModel
 
 + (NSDictionary<NSString *,id> *)modelContainerPropertyGenericClass
 {
-    return @{@"shopInfo": SCHShopInfoModel.class,
-             @"bannerList": SCHBannerModel.class,
-             @"actList": SCHActModel.class};
+    return @{@"shopInfo": SCGShopInfoModel.class,
+             @"bannerList": SCGBannerModel.class,
+             @"actList": SCGActModel.class};
 }
 
 @end
 
-@implementation SCHShopInfoModel
+@implementation SCGShopInfoModel
 
 + (NSDictionary *)modelCustomPropertyMapper {
     return @{@"defaultStr" : @"default"};
@@ -35,20 +35,20 @@
 
 @end
 
-@implementation SCHBannerModel
+@implementation SCGBannerModel
 
 @end
 
-@implementation SCHActModel
+@implementation SCGActModel
 
 + (NSDictionary<NSString *,id> *)modelContainerPropertyGenericClass
 {
-    return @{@"actImageList": SCHActImageModel.class};
+    return @{@"actImageList": SCGActImageModel.class};
 }
 
 @end
 
-@implementation SCHActImageModel
+@implementation SCGActImageModel
 
 @end
 

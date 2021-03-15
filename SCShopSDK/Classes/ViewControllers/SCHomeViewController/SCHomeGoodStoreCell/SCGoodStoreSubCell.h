@@ -7,17 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SCHomeStoreModel.h"
+#import "SCGoodStoreModel.h"
 
 #define kGoodStoreRowH SCREEN_FIX(129)
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCGoodStoreSubCell : UITableViewCell
-@property (nonatomic, strong) SCHomeStoreModel *model;
+@property (nonatomic, strong) SCGoodStoreModel *model;
 
-//@property (nonatomic, copy) void (^enterShopBlock)(SCHShopInfoModel *shopModel);
-@property (nonatomic, copy) void (^imgBlock)(NSInteger index, SCHActImageModel *imgModel);
+//@property (nonatomic, copy) void (^enterShopBlock)(SCGShopInfoModel *shopModel);
+@property (nonatomic, copy) void (^imgBlock)(NSInteger index, SCGActImageModel *imgModel);
 
 @end
 

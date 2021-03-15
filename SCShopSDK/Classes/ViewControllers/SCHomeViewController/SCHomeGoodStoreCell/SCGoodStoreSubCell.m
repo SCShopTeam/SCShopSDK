@@ -10,7 +10,7 @@
 
 @interface SCShowItemButton : UIButton
 @property (nonatomic, strong) UILabel *sellingPointLabel;
-@property (nonatomic, strong) SCHActImageModel *imgModel;
+@property (nonatomic, strong) SCGActImageModel *imgModel;
 @end
 
 @interface SCGoodStoreSubCell ()
@@ -36,7 +36,7 @@
     return self;
 }
 
-- (void)setModel:(SCHomeStoreModel *)model
+- (void)setModel:(SCGoodStoreModel *)model
 {
     _model = model;
     
@@ -86,7 +86,7 @@
     //活动商品
     NSMutableArray *shopList = [NSMutableArray array];
     
-    for (SCHActModel *actModel in model.actList) {
+    for (SCGActModel *actModel in model.actList) {
         [shopList addObjectsFromArray:actModel.actImageList];
     }
     
@@ -269,7 +269,7 @@
     self.imageView.frame = CGRectMake((self.width-wh)/2, self.titleLabel.bottom+SCREEN_FIX(5), wh, wh);
 }
 
-- (void)setImgModel:(SCHActImageModel *)imgModel
+- (void)setImgModel:(SCGActImageModel *)imgModel
 {
     _imgModel = imgModel;
 
