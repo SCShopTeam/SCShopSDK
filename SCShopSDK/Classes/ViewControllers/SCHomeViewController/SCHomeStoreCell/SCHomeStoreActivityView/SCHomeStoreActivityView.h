@@ -1,5 +1,5 @@
 //
-//  SCRecommendActivitySubView.h
+//  SCHomeStoreActivityView.h
 //  shopping
 //
 //  Created by gejunyu on 2021/3/4.
@@ -10,11 +10,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCRecommendActivitySubView : UIView
+@interface SCHomeStoreActivityView : UIView;
 
+@property (nonatomic, copy) NSArray *activityList;
 
-//假数据
-- (void)getData;
 
 @end
 

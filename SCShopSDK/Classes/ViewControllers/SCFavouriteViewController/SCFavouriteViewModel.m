@@ -21,15 +21,21 @@
                             kCountCurPageKey: @30};
     [SCRequestParams shareInstance].requestNum = @"favorite.list";
     
-    [self.favouriteList removeAllObjects];
-    
     [SCNetworkManager POST:SC_FAVORITE_LIST parameters:param success:^(id  _Nullable responseObject) {
         NSString *key = @"items";
         if (![SCNetworkTool checkResult:responseObject key:key forClass:NSArray.class completion:completion]) {
             return;
         }
+        
 
         NSArray *items = responseObject[B_RESULT][key];
+        
+        if (!self.favouriteList) {
+            self.favouriteList = [NSMutableArray arrayWithCapacity:items.count];
+            
+        }else {
+            [self.favouriteList removeAllObjects];
+        }
         
         for (NSDictionary *dict in items) {
             if (!VALID_DICTIONARY(dict)) {
@@ -66,12 +72,5 @@
 
 }
 
-- (NSMutableArray<SCFavouriteModel *> *)favouriteList
-{
-    if (!_favouriteList) {
-        _favouriteList = [NSMutableArray array];
-    }
-    return _favouriteList;
-}
 
 @end

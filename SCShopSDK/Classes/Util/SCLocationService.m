@@ -23,10 +23,16 @@
 #define SC_jzA 6378245.0
 #define SC_jzEE 0.00669342162296594323
 
+typedef NS_ENUM(NSInteger, SCLocationStatus) {
+    SCLocationStatusNone,
+    SCLocationStatusDoing,
+    SCLocationStatusFinish
+};
+
 
 @interface SCLocationService()<CLLocationManagerDelegate>
 
-@property (nonatomic, assign) BOOL isLocationing; //是否正在定位中
+@property (nonatomic, assign) SCLocationStatus status;
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 // 地理位置解码编码器
@@ -39,6 +45,8 @@
 
 @implementation SCLocationService
 
+@synthesize city = _city;
+
 + (instancetype)sharedInstance
 {
     static SCLocationService *_s;
@@ -49,39 +57,40 @@
     return _s;
 }
 
-- (void)startLocation:(SCLocationBlock)callBack;
-{
-    [self.blockList addObject:callBack];
-    
-    //从掌厅获取定位
-    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
-    if ([manager.delegate respondsToSelector:@selector(scGetLocationInfo)]) {
-        NSDictionary *locationInfo = [manager.delegate scGetLocationInfo];
-        if (VALID_DICTIONARY(locationInfo)) {
-            self.longitude       = NSStringFormat(@"%@", locationInfo[@"longitude"]);
-            self.latitude        = NSStringFormat(@"%@", locationInfo[@"latitude"]);
-            self.cityCode        = NSStringFormat(@"%@", locationInfo[@"cityCode"]);
-            self.city            = NSStringFormat(@"%@", locationInfo[@"City"]);
-            self.locationAddress = NSStringFormat(@"%@", locationInfo[@"locationAddress"]);
-            [self stopLocation];
-            
-            return;
-        }
-    }
 
-    //代理没有获取到则本地获取
-    [self startLocation];
+#pragma mark - public
+- (void)startLocation:(SCLocationBlock)callBack
+{
+    [self startLocation:callBack useCache:YES];
 }
 
-
-//开始定位
-- (void)startLocation
+- (void)startLocation:(SCLocationBlock)callBack useCache:(BOOL)useCache;
 {
-    if (_isLocationing) {
+    if (useCache && self.status == SCLocationStatusFinish) {
+        if (callBack) {
+            callBack(self);
+        }
         return;
     }
     
-    //     判断定位服务是否可用
+    //不用缓存或者没有缓存则开始定位
+    if (callBack) {
+        [self.blockList addObject:callBack];
+    }
+    
+    [self startLocation];
+}
+
+#pragma mark -开始定位
+- (void)startLocation
+{
+    if (_status == SCLocationStatusDoing) {
+        return;
+    }
+    
+    _status = SCLocationStatusDoing;
+    
+    //判断定位服务是否可用
     if (![CLLocationManager locationServicesEnabled]) {
         [self stopLocation];
         return;
@@ -106,9 +115,7 @@
         }
         //            [_locationManager requestAlwaysAuthorization];
     }
-    
-    _isLocationing = YES;
-    
+
     //    开启定位
     [self.locationManager startUpdatingLocation];
 
@@ -117,9 +124,7 @@
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
     CLLocation *location = [locations lastObject];
-    
-    CLLocationCoordinate2D wgsPt = location.coordinate;
-    CLLocationCoordinate2D gcjPt = [SCLocationService gcj02Encrypt:wgsPt.latitude bdLon:wgsPt.longitude];
+    CLLocationCoordinate2D gcjPt = [SCLocationService gcj02Encrypt:location.coordinate];
     
     self.longitude = NSStringFormat(@"%f",gcjPt.longitude);
     self.latitude  = NSStringFormat(@"%f",gcjPt.latitude);
@@ -128,25 +133,26 @@
         
         if (placemarks.count > 0) {
             CLPlacemark *mark = placemarks.firstObject;
+            NSDictionary *addressDictionary = mark.addressDictionary;
             
             //城市
-            NSString *city = mark.addressDictionary[@"City"];
+            NSString *city = addressDictionary[@"City"];
             self.city = city;
-            
+
             //详细地址
-            NSString *state       = mark.addressDictionary[@"State"];
-            NSString *subLocality = mark.addressDictionary[@"SubLocality"];
-            NSString *street      = mark.addressDictionary[@"Street"];
-            NSString *name        = mark.addressDictionary[@"Name"];
+            NSString *state       = addressDictionary[@"State"];
+            NSString *subLocality = addressDictionary[@"SubLocality"];
+            NSString *street      = addressDictionary[@"Street"];
+            NSString *name        = addressDictionary[@"Name"];
             
             NSString *locationAddress = [NSString stringWithFormat:@"%@%@%@%@%@",state,city,subLocality,street,name];
             self.locationAddress = locationAddress;
         }
 
+        [self stopLocation];
         
     }];
-    
-    [self stopLocation]; //目前只回调经纬度
+
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
@@ -170,27 +176,16 @@
     }
 }
 
-- (void)setCity:(NSString *)city
-{
-    NSMutableString *temp = city.mutableCopy;
-    
-    if ([temp hasSuffix:@"市"]) {
-        [temp deleteCharactersInRange:NSMakeRange(temp.length-1, 1)];
-    }
-    
-    _city = temp.copy;
-}
-
 - (void)stopLocation
 {
-    _isLocationing = NO;
+    _status = SCLocationStatusFinish;
     
     if (_locationManager) {
         [_locationManager stopUpdatingLocation];
     }
     
     for (SCLocationBlock block in self.blockList) {
-        block(self.longitude, self.latitude);
+        block(self);
     }
     
     [self.blockList removeAllObjects];
@@ -198,8 +193,53 @@
     
 }
 
+#pragma mark -参数设置
+- (void)setCity:(NSString *)city
+{
+    if ([city hasSuffix:@"市"]) {
+        city = [city substringToIndex:city.length -1];
+    }
+    
+    _city = city;
+}
+
+- (NSString *)city
+{
+    if (!_city) {
+        _city = @"南京";
+    }
+    return _city;
+}
+
+- (NSString *)cityCode
+{
+    if (!_cityCode) {
+        NSDictionary *dict = @{@"南京": @"14",
+                               @"苏州": @"11",
+                               @"无锡": @"19",
+                               @"常州": @"17",
+                               @"南通": @"20",
+                               @"镇江": @"18",
+                               @"扬州": @"23",
+                               @"泰州": @"21",
+                               @"徐州": @"16",
+                               @"盐城": @"22",
+                               @"淮安": @"12",
+                               @"连云港": @"15",
+                               @"宿迁": @"13"};
+        
+        _cityCode = dict[self.city];
+        
+    }
+    
+    return _cityCode;
+    
+
+}
+
 - (void)cleanData
 {
+    _status = SCLocationStatusNone;
     _longitude       = nil;
     _latitude        = nil;
     _cityCode        = nil;
@@ -215,8 +255,12 @@
     return _blockList;
 }
 
-+ (CLLocationCoordinate2D)gcj02Encrypt:(double)ggLat bdLon:(double)ggLon
+#pragma mark -坐标转换
++ (CLLocationCoordinate2D)gcj02Encrypt:(CLLocationCoordinate2D)wgsPt
 {
+    double ggLat = wgsPt.latitude;
+    double ggLon = wgsPt.longitude;
+    
     CLLocationCoordinate2D resPoint;
     double mgLat;
     double mgLon;

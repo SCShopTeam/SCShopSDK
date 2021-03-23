@@ -7,13 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SCStoreItemCell.h"
 #import "SCCartModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-#define kCartStoreTopH         SCREEN_FIX(34)
-#define kCartStoreBottomH      SCREEN_FIX(43)
 
 @interface SCCartStoreCell : UICollectionViewCell
 
@@ -22,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) void (^deleteBlock)(SCCartItemModel *item, BOOL needConfirm);
 @property (nonatomic, copy) void (^commitBlock)(void);
 @property (nonatomic, copy) void (^rowClickBlock)(NSString *url);
+
++ (CGFloat)calculateRowHeight:(SCCartModel *)model;
 
 @end
 

@@ -1,61 +1,112 @@
-//
-//  SCReachability.h
-//  YYKit <https://github.com/ibireme/YYKit>
-//
-//  Created by ibireme on 15/2/6.
-//  Copyright (c) 2015 ibireme.
-//
-//  This source code is licensed under the MIT-style license found in the
-//  LICENSE file in the root directory of this source tree.
-//
+/*
+ Copyright (c) 2011, Tony Million.
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ 
+ 1. Redistributions of source code must retain the above copyright notice, this
+ list of conditions and the following disclaimer.
+ 
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE. 
+ */
 
 #import <Foundation/Foundation.h>
 #import <SystemConfiguration/SystemConfiguration.h>
-#import <netinet/in.h>
 
-NS_ASSUME_NONNULL_BEGIN
+//! Project version number for MacOSReachability.
+FOUNDATION_EXPORT double SCReachabilityVersionNumber;
 
-typedef NS_ENUM(NSUInteger, SCReachabilityStatus) {
-    SCReachabilityStatusNone  = 0, ///< Not Reachable
-    SCReachabilityStatusWWAN  = 1, ///< Reachable via WWAN (2G/3G/4G)
-    SCReachabilityStatusWiFi  = 2, ///< Reachable via WiFi
+//! Project version string for MacOSReachability.
+FOUNDATION_EXPORT const unsigned char SCReachabilityVersionString[];
+
+/** 
+ * Create NS_ENUM macro if it does not exist on the targeted version of iOS or OS X.
+ *
+ * @see http://nshipster.com/ns_enum-ns_options/
+ **/
+#ifndef NS_ENUM
+#define NS_ENUM(_type, _name) enum _name : _type _name; enum _name : _type
+#endif
+
+extern NSString *const kSCReachabilityChangedNotification;
+
+typedef NS_ENUM(NSInteger, SCNetworkStatus) {
+    // Apple NetworkStatus Compatible Names.
+    SCNotReachable = 0,
+    SCReachableViaWiFi = 2,
+    SCReachableViaWWAN = 1
 };
 
-typedef NS_ENUM(NSUInteger, SCReachabilityWWANStatus) {
-    SCReachabilityWWANStatusNone  = 0, ///< Not Reachable vis WWAN
-    SCReachabilityWWANStatus2G = 2, ///< Reachable via 2G (GPRS/EDGE)       10~100Kbps
-    SCReachabilityWWANStatus3G = 3, ///< Reachable via 3G (WCDMA/HSDPA/...) 1~10Mbps
-    SCReachabilityWWANStatus4G = 4, ///< Reachable via 4G (eHRPD/LTE)       100Mbps
-    SCReachabilityWWANStatus5G = 5
+typedef NS_ENUM(NSInteger, SCWWANType) {
+    SCWWANTypeUnKnown = 0,
+    SCWWANType2G = 2,
+    SCWWANType3G = 3,
+    SCWWANType4G = 4,
+    SCWWANType5G = 5
 };
 
+@class SCReachability;
 
-/**
- `SCReachability` can used to monitor the network status of an iOS device.
- */
+typedef void (^NetworkReachable)(SCReachability * reachability);
+typedef void (^NetworkUnreachable)(SCReachability * reachability);
+typedef void (^NetworkReachability)(SCReachability * reachability, SCNetworkConnectionFlags flags);
+
+
 @interface SCReachability : NSObject
 
-@property (nonatomic, readonly) SCNetworkReachabilityFlags flags;                           ///< Current flags.
-@property (nonatomic, readonly) SCReachabilityStatus status;                                ///< Current status.
-@property (nonatomic, readonly) SCReachabilityWWANStatus wwanStatus NS_AVAILABLE_IOS(7_0);  ///< Current WWAN status.
-@property (nonatomic, readonly, getter=isReachable) BOOL reachable;                         ///< Current reachable status.
+@property (nonatomic, copy) NetworkReachable    reachableBlock;
+@property (nonatomic, copy) NetworkUnreachable  unreachableBlock;
+@property (nonatomic, copy) NetworkReachability reachabilityBlock;
 
-/// Notify block which will be called on main thread when network changed.
-@property (nullable, nonatomic, copy) void (^notifyBlock)(SCReachability *reachability);
+@property (nonatomic, assign) BOOL reachableOnWWAN;
 
-/// Create an object to check the reachability of the default route.
-+ (instancetype)reachability;
 
-/// Create an object to check the reachability of the local WI-FI.
-+ (instancetype)reachabilityForLocalWifi DEPRECATED_MSG_ATTRIBUTE("unnecessary and potentially harmful");
++(instancetype)reachabilityWithHostname:(NSString*)hostname;
+// This is identical to the function above, but is here to maintain
+//compatibility with Apples original code. (see .m)
++(instancetype)reachabilityWithHostName:(NSString*)hostname;
++(instancetype)reachabilityForInternetConnection;
++(instancetype)reachabilityWithAddress:(void *)hostAddress;
++(instancetype)reachabilityForLocalWiFi;
++(instancetype)reachabilityWithURL:(NSURL*)url;
 
-/// Create an object to check the reachability of a given host name.
-+ (nullable instancetype)reachabilityWithHostname:(NSString *)hostname;
+-(instancetype)initWithReachabilityRef:(SCNetworkReachabilityRef)ref;
 
-/// Create an object to check the reachability of a given IP address
-/// @param hostAddress You may pass `struct sockaddr_in` for IPv4 address or `struct sockaddr_in6` for IPv6 address.
-+ (nullable instancetype)reachabilityWithAddress:(const struct sockaddr *)hostAddress;
+-(BOOL)startNotifier;
+-(void)stopNotifier;
+
+-(BOOL)isReachable;
+-(BOOL)isReachableViaWWAN;
+-(BOOL)isReachableViaWiFi;
+
+// WWAN may be available, but not active until a connection has been established.
+// WiFi may require a connection for VPN on Demand.
+-(BOOL)isConnectionRequired; // Identical DDG variant.
+-(BOOL)connectionRequired; // Apple's routine.
+// Dynamic, on demand connection?
+-(BOOL)isConnectionOnDemand;
+// Is user intervention required?
+-(BOOL)isInterventionRequired;
+
+-(SCNetworkStatus)currentReachabilityStatus;
+- (SCWWANType)currentWWANType;
+-(SCNetworkReachabilityFlags)reachabilityFlags;
+-(NSString*)currentReachabilityString;
+-(NSString*)currentReachabilityFlags;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -11,6 +11,9 @@
 #import "SCStoreTopView.h"
 #import "SCStoreBottomView.h"
 
+#define kCartStoreTopH         SCREEN_FIX(34)
+#define kCartStoreBottomH      SCREEN_FIX(43)
+
 @interface SCCartStoreCell () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView *tableView;
 
@@ -31,10 +34,9 @@
     return self;
 }
 
-- (void)layoutSubviews
++ (CGFloat)calculateRowHeight:(SCCartModel *)model
 {
-    [super layoutSubviews];
-    self.tableView.height = self.height;
+    return kCartStoreTopH + model.cartItems.count * kCartStoreRowH + kCartStoreBottomH;
 }
 
 - (void)setModel:(SCCartModel *)model
@@ -42,6 +44,8 @@
     _model = model;
 
     [self updateHeaderAndFooter];
+    
+    self.tableView.height = model.rowHeight;
     
     //cell
     [self.tableView reloadData];
@@ -98,14 +102,12 @@
     return cell;
 }
 
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        if (self.deleteBlock) {
-            SCCartItemModel *item = self.model.cartItems[indexPath.row];
-            self.deleteBlock(item, YES);
-        }
+    
+    if (self.rowClickBlock) {
+        SCCartItemModel *item = _model.cartItems[indexPath.row];
+        self.rowClickBlock(item.categoryUrl);
     }
 }
 
@@ -114,12 +116,13 @@
     return @"删除";
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
-    if (self.rowClickBlock) {
-        SCCartItemModel *item = _model.cartItems[indexPath.row];
-        self.rowClickBlock(item.categoryUrl);
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        if (self.deleteBlock) {
+            SCCartItemModel *item = self.model.cartItems[indexPath.row];
+            self.deleteBlock(item, YES);
+        }
     }
 }
 

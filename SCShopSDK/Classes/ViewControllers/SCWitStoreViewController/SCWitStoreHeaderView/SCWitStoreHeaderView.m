@@ -141,7 +141,7 @@
             btn.hidden = NO;
             
             SCWitStoreGoodModel *model = goodsList[idx];
-            btn.model = model;
+            btn.witGoodModel = model;
         }
     }];
     
@@ -153,8 +153,8 @@
 
 - (void)goodSelected:(SCWSHeaderButton *)sender
 {
-    if (_goodSelectBlock && VALID_STRING(sender.model.goodsH5Link)) {
-        _goodSelectBlock(sender.model);
+    if (_goodSelectBlock && VALID_STRING(sender.witGoodModel.goodsH5Link)) {
+        _goodSelectBlock(sender.witGoodModel);
     }
 }
 

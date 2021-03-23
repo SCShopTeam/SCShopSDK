@@ -7,7 +7,6 @@
 //
 
 #import "SCUtilities.h"
-#import "SCCacheManager.h"
 #import <AdSupport/ASIdentifierManager.h>
 #import "SCShoppingManager.h"
 #import "UIDevice+SCExtension.h"
@@ -525,7 +524,7 @@ DEF_SINGLETON(SCUtilities)
     [suffix appendFormat:@"sign=%@&", sign];
     [suffix appendFormat:@"sign2=%@&", sign2];
     [suffix appendFormat:@"sign3=%@", sign3];
-    return [suffix stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return  [suffix stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 }
 
 +(NSString *)IDFA{
@@ -545,7 +544,7 @@ DEF_SINGLETON(SCUtilities)
 
 + (NSString *)addParametersToURL:(NSString *)urlStr withCurrentTime:(NSString *)currentTime;
 {
-    urlStr = [urlStr stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    urlStr =  [urlStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     /*必传参数
      *OS
      *IP
@@ -560,7 +559,7 @@ DEF_SINGLETON(SCUtilities)
     replacedStr = [replacedStr stringByReplacingOccurrencesOfString:@"__OS__"withString:@"1"];
     replacedStr = [replacedStr stringByReplacingOccurrencesOfString:@"__TS__"withString:currentTime];
     replacedStr = [replacedStr stringByReplacingOccurrencesOfString:@"__UUID__"withString:[NSString stringWithUUID]];
-    return [replacedStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return  [replacedStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 }
 
 //!head头参数认证是否拼接

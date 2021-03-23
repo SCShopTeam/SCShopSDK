@@ -12,11 +12,13 @@
 #import "SCCartViewModel.h"
 #import "SCCartEmptyView.h"
 #import "SCLifeViewController.h"
+#import "SCRecommendItemView.h"
 
 #define kStoreSectionMargin SCREEN_FIX(11.5)
 
 @interface SCCartViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) SCCollectionView *collectionView;
+@property (nonatomic, strong) SCRecommendItemView *recommendView;
 
 @property (nonatomic, strong) SCCartViewModel *viewModel;
 
@@ -34,11 +36,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    if (!_collectionView) {
-        [self showLoading];
-    }
-    
+
     [self requestData];
     
 }
@@ -52,7 +50,8 @@
     
     if (!self.viewModel.recommendList) {
         [self.viewModel requestRecommend:^(NSString * _Nullable errorMsg) {
-            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:1]];
+            self.recommendView.list = self.viewModel.recommendList;
+            [self.collectionView reloadData];
         }];
     }
     
@@ -60,82 +59,29 @@
 }
 
 #pragma mark -UICollectionViewDelegate, UICollectionViewDataSource
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
-    return 2;
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    CGSize size = CGSizeZero;
+    CGFloat height = 0;
     
-    if (indexPath.section == 0) { //商品
-        SCCartModel *model = self.viewModel.cartList[indexPath.row];
-        size = CGSizeMake(collectionView.width - kStoreSectionMargin*2, kCartStoreTopH + kCartStoreBottomH + kCartStoreRowH*model.cartItems.count);
-        
-        
-    }else { //为你推荐
-        CGFloat itemW = kCommodityItemW;
-        CGFloat itemH = kCommodityItemH;
-        size = CGSizeMake(itemW, itemH);
+    if (self.viewModel.cartList) {
+        height = VALID_ARRAY(self.viewModel.cartList) ? 0 : SCREEN_FIX(200); //空数据提示
     }
-    return size;
-}
 
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
-{
-    if (section == 0) { //商品
-        return UIEdgeInsetsMake(SCREEN_FIX(13), kStoreSectionMargin, SCREEN_FIX(10), kStoreSectionMargin);
-        
-    }else { //为你推荐
-        CGFloat margin = SCREEN_FIX(17);
-        return UIEdgeInsetsMake(SCREEN_FIX(5.5), margin, SCREEN_FIX(10), margin);
-    }
-}
-
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
-{
-    if (section == 0) { //商品
-        return SCREEN_FIX(12);
-        
-    }else {
-        return SCREEN_FIX(19);
-    }
-}
-
-
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
-{
-    if (section == 0) { //商品
-        return 0;
-        
-    }else {
-        return SCREEN_FIX(13.5);
-    }
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
+    return CGSizeMake(collectionView.width, height);
     
-    CGFloat width = collectionView.width;
-    CGFloat height;
-    
-    if (section == 0) {
-        height = VALID_ARRAY(self.viewModel.cartList) ? 0 : SCREEN_FIX(200);
-        
-    }else {
-        height = VALID_ARRAY(self.viewModel.recommendList) ? SCREEN_FIX(29.5) : 0;
-    }
-    return CGSizeMake(width, height);
-    
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
+{
+    return CGSizeMake(collectionView.width, self.recommendView.height);
 }
 
 
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0) {
-        SCCartEmptyView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCCartEmptyView.class) forIndexPath:indexPath];
+    if ([kind isEqualToString:UICollectionElementKindSectionHeader]) { //header 空数据提示
+        SCCartEmptyView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:UICollectionElementKindSectionHeader forIndexPath:indexPath];
         @weakify(self)
         header.pushBlock = ^{
             @strongify(self)
@@ -144,18 +90,24 @@
         
         return header;
         
-    }else {
-        UICollectionReusableView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(UICollectionReusableView.class) forIndexPath:indexPath];
-        UIImageView *imgView = [header viewWithTag:100];
-        if (!imgView) {
-            UIImageView *imageView = [[UIImageView alloc] initWithImage:SCIMAGE(@"Cart_Recommend")];
-            imageView.center = CGPointMake(header.width/2, header.height/2);
-            imageView.tag = 100;
-            [header addSubview:imageView];
+    }else { //footer 推荐商品
+        UICollectionReusableView *footer = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:UICollectionElementKindSectionFooter forIndexPath:indexPath];
+        
+        SCRecommendItemView *recommendView = [footer viewWithTag:100];
+        
+        if (!recommendView) {
+            self.recommendView.tag = 100;
+            
+            @weakify(self)
+            self.recommendView.selectBlock = ^(SCCommodityModel * _Nonnull model) {
+                @strongify(self)
+                [SCURLSerialization gotoWebcustom:model.detailUrl title:@"" navigation:self.navigationController];
+            };
+            [footer addSubview:self.recommendView];
+            
         }
-        
-        
-        return header;
+
+        return footer;
     }
     
     
@@ -163,17 +115,18 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    if (section == 0) { //商品
-        return self.viewModel.cartList.count;
-        
-    }else { //为你推荐
-        return self.viewModel.recommendList.count;
-    }
+    return self.viewModel.cartList.count;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    SCCartModel *model = self.viewModel.cartList[indexPath.row];
+    
+    return CGSizeMake(collectionView.width - kStoreSectionMargin*2, model.rowHeight);
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0) {  //商品
         SCCartStoreCell *cell = (SCCartStoreCell *)[collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(SCCartStoreCell.class) forIndexPath:indexPath];
         SCCartModel *model = self.viewModel.cartList[indexPath.row];
         cell.model = model;
@@ -196,23 +149,7 @@
         };
         
         return cell;
-        
-    }else {  //为你推荐
-        SCShopCollectionCell *cell = (SCShopCollectionCell *)[collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(SCShopCollectionCell.class) forIndexPath:indexPath];
-        SCCommodityModel *model = self.viewModel.recommendList[indexPath.row];
-        cell.model = model;
-        
-        return cell;
-    }
-}
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (indexPath.section != 0) { //为你推荐
-        SCCommodityModel *model = self.viewModel.recommendList[indexPath.row];
-        [SCURLSerialization gotoWebcustom:model.detailUrl title:@"" navigation:self.navigationController];
-        
-    }
 }
 
 - (void)deleteCartItem:(SCCartItemModel *)item needConfirm:(BOOL)needConfirm
@@ -250,6 +187,9 @@
     if (!_collectionView) {
         UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
         layout.scrollDirection = UICollectionViewScrollDirectionVertical;
+        layout.sectionInset = UIEdgeInsetsMake(SCREEN_FIX(13), kStoreSectionMargin, 0, kStoreSectionMargin);
+        layout.minimumLineSpacing = SCREEN_FIX(12);
+        layout.minimumInteritemSpacing = 0;
         
         CGFloat h = SCREEN_HEIGHT - NAV_BAR_HEIGHT - (self.isMainTabVC ? TAB_BAR_HEIGHT: 0);
         
@@ -259,14 +199,12 @@
         _collectionView.dataSource      = self;
         [self.view addSubview:_collectionView];
         
-        [_collectionView registerClass:SCShopCollectionCell.class forCellWithReuseIdentifier:NSStringFromClass(SCShopCollectionCell.class)];
         [_collectionView registerClass:SCCartStoreCell.class forCellWithReuseIdentifier:NSStringFromClass(SCCartStoreCell.class)];
-        [_collectionView registerClass:SCCartEmptyView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(SCCartEmptyView.class)];
-        [_collectionView registerClass:UICollectionReusableView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:NSStringFromClass(UICollectionReusableView.class)];
+        [_collectionView registerClass:SCCartEmptyView.class forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:UICollectionElementKindSectionHeader];
+        [_collectionView registerClass:UICollectionReusableView.class forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:UICollectionElementKindSectionFooter];
         
         //
         [_collectionView showsRefreshHeader];
-        //        [_collectionView showsRefreshFooter];
         @weakify(self)
         _collectionView.refreshingBlock = ^(NSInteger page) {
             @strongify(self)
@@ -274,6 +212,14 @@
         };
     }
     return _collectionView;
+}
+
+- (SCRecommendItemView *)recommendView
+{
+    if (!_recommendView) {
+        _recommendView = [[SCRecommendItemView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, 0)];
+    }
+    return _recommendView;
 }
 
 - (SCCartViewModel *)viewModel

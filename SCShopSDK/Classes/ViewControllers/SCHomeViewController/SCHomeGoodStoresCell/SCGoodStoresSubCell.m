@@ -1,19 +1,19 @@
 //
-//  SCGoodStoreSubCell.m
+//  SCGoodStoresSubCell.m
 //  shopping
 //
 //  Created by gejunyu on 2021/3/2.
 //  Copyright © 2021 jsmcc. All rights reserved.
 //
 
-#import "SCGoodStoreSubCell.h"
+#import "SCGoodStoresSubCell.h"
 
 @interface SCShowItemButton : UIButton
 @property (nonatomic, strong) UILabel *sellingPointLabel;
 @property (nonatomic, strong) SCGActImageModel *imgModel;
 @end
 
-@interface SCGoodStoreSubCell ()
+@interface SCGoodStoresSubCell ()
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UIButton *styleIcon;
 @property (nonatomic, strong) NSArray <UILabel *> *couponLabelList; //优惠券
@@ -23,7 +23,7 @@
 @property (nonatomic, strong) UIView *line;
 @end
 
-@implementation SCGoodStoreSubCell
+@implementation SCGoodStoresSubCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -36,7 +36,7 @@
     return self;
 }
 
-- (void)setModel:(SCGoodStoreModel *)model
+- (void)setModel:(SCGoodStoresModel *)model
 {
     _model = model;
     

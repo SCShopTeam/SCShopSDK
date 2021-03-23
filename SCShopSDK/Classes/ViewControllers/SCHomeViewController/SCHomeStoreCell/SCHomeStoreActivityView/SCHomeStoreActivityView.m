@@ -1,22 +1,22 @@
 //
-//  SCHomeRecommendActivityView.m
+//  SCHomeStoreActivityView.m
 //  shopping
 //
 //  Created by gejunyu on 2021/3/4.
 //  Copyright © 2021 jsmcc. All rights reserved.
 //
 
-#import "SCHomeRecommendActivityView.h"
-#import "SCRecommendActivityCell.h"
+#import "SCHomeStoreActivityView.h"
+#import "SCHomeStoreActivityCell.h"
 
-@interface SCHomeRecommendActivityView () <UICollectionViewDelegate, UICollectionViewDataSource>
+@interface SCHomeStoreActivityView () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) UIPageControl *pageControl;
+@property (nonatomic, weak) NSTimer *timer;
 
-@property (nonatomic, strong) NSArray *list; //假数据
 @end
 
-@implementation SCHomeRecommendActivityView
+@implementation SCHomeStoreActivityView
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -41,26 +41,29 @@
     
 }
 
-- (void)getData
+- (void)setActivityList:(NSArray *)activityList
 {
-    _list = @[@[@"直播"],@[@"限时秒杀", @"新品预售"], @[@"超值拼团", @"优惠券"]];
+    _activityList = activityList;
+
     [self.collectionView reloadData];
-    self.pageControl.numberOfPages = _list.count;
+    
+    self.pageControl.numberOfPages = activityList.count;
 }
 
 #pragma mark -UICollectionViewDelegate, UICollectionViewDataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 999;//可循环滚动
+    return _activityList.count > 1 ? 999 : _activityList.count;//可循环滚动
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSInteger index = indexPath.row%_list.count;
+    NSInteger index = indexPath.row%_activityList.count;
     
-    SCRecommendActivityCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(SCRecommendActivityCell.class) forIndexPath:indexPath];
+    SCHomeStoreActivityCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(SCHomeStoreActivityCell.class) forIndexPath:indexPath];
     
-    [cell getData];
+    NSArray *models = _activityList[index];
+    cell.models = models;
     
     return cell;
 }
@@ -68,7 +71,7 @@
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     NSInteger index = self.collectionView.contentOffset.x/self.collectionView.width;
-    index = index%_list.count;
+    index = index%_activityList.count;
     
     self.pageControl.currentPage = index;
 }
@@ -91,7 +94,7 @@
         _collectionView.bounces = NO;
         _collectionView.backgroundColor = [UIColor clearColor];
         _collectionView.showsHorizontalScrollIndicator = NO;
-        [_collectionView registerClass:SCRecommendActivityCell.class forCellWithReuseIdentifier:NSStringFromClass(SCRecommendActivityCell.class)];
+        [_collectionView registerClass:SCHomeStoreActivityCell.class forCellWithReuseIdentifier:NSStringFromClass(SCHomeStoreActivityCell.class)];
         [self addSubview:_collectionView];
         
     }

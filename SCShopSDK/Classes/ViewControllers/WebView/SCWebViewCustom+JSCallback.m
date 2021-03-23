@@ -7,10 +7,8 @@
 //
 
 #import "SCWebViewCustom+JSCallback.h"
-#import "SCCacheManager.h"
-
 #import "WKWebViewJavascriptBridge.h"
-
+#import "SCLocationService.h"
 
 //#if TARGET_IPHONE_SIMULATOR
 //#else
@@ -77,16 +75,16 @@
 #pragma mark urlScheme
 - (BOOL)parseScheme : (NSURLRequest *)request
 {
-    NSURL *url      = [request URL];
-    NSString *msg   = [url absoluteString];
-    NSString *scheme = [url scheme];
-    NSUInteger enumSchemeType = [[self urlSchemeTypeToEnumArr] indexOfObject:scheme.lowercaseString];
+//    NSURL *url      = [request URL];
+//    NSString *msg   = [url absoluteString];
+//    NSString *scheme = [url scheme];
+//    NSUInteger enumSchemeType = [[self urlSchemeTypeToEnumArr] indexOfObject:scheme.lowercaseString];
     
     
 //    [[self urlSchemeTypeToEnumArr] indexOfObject:[[url scheme] lowercaseString]];//urlSchemeTypeToEnum([[url scheme] lowercaseString]);
 //    NSUInteger enumSchemeType = urlSchemeTypeToEnum([url scheme]);
     return YES;
-    BOOL bScheme = YES;
+//    BOOL bScheme = YES;
     
     /*
     
@@ -134,7 +132,7 @@
     }
 */
 
-    return bScheme;
+//    return bScheme;
 }
 
 
@@ -149,7 +147,7 @@
 #pragma mark - 微信图片分享
 -(BOOL)weiXinImageShare:(NSString *)msg{
     //协议：wechatshare://share??imageUrl
-    NSArray *params = [msg componentsSeparatedByString:@"??"];
+//    NSArray *params = [msg componentsSeparatedByString:@"??"];
    
     return NO;
 }
@@ -174,7 +172,7 @@
 - (BOOL)saveCliqueBonusLogin: (NSString *)msg
 {
     //协议：ecmc://save??param1??param2
-    NSArray *params = [msg componentsSeparatedByString:@"??"];
+//    NSArray *params = [msg componentsSeparatedByString:@"??"];
    
     return NO;
 }
@@ -195,18 +193,14 @@
     //协议：palmshop://getGeographyInfo
     //方法：getGeographyInfo
     //缓存定位信息
-    NSMutableDictionary *locationInfo = [SCCacheManager getCachedObjectWithKey:@"LocationInfo"];
-    if([SCUtilities isValidDictionary:locationInfo])
-    {
-        NSString *lng = [NSString stringWithFormat:@"%@",locationInfo[@"longitude"]];
-        NSString *lat = [NSString stringWithFormat:@"%@",locationInfo[@"latitude"]];
-        if ([SCUtilities isValidString:lng] && [SCUtilities isValidString:lat])
-        {
-//            [self.myWebView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"getCoordinates([%@],[%@]);",lng,lat]];
-            [self.myWebView evaluateJavaScript:[NSString stringWithFormat:@"getCoordinates([%@],[%@]);",lng,lat] completionHandler:^(id _Nullable result, NSError *error) {
-                                 }];
+    [[SCLocationService sharedInstance] startLocation:^(SCLocationService * _Nonnull ls) {
+        if (ls.latitude && ls.longitude) {
+            [self.myWebView evaluateJavaScript:[NSString stringWithFormat:@"getCoordinates([%@],[%@]);",ls.longitude,ls.latitude] completionHandler:^(id _Nullable result, NSError *error) {
+            }];
         }
-    }
+        
+    }];
+
     return NO;
 }
 
@@ -299,7 +293,7 @@
      支持抓取当前页面作为分享图片
      直接跳到分享页面，不经过Alert
      */
-    NSString *str = [msg substringFromIndex:10];
+//    NSString *str = [msg substringFromIndex:10];
   
     return NO;
 }
@@ -332,7 +326,8 @@
     NSString *path          = @"";
     NSString *type_release  = @"";
     
-    NSString *str = [msg stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+//    NSString *str = [msg stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *str = [msg stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     NSString *tmpString = [[str componentsSeparatedByString:@"??"] lastObject];
     NSArray  *tmpArray  = [tmpString componentsSeparatedByString:@"#"];
     for (NSString *item in tmpArray) {
@@ -424,7 +419,7 @@
                  _moreBtn.frame = CGRectMake(0,0, 20, 21);
                  _moreBtn.backgroundColor = [UIColor clearColor];
                  [_moreBtn setImage:SCIMAGE(@"yktfu_moredark") forState:UIControlStateNormal];
-                 [_moreBtn addTarget:self action:@selector(navigationFunctionTap:) forControlEvents:UIControlEventTouchUpInside];
+//                 [_moreBtn addTarget:self action:@selector(navigationFunctionTap:) forControlEvents:UIControlEventTouchUpInside];
                  [_moreBtn setAdjustsImageWhenHighlighted:NO];
                  UIBarButtonItem *moreItem = [[UIBarButtonItem alloc] initWithCustomView:_moreBtn];
                 
@@ -433,9 +428,7 @@
                 _hotServiceButton.frame     = CGRectMake(0, 0,  20, 21);
                 [_hotServiceButton setBackgroundImage:SCIMAGE(@"monthHot_service")
                                             forState:UIControlStateNormal];
-                [_hotServiceButton addTarget:self
-                                     action:@selector(goToOnlineService)
-                           forControlEvents:UIControlEventTouchUpInside];
+//                [_hotServiceButton addTarget:self action:@selector(goToOnlineService) forControlEvents:UIControlEventTouchUpInside];
                 UIBarButtonItem *hotServiceItem = [[UIBarButtonItem alloc] initWithCustomView:_hotServiceButton];
                 NSArray *rightButtonItems = @[moreItem,hotServiceItem,shareItem];
                 self.navigationItem.rightBarButtonItems = rightButtonItems;
@@ -486,7 +479,7 @@
     NSString *title     = @""; //标题
     NSString *picUrl    = @""; //图片url
     NSString *vwtId     = @""; //vwtId
-    NSString *str       = [msg stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *str       = [msg stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     NSString *tmpString = [[str componentsSeparatedByString:@"??"] lastObject];
     NSArray  *tmpArray  = [tmpString componentsSeparatedByString:@"#"];
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
@@ -586,7 +579,7 @@
          _moreBtn.frame = CGRectMake(0,0, 20, 21);
          _moreBtn.backgroundColor = [UIColor clearColor];
          [_moreBtn setImage:SCIMAGE(@"yktfu_moredark") forState:UIControlStateNormal];
-         [_moreBtn addTarget:self action:@selector(navigationFunctionTap:) forControlEvents:UIControlEventTouchUpInside];
+//         [_moreBtn addTarget:self action:@selector(navigationFunctionTap:) forControlEvents:UIControlEventTouchUpInside];
          [_moreBtn setAdjustsImageWhenHighlighted:NO];
          UIBarButtonItem *moreItem = [[UIBarButtonItem alloc] initWithCustomView:_moreBtn];
         
@@ -595,9 +588,7 @@
         _hotServiceButton.frame     = CGRectMake(0, 0,  20, 21);
         [_hotServiceButton setBackgroundImage:SCIMAGE(@"monthHot_service")
                                     forState:UIControlStateNormal];
-        [_hotServiceButton addTarget:self
-                             action:@selector(goToOnlineService)
-                   forControlEvents:UIControlEventTouchUpInside];
+//        [_hotServiceButton addTarget:self action:@selector(goToOnlineService) forControlEvents:UIControlEventTouchUpInside];
         UIBarButtonItem *hotServiceItem = [[UIBarButtonItem alloc] initWithCustomView:_hotServiceButton];
         NSArray *rightButtonItems = @[moreItem,hotServiceItem,shareItem];
         self.navigationItem.rightBarButtonItems = rightButtonItems;
@@ -609,7 +600,7 @@
 - (BOOL)networkAddressbook : (NSString*) msg
 {
     //协议：networkcontact://getContactBook??parm1
-    NSArray *params = [msg componentsSeparatedByString:@"??"];
+//    NSArray *params = [msg componentsSeparatedByString:@"??"];
    
     return NO;
 }

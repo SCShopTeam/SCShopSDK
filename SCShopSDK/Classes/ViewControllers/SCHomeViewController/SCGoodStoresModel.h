@@ -1,5 +1,5 @@
 //
-//  SCGoodStoreModel.h
+//  SCGoodStoresModel.h
 //  shopping
 //
 //  Created by gejunyu on 2020/8/19.
@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCGoodStoreModel : NSObject
+@interface SCGoodStoresModel : NSObject
 @property (nonatomic, strong) SCGShopInfoModel *shopInfo;
 @property (nonatomic, strong) NSArray <SCGBannerModel *> *bannerList;
 @property (nonatomic, strong) NSArray <SCGActModel *> *actList;

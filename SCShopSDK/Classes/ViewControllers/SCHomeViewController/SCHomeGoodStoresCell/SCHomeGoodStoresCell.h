@@ -1,5 +1,5 @@
 //
-//  SCHomeGoodStoreCell.h
+//  SCHomeGoodStoresCell.h
 //  shopping
 //
 //  Created by gejunyu on 2021/3/2.
@@ -7,13 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "SCGoodStoreModel.h"
+#import "SCGoodStoresModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCHomeGoodStoreCell : UITableViewCell
+@interface SCHomeGoodStoresCell : UITableViewCell
 
-@property (nonatomic, strong) NSArray <SCGoodStoreModel *> *goodStoreList;
+@property (nonatomic, strong) NSArray <SCGoodStoresModel *> *goodStoreList;
 
 //查看更多
 @property (nonatomic, copy) void (^moreBlock)(void);

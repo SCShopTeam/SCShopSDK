@@ -1,10 +1,13 @@
 //
-//  SCRecommendActivitySubView.m
+//  SCHomeStoreActivitySubView.m
 //  shopping
 //
 //  Created by gejunyu on 2021/3/4.
 //  Copyright © 2021 jsmcc. All rights reserved
 //
+
+#import "SCHomeStoreActivitySubView.h"
+#import "SCHomeStoreModel.h"
 
 @interface SCActivityItemView : UIControl //商品
 @property (nonatomic, strong) UIImageView *icon;
@@ -17,10 +20,9 @@
 @property (nonatomic, copy) NSString *startTime;
 @end
 
-#import "SCRecommendActivitySubView.h"
 
-//临时用     _list = @[@[@"直播"0],@[@"限时秒杀"1, @"新品预售"]2, @[@"超值拼团"3, @"优惠券"4]];每日抽奖5
-@interface SCRecommendActivitySubView ()
+//临时用    
+@interface SCHomeStoreActivitySubView ()
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *sellPointLabel;
 @property (nonatomic, strong) UILabel *topicLabel;
@@ -32,7 +34,7 @@
 
 @end
 
-@implementation SCRecommendActivitySubView
+@implementation SCHomeStoreActivitySubView
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -42,44 +44,91 @@
     return self;
 }
 
-
-- (void)getData
+- (void)setModel:(id)model
 {
+    _model = model;
+    
+    NSString *title     = @"";   //标题
+    NSString *sellPoint = @"";   //卖点
+    NSString *startTime = @"";   //直播开始时间
+    UIColor *textColor  = HEX_RGB(@"#007FFF"); //主题，卖点文字颜色
+    NSString *topic     = @"";   //主题
+    NSArray <SCHomeGoodsModel *> *goodsList = @[];
+    
+    if ([model isKindOfClass:SCHomeLiveModel.class]) {
+        SCHomeLiveModel *liveModel = (SCHomeLiveModel *)model;
+        title     = liveModel.livePlayerName;
+        sellPoint = liveModel.livePlayerSellPoint;
+        startTime = liveModel.startTime;
+        textColor = HEX_RGB(@"#FF1448");
+        topic     = liveModel.livePlayerTopic;
+        goodsList = liveModel.liveGoodsList;
+        
+    }else if ([model isKindOfClass:SCHomeLimitedModel.class]) {
+        SCHomeLimitedModel *limitedModel = (SCHomeLimitedModel *)model;
+        title     = limitedModel.limitedName;
+        sellPoint = limitedModel.limitedSellPoint;
+        topic     = limitedModel.limitedTopic;
+        goodsList = limitedModel.limitedGoodsList;
+        
+    }else if ([model isKindOfClass:SCHomePresaleModel.class]) {
+        SCHomePresaleModel *presaleModel = (SCHomePresaleModel *)model;
+        title     = presaleModel.presaleName;
+        sellPoint = presaleModel.presalePoint;
+        topic     = presaleModel.presaleTopic;
+        goodsList = presaleModel.presaleGoodsList;
+        
+    }else if ([model isKindOfClass:SCHomeGroupModel.class]) {
+        SCHomeGroupModel *groupModel = (SCHomeGroupModel *)model;
+        title     = groupModel.groupName;
+        sellPoint = groupModel.groupSellPoint;
+        topic     = groupModel.groupTopic;
+        goodsList = groupModel.groupGoodsList;
+        
+    }else if ([model isKindOfClass:SCHomeActivityModel.class]) {
+        SCHomeActivityModel *activityModel = (SCHomeActivityModel *)model;
+        title     = activityModel.activityName;
+        sellPoint = activityModel.activityPoints;
+        textColor = HEX_RGB(@"#FF1448");
+        topic     = activityModel.topic;
+        
+    }
+    
     //标题
-    self.titleLabel.text = @"正在直播";
+    self.titleLabel.text = title;
     [self.titleLabel sizeToFit];
     
-    //卖点 /倒计时
-    BOOL showSellPoint = arc4random()%2;
-    if (showSellPoint) {
-        self.sellPointLabel.hidden = NO;
-        self.countdownView.hidden = YES;
-        
-        NSString *sp = @"直播好货低价购";
-        self.sellPointLabel.text = sp;
-        self.sellPointLabel.left = self.titleLabel.right + SCREEN_FIX(3.5);
-        self.sellPointLabel.width = [sp calculateWidthWithFont:self.sellPointLabel.font height: self.sellPointLabel.height] + SCREEN_FIX(12);
-        self.sellPointLabel.textColor = HEX_RGB(@"#007FFF");
-        self.sellPointLabel.layer.borderColor = HEX_RGB(@"#007FFF").CGColor;
-        
-    }else {
+    // 卖点 /倒计时
+    if (startTime.length > 0) { //倒计时
         self.sellPointLabel.hidden = YES;
         self.countdownView.hidden = NO;
         
-        self.countdownView.startTime = @"aaaaa";
+        self.countdownView.startTime = startTime;
         self.countdownView.left = self.titleLabel.right + SCREEN_FIX(5);
-
+        
+    }else {  //卖点
+        self.sellPointLabel.hidden = NO;
+        self.countdownView.hidden = YES;
+        
+        NSString *sp = sellPoint;
+        self.sellPointLabel.text = sp;
+        self.sellPointLabel.left = self.titleLabel.right + SCREEN_FIX(3.5);
+        self.sellPointLabel.width = [sp calculateWidthWithFont:self.sellPointLabel.font height: self.sellPointLabel.height] + SCREEN_FIX(12);
+        
+        self.sellPointLabel.textColor = textColor;
+        self.sellPointLabel.layer.borderColor = textColor.CGColor;
     }
     
     
+    
     //主题
-    self.topicLabel.text = @"品质好物 限量开团";
-    self.topicLabel.textColor = HEX_RGB(@"#007FFF");
+    self.topicLabel.text = topic;
+    self.topicLabel.textColor = textColor;
     [self.topicLabel sizeToFit];
     
     
     //是否是优惠券,抽奖
-    BOOL hideItems = arc4random()%2;
+    BOOL hideItems = [model isKindOfClass:SCHomeActivityModel.class];
     
     if (hideItems) {
         for (SCActivityItemView *itemView in self.itemViewList) {
@@ -87,22 +136,35 @@
         }
         self.pushIcon.hidden = NO;
         self.pushButton.hidden = NO;
-        [self.pushButton setTitle:@"立即领券 >" forState:UIControlStateNormal];
-        [self.pushIcon setImage:IMG_PLACE_HOLDER forState:UIControlStateNormal];
+
+        [self.pushIcon sd_setImageWithURL:[NSURL URLWithString:((SCHomeActivityModel *) model).imageUrl] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
         
         
     }else {
         self.pushIcon.hidden = YES;
         self.pushButton.hidden = YES;
+        
+        
         //商品
         [self.itemViewList enumerateObjectsUsingBlock:^(SCActivityItemView * _Nonnull itemView, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (idx > 1) {
-                *stop = YES;
+            if (goodsList.count == 0) {
+                itemView.hidden = YES;
+                
+            }else {
+                itemView.hidden = NO;
+                
+                //固定显示两个商品，如果不足两个，重复显示第一个
+                NSInteger index = (idx >= goodsList.count ? 0 : idx);
+                
+                SCHomeGoodsModel *goodsModel = goodsList[index];
+                
+                [itemView.icon sd_setImageWithURL:[NSURL URLWithString:goodsModel.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER];
+                itemView.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:(goodsModel.guidePrice/1000*1.f) font:itemView.oldPriceLabel.font color:itemView.oldPriceLabel.textColor];
+                itemView.priceLabel.text = [NSString stringWithFormat:@"¥%@", [SCUtilities removeFloatSuffix:goodsModel.activityPrice/1000*1.f]];
             }
-            itemView.hidden = NO;
-            itemView.icon.image = IMG_PLACE_HOLDER;
-            itemView.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:3099 font:itemView.oldPriceLabel.font color:itemView.oldPriceLabel.textColor];
-            itemView.priceLabel.text = @"¥2034";
+
+            
+
             
             
         }];
@@ -111,6 +173,9 @@
 
     
 }
+
+
+
 
 #pragma mark - ui
 - (UILabel *)titleLabel
@@ -186,6 +251,7 @@
         [_pushButton setBackgroundImage:SCIMAGE(@"home_orange") forState:UIControlStateNormal];
         _pushButton.titleLabel.font = SCFONT_SIZED_FIX(12);
         [_pushButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_pushButton setTitle:@"立即领券 >" forState:UIControlStateNormal];
         _pushButton.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 1, 0);
         [self addSubview:_pushButton];
         

@@ -1,28 +1,29 @@
 //
-//  SCRecommendActivityCell.m
+//  SCHomeStoreActivityCell.m
 //  shopping
 //
 //  Created by gejunyu on 2021/3/4.
 //  Copyright © 2021 jsmcc. All rights reserved.
 //
 
-#import "SCRecommendActivityCell.h"
-#import "SCRecommendActivitySubView.h"
+#import "SCHomeStoreActivityCell.h"
+#import "SCHomeStoreActivitySubView.h"
+#import "SCHomeStoreModel.h"
 
 @interface SCRecommendLiveView : UIButton //直播图
 @property (nonatomic, strong) UIView *textBg;
 @property (nonatomic, strong) UIImageView *icon;
 @property (nonatomic, strong) UILabel *textLabel;
-- (void)setImageUrl:(NSString *)url peopleNum:(NSString *)peopleNum;
+- (void)setImageUrl:(NSString *)url peopleNum:(NSInteger)peopleNum;
 @end
 
-@interface SCRecommendActivityCell ()
+@interface SCHomeStoreActivityCell ()
 @property (nonatomic, strong) SCRecommendLiveView *liveView; //直播图
 @property (nonatomic, strong) UILabel *peopleNumLabel;
 
 @end
 
-@implementation SCRecommendActivityCell
+@implementation SCHomeStoreActivityCell
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -38,7 +39,7 @@
     //两个活动位
     for (int i=0; i<2; i++) {
         CGFloat w = self.width/2;
-        SCRecommendActivitySubView *view = [[SCRecommendActivitySubView alloc] initWithFrame:CGRectMake(w*i, 0, w, self.height)];
+        SCHomeStoreActivitySubView *view = [[SCHomeStoreActivitySubView alloc] initWithFrame:CGRectMake(w*i, 0, w, self.height)];
         
         view.tag = 100+i;
         [self.contentView addSubview:view];
@@ -52,27 +53,34 @@
 
 }
 
-- (void)getData
+- (void)setModels:(NSArray *)models
 {
-    for (int i=0; i<2; i++) {
-        SCRecommendActivitySubView *view = [self.contentView viewWithTag:(100+i)];
-        if (!view) {
-            return;
+    _models = models;
+    
+    if (models.count < 2) {
+        return;
+    }
+    
+    [models enumerateObjectsUsingBlock:^(id  _Nonnull model, NSUInteger idx, BOOL * _Nonnull stop) {
+        SCHomeStoreActivitySubView *subView = [self.contentView viewWithTag:(100+idx)];
+        if (!subView) {
+            *stop = YES;
         }
         
-        if (i==1 && arc4random()%2) {
-            view.hidden = YES;
+        if (idx == 1 && [model isKindOfClass:SCHomeLiveModel.class]) { //右侧的直播占位
             self.liveView.hidden = NO;
-            [self.liveView setImageUrl:nil peopleNum:@"999观看"];
+            subView.hidden = YES;
+            SCHomeLiveModel *liveModel = (SCHomeLiveModel *)model;
+            [self.liveView setImageUrl:liveModel.liveImageUrl peopleNum:liveModel.liveAudience];
             
         }else {
             self.liveView.hidden = YES;
-            view.hidden = NO;
-            [view getData];
+            subView.hidden = NO;
+            subView.model = model;
         }
         
+    }];
 
-    }
 }
 
 - (SCRecommendLiveView *)liveView
@@ -101,11 +109,11 @@
 
 @implementation SCRecommendLiveView
 
-- (void)setImageUrl:(NSString *)url peopleNum:(NSString *)peopleNum
+- (void)setImageUrl:(NSString *)url peopleNum:(NSInteger)peopleNum
 {
     [self sd_setBackgroundImageWithURL:[NSURL URLWithString:url] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
     
-    self.textLabel.text = peopleNum;
+    self.textLabel.text = [NSString stringWithFormat:@"%li",peopleNum];
     [self.textLabel sizeToFit];
     self.textLabel.width += SCREEN_FIX(8.5);
     self.textBg.width = self.textLabel.right;
@@ -119,7 +127,6 @@
         _textBg.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
         _textBg.layer.cornerRadius = h/2;
         [self addSubview:_textBg];
-    
 
     }
     return _textBg;

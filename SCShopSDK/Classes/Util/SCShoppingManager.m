@@ -9,6 +9,7 @@
 #import "SCShoppingManager.h"
 #import "SCHomeViewController.h"
 #import "SCBaseNavigationController.h"
+#import "SCLocationService.h"
 
 @implementation SCShoppingManager
 
@@ -21,6 +22,15 @@
         m = [SCShoppingManager new];
     });
     return m;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [[SCLocationService sharedInstance] startLocation:nil]; //获取定位并缓存
+    }
+    return self;
 }
 
 - (void)setDelegate:(id<SCShoppingDelegate>)delegate

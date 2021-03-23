@@ -11,30 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
-#ifndef kIsNetwork
-#define kIsNetwork     [RWNetworkManager isNetwork]  // 一次性判断是否有网的宏
-#endif
-
-#ifndef kIsWWANNetwork
-#define kIsWWANNetwork [RWNetworkManager isWWANNetwork]  // 一次性判断是否为手机网络的宏
-#endif
-
-#ifndef kIsWiFiNetwork
-#define kIsWiFiNetwork [RWNetworkManager isWiFiNetwork]  // 一次性判断是否为WiFi网络的宏
-#endif
-
-typedef NS_ENUM(NSUInteger, SCNetworkStatusType) {
-    /** 未知网络*/
-    SCNetworkStatusUnknown,
-    /** 无网络*/
-    SCNetworkStatusNotReachable,
-    /** 手机网络*/
-    SCNetworkStatusReachableViaWWAN,
-    /** WIFI网络*/
-    SCNetworkStatusReachableViaWiFi
-};
-
 typedef NS_ENUM(NSUInteger, SCRequestSerializer) {
     /** 设置请求数据为JSON格式*/
     SCRequestSerializerJSON,
@@ -65,31 +41,8 @@ typedef void(^SCHttpRequestCache) (id responseCache);
 /** 上传或者下载的进度, Progress.completedUnitCount:当前大小 - Progress.totalUnitCount:总大小*/
 typedef void (^SCHttpProgress) (NSProgress *progress);
 
-/** 网络状态的Block*/
-typedef void(^SCNetworkStatus) (SCNetworkStatusType status);
 
 @interface SCNetworkManager : NSObject
-
-
-/**
- 有网YES, 无网:NO
- */
-+ (BOOL)isNetwork;
-
-/**
- 手机网络:YES, 反之:NO
- */
-+ (BOOL)isWWANNetwork;
-
-/**
- WiFi网络:YES, 反之:NO
- */
-+ (BOOL)isWiFiNetwork;
-
-/**
- 实时获取网络状态,通过Block回调实时获取(此方法可多次调用)
- */
-+ (void)networkStatusWithBlock:(SCNetworkStatus)networkStatus;
 
 /**
  取消所有HTTP请求

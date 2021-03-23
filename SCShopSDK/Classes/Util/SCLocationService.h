@@ -7,20 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
+@class SCLocationService;
 
-//备用定位，如果无法从代理获取定位，则自己定位一次
-typedef void(^SCLocationBlock)(NSString * _Nullable longitude, NSString * _Nullable latitude);
+typedef void(^SCLocationBlock)(SCLocationService * _Nonnull ls);
 
 @interface SCLocationService : NSObject
 
-+ (instancetype)sharedInstance;
++ (instancetype _Nonnull)sharedInstance;
 
-@property (nonatomic, copy, nullable) NSString *cityCode;
+@property (nonatomic, copy, nonnull)  NSString *cityCode;
 @property (nonatomic, copy, nullable) NSString *longitude;
 @property (nonatomic, copy, nullable) NSString *latitude;
-@property (nonatomic, copy, nullable) NSString *city;
+@property (nonatomic, copy, nonnull)  NSString *city;
 @property (nonatomic, copy, nullable) NSString *locationAddress;
 
+- (void)startLocation:(SCLocationBlock _Nullable )callBack useCache:(BOOL)useCache;
 - (void)startLocation:(SCLocationBlock _Nullable )callBack;
 
 - (void)cleanData;

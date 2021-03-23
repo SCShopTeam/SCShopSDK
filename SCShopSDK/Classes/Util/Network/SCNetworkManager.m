@@ -18,45 +18,6 @@ static BOOL _isOpenLog;   // 是否已开启日志打印
 static NSMutableArray *_allSessionTask;
 static AFHTTPSessionManager *_sessionManager;
 
-#pragma mark - 开始监听网络
-+ (void)networkStatusWithBlock:(SCNetworkStatus)networkStatus {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-            switch (status) {
-                case AFNetworkReachabilityStatusUnknown:
-                    networkStatus ? networkStatus(SCNetworkStatusUnknown) : nil;
-                    NSLog(@"未知网络");
-                    break;
-                case AFNetworkReachabilityStatusNotReachable:
-                    networkStatus ? networkStatus(SCNetworkStatusNotReachable) : nil;
-                    NSLog(@"无网络");
-                    break;
-                case AFNetworkReachabilityStatusReachableViaWWAN:
-                    networkStatus ? networkStatus(SCNetworkStatusReachableViaWWAN) : nil;
-                    NSLog(@"手机自带网络");
-                    break;
-                case AFNetworkReachabilityStatusReachableViaWiFi:
-                    networkStatus ? networkStatus(SCNetworkStatusReachableViaWiFi) : nil;
-                    NSLog(@"WIFI");
-                    break;
-            }
-        }];
-    });
-}
-
-+ (BOOL)isNetwork {
-    return [AFNetworkReachabilityManager sharedManager].reachable;
-}
-
-+ (BOOL)isWWANNetwork {
-    return [AFNetworkReachabilityManager sharedManager].reachableViaWWAN;
-}
-
-+ (BOOL)isWiFiNetwork {
-    return [AFNetworkReachabilityManager sharedManager].reachableViaWiFi;
-}
-
 + (void)openLog {
     _isOpenLog = YES;
 }
@@ -173,6 +134,11 @@ static AFHTTPSessionManager *_sessionManager;
         cmtokenid = [NSString stringWithFormat:@"cmtokenid=%@",cmtokenid];
     }
     [_sessionManager.requestSerializer setValue:appPwd forHTTPHeaderField:@"appPwd"];
+    
+    if ([SCUtilities isInShoppingDebug]) {
+        [_sessionManager.requestSerializer setValue:cmtokenid forHTTPHeaderField:@"Cookie"];
+    }
+
     
     NSURLSessionTask *sessionTask = [_sessionManager POST:URL parameters:param headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         

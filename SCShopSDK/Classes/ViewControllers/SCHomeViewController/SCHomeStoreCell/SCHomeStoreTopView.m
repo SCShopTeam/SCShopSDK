@@ -1,25 +1,24 @@
 //
-//  SCHomeRecommendTopView.m
+//  SCHomeStoreTopView.m
 //  shopping
 //
 //  Created by gejunyu on 2021/3/4.
 //  Copyright © 2021 jsmcc. All rights reserved.
 //
 
-#import "SCHomeRecommendTopView.h"
+#import "SCHomeStoreTopView.h"
+#import "SCHomeStoreModel.h"
 
-
-@interface SCHomeRecommendTopView ()
+@interface SCHomeStoreTopView ()
 @property (nonatomic, strong) UIView *line;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *distanceLabel;
 @property (nonatomic, strong) UIButton *serviceButton;
 @property (nonatomic, strong) UIButton *phonebutton;
-@property (nonatomic, strong) UIButton *enterStoreButton;
 
 @end
 
-@implementation SCHomeRecommendTopView
+@implementation SCHomeStoreTopView
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -30,47 +29,51 @@
     return self;
 }
 
-
- 
-- (void)getData
+- (void)setModel:(SCHomeStoreModel *)model
 {
+    _model = model;
+    
     //标题
-    self.titleLabel.text = @"南京移动龙江阳光智享生活馆";
+    self.titleLabel.text = model.storeName;
     [self.titleLabel sizeToFit];
     self.titleLabel.width = MIN(self.titleLabel.width, SCREEN_FIX(213));
     
     //距离
-    self.distanceLabel.left = self.titleLabel.right + SCREEN_FIX(10);
-    NSInteger num = 421;
-    NSString *numStr = [NSString stringWithFormat:@"%lim",num];
+    self.distanceLabel.left = self.titleLabel.right + SCREEN_FIX(5);
+    NSString *numStr = [NSString stringWithFormat:@"%lim",model.distance];
     NSString *distanceStr = [NSString stringWithFormat:@"距离您%@",numStr];
     NSMutableAttributedString *mulA = [[NSMutableAttributedString alloc] initWithString:distanceStr];
     [mulA addAttributes:@{NSForegroundColorAttributeName:HEX_RGB(@"#ff3434")} range:[distanceStr rangeOfString:numStr]];
     self.distanceLabel.attributedText = mulA;
     [self.distanceLabel sizeToFit];
     
-    //标签
-    BOOL isInHoure = num <= 5000; //是否是1小时达
-    NSArray *data = @[@"官方好店",@"本地包邮",@"赠品"];
+    //亮点标签
+    BOOL isInHoure = model.distance <= 5000; //是否是1小时达
 
     //最多显示4个标签， 1小时达占一个
-    NSInteger maxNum = isInHoure ? 3 : 4;
-    NSMutableArray *tags = [data subarrayWithRange:NSMakeRange(0, MIN(data.count, maxNum))].mutableCopy;
+    NSInteger maxLightSpotNum = isInHoure ? 3 : 4;
+
+    NSMutableArray *temp = [NSMutableArray arrayWithCapacity:4];
+    [model.lightspotList enumerateObjectsUsingBlock:^(SCHomeLightSpotModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (idx < maxLightSpotNum) {
+            [temp addObject:obj.lightSpotName];
+        }
+    }];
+    
     if (isInHoure) {
-        [tags addObject:@"一小时达"];
+        [temp addObject:@"一小时达"];
     }
 
-//    home_recommend_tag0@2x
     
     __block CGFloat x = SCREEN_FIX(19);
     CGFloat btnH = SCREEN_FIX(18);
-    [tags enumerateObjectsUsingBlock:^(NSString * _Nonnull tag, NSUInteger idx, BOOL * _Nonnull stop) {
+    [temp enumerateObjectsUsingBlock:^(NSString * _Nonnull tag, NSUInteger idx, BOOL * _Nonnull stop) {
         UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(x, self.height - SCREEN_FIX(8) - btnH, 0, btnH)];
         btn.titleLabel.font = SCFONT_SIZED_FIX(11);
         [btn setTitle:tag forState:UIControlStateNormal];
         btn.userInteractionEnabled = NO;
         //是否是一小时达的标签
-        BOOL isInHourTag = isInHoure && idx == tags.count - 1;
+        BOOL isInHourTag = isInHoure && idx == temp.count - 1;
         if (isInHourTag) {
             [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             [btn setBackgroundImage:SCIMAGE(@"home_recommend_tag3") forState:UIControlStateNormal];
@@ -140,8 +143,8 @@
         @weakify(self)
         [_phonebutton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
            @strongify(self)
-            if (self.telBlock) {
-                self.telBlock();
+            if (self.phoneBlock) {
+                self.phoneBlock();
             }
         }];
     }

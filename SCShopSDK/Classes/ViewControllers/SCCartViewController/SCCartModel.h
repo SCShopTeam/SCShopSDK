@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL selectedAll;      //是否全选
 @property (nonatomic, assign) CGFloat sumPrice;      //合计
 @property (nonatomic, assign) NSInteger balanceNum;  //结算数量
+@property (nonatomic, assign) CGFloat rowHeight;
 
 //是否是阿波罗商户
 @property (nonatomic, assign) BOOL isApollo;
@@ -28,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) void (^updateSelectBlock)(SCCartModel *model);
 
 - (void)updateData;
+
 
 @end
 

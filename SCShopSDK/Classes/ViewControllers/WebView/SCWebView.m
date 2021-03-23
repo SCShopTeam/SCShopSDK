@@ -236,7 +236,7 @@
        
        NSString*urlString = [[navigationAction.request URL] absoluteString];
        
-       urlString = [urlString stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    urlString =  [urlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
        
        if ([urlString containsString:@"weixin://wap/pay?"] || [urlString containsString:@"alipay://alipayclient"]) {
            if([[UIApplication sharedApplication] respondsToSelector:@selector(openURL:options:completionHandler:)]) {

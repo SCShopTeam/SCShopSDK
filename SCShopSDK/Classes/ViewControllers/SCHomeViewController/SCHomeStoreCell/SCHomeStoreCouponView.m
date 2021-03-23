@@ -1,15 +1,16 @@
 //
-//  SCHomeRecommendCouponView.m
+//  SCHomeStoreCouponView.m
 //  shopping
 //
 //  Created by gejunyu on 2021/3/8.
 //  Copyright © 2021 jsmcc. All rights reserved.
 //
 
-#import "SCHomeRecommendCouponView.h"
+#import "SCHomeStoreCouponView.h"
 #import "SCWSHeaderButton.h"
+#import "SCHomeStoreModel.h"
 
-@interface SCHomeRecommendCouponView ()
+@interface SCHomeStoreCouponView ()
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UIButton *couponIcon;
 @property (nonatomic, strong) UILabel *tipLabel;
@@ -19,7 +20,7 @@
 
 @end
 
-@implementation SCHomeRecommendCouponView
+@implementation SCHomeStoreCouponView
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -30,33 +31,34 @@
     return self;
 }
 
-- (void)getData
+- (void)setModel:(SCHomeStoreModel *)model
 {
-    //标题
-    self.titleLabel.text = @"更多优惠";
-    [self.titleLabel sizeToFit];
+    _model = model;
+
     
-    //icon
-    [self.couponIcon setTitle:@"优惠券" forState:UIControlStateNormal];
-    self.couponIcon.left = self.titleLabel.right + SCREEN_FIX(4.5);
-    
-    BOOL hasCoupons = arc4random()%2;
+    BOOL hasCoupons = model.couponList.count;
     
     //提示
     self.tipLabel.hidden = hasCoupons;
-    self.tipLabel.left = self.couponIcon.right + SCREEN_FIX(3);
-    
+
     //优惠券
     __block CGFloat x = self.couponIcon.right + SCREEN_FIX(4.5);
-    NSArray *arr = @[@"满1000减100",@"满2000减300"];
+    
+    NSMutableArray *temp = [NSMutableArray arrayWithCapacity:2];
+    [model.couponList enumerateObjectsUsingBlock:^(SCHomeCouponModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (idx < 2) { //最多显示两个
+            [temp addObject:obj.limitDesc];
+        }
+    }];
+    
     [self.couponLabelList enumerateObjectsUsingBlock:^(UILabel * _Nonnull label, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (idx >= arr.count || !hasCoupons) {
+        if (idx >= temp.count || !hasCoupons) {
             label.hidden = YES;
             
         }else {
             label.hidden = NO;
             label.left = x;
-            NSString *text = arr[idx];
+            NSString *text = temp[idx];
             label.text = text;
             CGFloat textW = [text calculateWidthWithFont:label.font height:label.height];
             label.width = textW + SCREEN_FIX(8);
@@ -67,12 +69,13 @@
     
     //按钮
     [self.itemButtonList enumerateObjectsUsingBlock:^(SCWSHeaderButton * _Nonnull btn, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (idx >=@[@1,@1,@1].count) {
+        if (idx >= model.topGoodsList.count) {
             btn.hidden = YES;
             
         }else {
             btn.hidden = NO;
-            [btn getData];
+            SCHomeGoodsModel *goodsModel = model.topGoodsList[idx];
+            btn.homeGoodsModel = goodsModel;
         }
     }];
 
@@ -84,18 +87,22 @@
     if (!_titleLabel) {
         _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(22), SCREEN_FIX(8), 0, SCREEN_FIX(16))];
         _titleLabel.font = SCFONT_SIZED_FIX(16);
+        _titleLabel.text = @"更多优惠";
+        [_titleLabel sizeToFit];
         [self addSubview:_titleLabel];
     }
     return _titleLabel;
 }
-//home_coupon_icon
+
+//icon
 - (UIButton *)couponIcon
 {
     if (!_couponIcon) {
-        _couponIcon = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(39), SCREEN_FIX(15))];
+        _couponIcon = [[UIButton alloc] initWithFrame:CGRectMake(self.titleLabel.right + SCREEN_FIX(4.5), 0, SCREEN_FIX(39), SCREEN_FIX(15))];
         _couponIcon.centerY = self.titleLabel.centerY;
         _couponIcon.userInteractionEnabled = NO;
         [_couponIcon setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_couponIcon setTitle:@"优惠券" forState:UIControlStateNormal];
         [_couponIcon setBackgroundImage:SCIMAGE(@"home_coupon_icon") forState:UIControlStateNormal];
         _couponIcon.titleLabel.font = SCFONT_SIZED_FIX(10);
         [self addSubview:_couponIcon];
@@ -106,7 +113,7 @@
 - (UILabel *)tipLabel
 {
     if (!_tipLabel) {
-        _tipLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(132.5), SCREEN_FIX(15.5))];
+        _tipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.couponIcon.right + SCREEN_FIX(3), 0, SCREEN_FIX(132.5), SCREEN_FIX(15.5))];
         _tipLabel.centerY = self.titleLabel.centerY;
         _tipLabel.backgroundColor = HEX_RGB(@"#FFF8DC");
         _tipLabel.textAlignment = NSTextAlignmentCenter;
@@ -151,6 +158,15 @@
         [_moreButton setTitle:@"更多热销" forState:UIControlStateNormal];
         [_moreButton setImage:SCIMAGE(@"home_coupon_more") forState:UIControlStateNormal];
         [_moreButton layoutButtonWithEdgeInsetsStyle:XGButtonEdgeInsetsStyleRight imageTitleSpace:SCREEN_FIX(3.5)];
+        
+        @weakify(self)
+        [_moreButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+            @strongify(self)
+            if (self.pushBlock) {
+                self.pushBlock();
+            }
+        }];
+        
         [self addSubview:_moreButton];
     }
     return _moreButton;

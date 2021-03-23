@@ -14,22 +14,19 @@
 @interface SCHomeViewModel ()
 @property (nonatomic, strong) SCUserInfo *lastUserInfo;
 
-@property (nonatomic, assign) BOOL isTouchRequesting;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *topList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *bannerList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *gridList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *adList;                     //广告
-@property (nonatomic, strong) NSDictionary <NSNumber *, SCHomeTouchModel *> *popupDict; //弹窗
+@property (nonatomic, strong) NSMutableDictionary <NSNumber *, SCHomeTouchModel *> *popupDict; //弹窗
 
-@property (nonatomic, assign) BOOL isRecommendRequesting;
+@property (nonatomic, strong) SCHomeStoreModel *storeModel;               //推荐门店
+@property (nonatomic, copy) NSMutableDictionary *serviceUrlCaches;
 
-@property (nonatomic, assign) BOOL isGoodStoreRequesting;
-@property (nonatomic, strong) NSArray <SCGoodStoreModel *> *goodStoreList;              //发现好店
+@property (nonatomic, strong) NSArray <SCGoodStoresModel *> *goodStoreList;              //发现好店
 
-@property (nonatomic, assign) BOOL isCategoryRequesting; //是否正在请求分类
 @property (nonatomic, strong) NSArray <SCCategoryModel *> *categoryList;                //分类
 
-@property (nonatomic, assign) BOOL isCommodityRequesting;
 @property (nonatomic, strong) NSMutableArray<SCCommodityModel *> *commodityList;
 @property (nonatomic, assign) BOOL hasNoData;
 
@@ -55,10 +52,6 @@
 #pragma mark -触点相关
 - (void)requestTouchData:(UIViewController *)viewController success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
-    if (_isTouchRequesting) {
-        return;
-    }
-    
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
 
     if (![manager.delegate respondsToSelector:@selector(scADTouchDataFrom:backData:)]) {
@@ -67,12 +60,8 @@
         }
         return;
     }
-    
-    _isTouchRequesting = YES;
 
     [manager.delegate scADTouchDataFrom:viewController backData:^(id  _Nonnull touchData) {
-        self.isTouchRequesting = NO;
-        
         if (!VALID_DICTIONARY(touchData)) {
             if (failure) {
                 failure(@"get touch failure");
@@ -168,14 +157,10 @@
 #pragma mark -推荐门店
 - (void)requestRecommendStoreData:(SCHttpRequestCompletion)completion
 {
-    if (_isRecommendRequesting) {
-        return;
-    }
-    
     SCUserInfo *userInfo = [SCUserInfo currentUser];
     
     if (!VALID_STRING(userInfo.phoneNumber)) {
-        //清除数据
+        self.storeModel = nil;
         
         if (completion) {
             completion(@"phone null");
@@ -184,15 +169,13 @@
         return;
     }
     
-    [[SCLocationService sharedInstance] startLocation:^(NSString * _Nullable longitude, NSString * _Nullable latitude) {
-        [self requestRecommendStoreDataWithLongitude:longitude latitude:latitude userInfo:userInfo completion:completion];
+    [[SCLocationService sharedInstance] startLocation:^(SCLocationService * _Nonnull ls) {
+        [self requestRecommendStoreDataWithLongitude:ls.longitude latitude:ls.latitude userInfo:userInfo completion:completion];
     }];
 }
 
 - (void)requestRecommendStoreDataWithLongitude:(nullable NSString *)longitude latitude:(nullable NSString *)latitude userInfo:(SCUserInfo *)userInfo completion:(SCHttpRequestCompletion)completion
 {
-    self.isRecommendRequesting = YES;
-    
     NSDictionary *param = @{@"longitude": longitude?:@"",
                             @"latitude": latitude?:@"",
                             @"areaNum": userInfo.uan,
@@ -201,11 +184,23 @@
     [SCRequestParams shareInstance].requestNum = @"apollo.queryFloorGoods";
     
     [SCNetworkManager POST:SC_STORE_FLOOR parameters:param success:^(id  _Nullable responseObject) {
-        self.isRecommendRequesting = NO;
+        if (![SCNetworkTool checkResult:responseObject key:nil forClass:NSDictionary.class completion:completion]) {
+            self.storeModel = nil;
+            return;
+        }
+        
+        NSDictionary *result = responseObject[B_RESULT];
+        SCHomeStoreModel *storeModel = [SCHomeStoreModel yy_modelWithDictionary:result];
+        
+        if (storeModel.storeId) {
+            [self requestRecommendGoodsData:storeModel userInfo:userInfo completion:completion];
+            [self requestStoreService:storeModel userInfo:userInfo];
+        }
+        
+
         
     } failure:^(NSString * _Nullable errorMsg) {
-        self.isRecommendRequesting = NO;
-        //清除数据
+        self.storeModel = nil;
         if (completion) {
             completion(errorMsg);
         }
@@ -213,30 +208,90 @@
     }];
 }
 
+- (void)requestRecommendGoodsData:(SCHomeStoreModel *)storeModel userInfo:(SCUserInfo *)userInfo completion:(SCHttpRequestCompletion)completion
+{
+    NSDictionary *param = @{@"storeId": storeModel.storeId,
+                            @"areaNum": userInfo.uan,
+                            @"floorType": @"1、2"};
+    
+    [SCRequestParams shareInstance].requestNum = @"apollo.queryFloorGoods";
+    
+    [SCNetworkManager POST:SC_FLOOR_GOODS parameters:param success:^(id  _Nullable responseObject) {
+        if ([SCNetworkTool checkResult:responseObject key:nil forClass:NSDictionary.class completion:nil]) {
+            //数据处理
+            [storeModel parsingActivityModelsFromData:responseObject[B_RESULT]];
+           
+        }
+        
+        self.storeModel = storeModel;
+        
+        if (completion) {
+            completion(nil);
+        }
+        
+    } failure:^(NSString * _Nullable errorMsg) {
+        if (completion) {
+            completion(nil);
+        }
+    }];
+}
+
+- (void)requestStoreService:(SCHomeStoreModel *)storeModel userInfo:(SCUserInfo *)userInfo
+{
+    if (!_serviceUrlCaches) {
+        _serviceUrlCaches = [NSMutableDictionary dictionary];
+    }
+    
+    //门店id和手机号相同，客服地址是一样的，不需要每次都请求
+    NSString *cacheKey = [NSString stringWithFormat:@"%@+%@",storeModel.storeId,userInfo.phoneNumber];
+    
+    NSString *cacheUrl = _serviceUrlCaches[cacheKey];
+    
+    if (VALID_STRING(cacheUrl)) {
+        storeModel.serviceUrl = cacheUrl;
+        return;
+    }
+    
+    
+    NSDictionary *param = @{@"storeId": storeModel.storeId,
+                            @"areaNum": userInfo.uan,
+                            @"phoneNum": userInfo.phoneNumber};
+    
+    [SCRequestParams shareInstance].requestNum = @"apollo.customerService";
+    
+    [SCNetworkManager POST:SC_CUSTOMER_SERVICE parameters:param success:^(id  _Nullable responseObject) {
+        if (![SCNetworkTool checkResult:responseObject key:nil forClass:NSString.class completion:nil]) {
+            return;
+        }
+        
+        NSString *url = responseObject[B_RESULT];
+        
+        storeModel.serviceUrl = url;
+        
+        self.serviceUrlCaches[cacheKey] = url; //缓存
+
+    } failure:^(NSString * _Nullable errorMsg) {
+
+    }];
+}
+
 #pragma mark -发现好店
 - (void)requestGoodStoreList:(SCHttpRequestCompletion)completion
 {
-    if (self.isGoodStoreRequesting) {
-        return;
-    }
-
-    [[SCLocationService sharedInstance] startLocation:^(NSString * _Nullable longitude, NSString * _Nullable latitude) {
-        [self requestGoodStoreDataWithLongitude:longitude latitude:latitude completion:completion];
+    [[SCLocationService sharedInstance] startLocation:^(SCLocationService * _Nonnull ls) {
+        [self requestGoodStoreDataWithLongitude:ls.longitude latitude:ls.latitude completion:completion];
     }];
     
 }
 
 - (void)requestGoodStoreDataWithLongitude:(nullable NSString *)longitude latitude:(nullable NSString *)latitude completion:(SCHttpRequestCompletion)completion
 {
-    self.isGoodStoreRequesting = YES;
-    
     NSDictionary *param = @{@"longitude": longitude?:@"",
                             @"latitude": latitude?:@""};
     
     [SCRequestParams shareInstance].requestNum = @"shop.recommend";
 
     [SCNetworkManager POST:SC_SHOP_RECOMMEND parameters:param success:^(id  _Nullable responseObject) {
-        self.isGoodStoreRequesting = NO;
         NSString *key = @"shopList";
         if (![SCNetworkTool checkResult:responseObject key:key forClass:NSArray.class completion:completion]) {
             return;
@@ -250,7 +305,7 @@
             if (!VALID_DICTIONARY(dict)) {
                 continue;
             }
-            SCGoodStoreModel *model = [SCGoodStoreModel yy_modelWithDictionary:dict];
+            SCGoodStoresModel *model = [SCGoodStoresModel yy_modelWithDictionary:dict];
 
             if (model.shopInfo.isFindGood) {   //发现好店
                 [mulArr addObject:model];
@@ -266,7 +321,6 @@
         }
         
     } failure:^(NSString * _Nullable errorMsg) {
-        self.isGoodStoreRequesting = NO;
         self.goodStoreList = nil;
         if (completion) {
             completion(errorMsg);
@@ -300,10 +354,7 @@
 #pragma mark -分类
 - (void)requestCategoryList:(SCHttpRequestCompletion)completion
 {
-    self.isCategoryRequesting = YES;
     [SCRequest requestCategory:^(NSArray<SCCategoryModel *> * _Nonnull categoryList) {
-        self.isCategoryRequesting = YES;
-        
         self.categoryList = categoryList;
         
         if (categoryList.count > 0) {
@@ -317,7 +368,6 @@
         }
         
     } failure:^(NSString * _Nullable errorMsg) {
-        self.isCategoryRequesting = NO;
         if (completion) {
             completion(errorMsg);
         }
@@ -328,14 +378,7 @@
 #pragma mark -商品
 - (void)requestCommodityListData:(NSString *)typeNum pageNum:(NSInteger)pageNum completion:(SCHttpRequestCompletion)completion
 {
-    if (_isCommodityRequesting) {
-        return;
-    }
-    
-    _isCommodityRequesting = YES;
-    
     [SCRequest requestCommoditiesWithTypeNum:(typeNum?:@"") brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, NSArray * _Nonnull originDatas) {
-        self.isCommodityRequesting = NO;
         
         if (pageNum == 1) {
             [self.commodityList removeAllObjects];
@@ -350,7 +393,6 @@
         
         
     } failure:^(NSString * _Nullable errorMsg) {
-        self.isCommodityRequesting = NO;
         
         if (completion) {
             completion(errorMsg);

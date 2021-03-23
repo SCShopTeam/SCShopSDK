@@ -50,8 +50,6 @@ typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nul
 @required
 //获取用户信息
 - (NSDictionary *)scGetUserInfo;
-//获取定位
-- (NSDictionary *)scGetLocationInfo;
 
 
 @end

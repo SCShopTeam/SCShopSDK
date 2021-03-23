@@ -131,7 +131,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
             if ([SCUtilities isValidString:lastString])
             {
                 // 只对问号后面的进行url编码，前面的不编码
-                lastString = [lastString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                lastString =  [lastString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
                 
                 NSMutableString *lastStr = [NSMutableString stringWithString:lastString];
                 [lastStr deleteCharactersInRange:NSMakeRange(0,1)];
@@ -146,7 +146,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
                     }
                     else
                     {
-                        temp = [firstStr stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                        temp =  [firstStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
                     }
                 }
                 else
@@ -187,7 +187,7 @@ UIGestureRecognizerDelegate,NSURLSessionDelegate,SCWebViewDelegate>
         
         if ([SCUtilities isValidString:lastString])
         {// 只对问号后面的进行url编码，前面的不编码
-            [lstMutableString appendString:[NSString stringWithFormat:@"?%@",[lastString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+            [lstMutableString appendString:[NSString stringWithFormat:@"?%@", [lastString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]]];
         }
     }
     //                NSString *lastString  = tempArr[1];

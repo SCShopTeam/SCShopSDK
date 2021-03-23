@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString*)encodeURIComponent:(NSString*)str;
 
 //baritem
-+ (UIBarButtonItem *)makeBarButtonWithIcon:(UIImage *)image target:(id)target action:(SEL)selector isLeft:(BOOL)left;
++ (UIBarButtonItem *)makeBarButtonWithIcon:(UIImage *)image target:(id _Nullable)target action:(SEL  _Nullable)selector isLeft:(BOOL)left;
 + (UIBarButtonItem *)makeBarButtonWithIcon:(UIImage *)image isLeft:(BOOL)left handler:(void (^)(id sender))handler;
 
 //价格文字  eg:¥1000

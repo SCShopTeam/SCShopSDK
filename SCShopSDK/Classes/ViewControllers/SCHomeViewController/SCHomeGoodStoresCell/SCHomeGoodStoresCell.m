@@ -1,13 +1,13 @@
 //
-//  SCHomeGoodStoreCell.m
+//  SCHomeGoodStoresCell.m
 //  shopping
 //
 //  Created by gejunyu on 2021/3/2.
 //  Copyright © 2021 jsmcc. All rights reserved.
 //
 
-#import "SCHomeGoodStoreCell.h"
-#import "SCGoodStoreSubCell.h"
+#import "SCHomeGoodStoresCell.h"
+#import "SCGoodStoresSubCell.h"
 #import "NSData+SCBase64.h"
 
 #define kGrayLineH SCREEN_FIX(4)
@@ -16,7 +16,7 @@
 
 static NSInteger kMaxGoodShopCount = 3;
 
-@interface SCHomeGoodStoreCell () <UITableViewDelegate, UITableViewDataSource>
+@interface SCHomeGoodStoresCell () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UIView *grayLine;
 @property (nonatomic, strong) UIView *topView;
@@ -25,7 +25,7 @@ static NSInteger kMaxGoodShopCount = 3;
 
 @end
 
-@implementation SCHomeGoodStoreCell
+@implementation SCHomeGoodStoresCell
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -36,7 +36,7 @@ static NSInteger kMaxGoodShopCount = 3;
     return self;
 }
 
-- (void)setGoodStoreList:(NSArray<SCGoodStoreModel *> *)goodStoreList
+- (void)setGoodStoreList:(NSArray<SCGoodStoresModel *> *)goodStoreList
 {
     if (goodStoreList == _goodStoreList || goodStoreList.count == 0) {
         return;
@@ -74,11 +74,11 @@ static NSInteger kMaxGoodShopCount = 3;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SCGoodStoreSubCell *cell = (SCGoodStoreSubCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCGoodStoreSubCell.class) forIndexPath:indexPath];
+    SCGoodStoresSubCell *cell = (SCGoodStoresSubCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCGoodStoresSubCell.class) forIndexPath:indexPath];
     
     NSInteger row = indexPath.row;
     if (row < self.goodStoreList.count) {
-        SCGoodStoreModel *model = self.goodStoreList[row];
+        SCGoodStoresModel *model = self.goodStoreList[row];
         cell.model = model;
     }
     
@@ -102,7 +102,7 @@ static NSInteger kMaxGoodShopCount = 3;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SCGoodStoreModel *model = self.goodStoreList[indexPath.row];
+    SCGoodStoresModel *model = self.goodStoreList[indexPath.row];
     if (self.enterShopBlock) {
         self.enterShopBlock(indexPath.row, model.shopInfo);
     }
@@ -167,7 +167,7 @@ static NSInteger kMaxGoodShopCount = 3;
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.scrollEnabled = NO;
-        [_tableView registerClass:SCGoodStoreSubCell.class forCellReuseIdentifier:NSStringFromClass(SCGoodStoreSubCell.class)];
+        [_tableView registerClass:SCGoodStoresSubCell.class forCellReuseIdentifier:NSStringFromClass(SCGoodStoresSubCell.class)];
         [self.contentView addSubview:_tableView];
     }
     return _tableView;

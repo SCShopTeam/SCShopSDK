@@ -1,184 +1,549 @@
-//
-//  SCReachability.m
-//  YYKit <https://github.com/ibireme/YYKit>
-//
-//  Created by ibireme on 15/2/6.
-//  Copyright (c) 2015 ibireme.
-//
-//  This source code is licensed under the MIT-style license found in the
-//  LICENSE file in the root directory of this source tree.
-//
+/*
+ Copyright (c) 2011, Tony Million.
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ 
+ 1. Redistributions of source code must retain the above copyright notice, this
+ list of conditions and the following disclaimer.
+ 
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE. 
+ */
 
 #import "SCReachability.h"
-#import <objc/message.h>
+
+#import <sys/socket.h>
+#import <netinet/in.h>
+#import <netinet6/in6.h>
+#import <arpa/inet.h>
+#import <ifaddrs.h>
+#import <netdb.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
-static SCReachabilityStatus SCReachabilityStatusFromFlags(SCNetworkReachabilityFlags flags, BOOL allowWWAN) {
-    if ((flags & kSCNetworkReachabilityFlagsReachable) == 0) {
-        return SCReachabilityStatusNone;
-    }
-    
-    if ((flags & kSCNetworkReachabilityFlagsConnectionRequired) &&
-        (flags & kSCNetworkReachabilityFlagsTransientConnection)) {
-        return SCReachabilityStatusNone;
-    }
-    
-    if ((flags & kSCNetworkReachabilityFlagsIsWWAN) && allowWWAN) {
-        return SCReachabilityStatusWWAN;
-    }
-    
-    return SCReachabilityStatusWiFi;
-}
 
-static void SCReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info) {
-    SCReachability *self = ((__bridge SCReachability *)info);
-    if (self.notifyBlock) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.notifyBlock(self);
-        });
-    }
-}
+NSString *const kSCReachabilityChangedNotification = @"kSCReachabilityChangedNotification";
+
 
 @interface SCReachability ()
-@property (nonatomic, assign) SCNetworkReachabilityRef ref;
-@property (nonatomic, assign) BOOL scheduled;
-@property (nonatomic, assign) BOOL allowWWAN;
-@property (nonatomic, strong) CTTelephonyNetworkInfo *networkInfo;
+
+@property (nonatomic, assign) SCNetworkReachabilityRef  reachabilityRef;
+@property (nonatomic, strong) dispatch_queue_t          reachabilitySerialQueue;
+@property (nonatomic, strong) id                        reachabilityObject;
+
+-(void)reachabilityChanged:(SCNetworkReachabilityFlags)flags;
+-(BOOL)isReachableWithFlags:(SCNetworkReachabilityFlags)flags;
+
 @end
+
+
+static NSString *reachabilityFlags(SCNetworkReachabilityFlags flags) 
+{
+    return [NSString stringWithFormat:@"%c%c %c%c%c%c%c%c%c",
+#if	TARGET_OS_IPHONE
+            (flags & kSCNetworkReachabilityFlagsIsWWAN)               ? 'W' : '-',
+#else
+            'X',
+#endif
+            (flags & kSCNetworkReachabilityFlagsReachable)            ? 'R' : '-',
+            (flags & kSCNetworkReachabilityFlagsConnectionRequired)   ? 'c' : '-',
+            (flags & kSCNetworkReachabilityFlagsTransientConnection)  ? 't' : '-',
+            (flags & kSCNetworkReachabilityFlagsInterventionRequired) ? 'i' : '-',
+            (flags & kSCNetworkReachabilityFlagsConnectionOnTraffic)  ? 'C' : '-',
+            (flags & kSCNetworkReachabilityFlagsConnectionOnDemand)   ? 'D' : '-',
+            (flags & kSCNetworkReachabilityFlagsIsLocalAddress)       ? 'l' : '-',
+            (flags & kSCNetworkReachabilityFlagsIsDirect)             ? 'd' : '-'];
+}
+
+// Start listening for reachability notifications on the current run loop
+static void TMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* info) 
+{
+#pragma unused (target)
+
+    SCReachability *reachability = ((__bridge SCReachability*)info);
+
+    // We probably don't need an autoreleasepool here, as GCD docs state each queue has its own autorelease pool,
+    // but what the heck eh?
+    @autoreleasepool 
+    {
+        [reachability reachabilityChanged:flags];
+    }
+}
+
 
 @implementation SCReachability
 
-+ (dispatch_queue_t)sharedQueue {
-    static dispatch_queue_t queue;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        queue = dispatch_queue_create("com.ibireme.sc.reachability", DISPATCH_QUEUE_SERIAL);
-    });
-    return queue;
+#pragma mark - Class Constructor Methods
+
++(instancetype)reachabilityWithHostName:(NSString*)hostname
+{
+    return [SCReachability reachabilityWithHostname:hostname];
 }
 
-- (instancetype)init {
-    /*
-     See Apple's Reachability implementation and readme:
-     The address 0.0.0.0, which reachability treats as a special token that 
-     causes it to actually monitor the general routing status of the device, 
-     both IPv4 and IPv6.
-     https://developer.apple.com/library/ios/samplecode/Reachability/Listings/ReadMe_md.html#//apple_ref/doc/uid/DTS40007324-ReadMe_md-DontLinkElementID_11
-     */
-    struct sockaddr_in zero_addr;
-    bzero(&zero_addr, sizeof(zero_addr));
-    zero_addr.sin_len = sizeof(zero_addr);
-    zero_addr.sin_family = AF_INET;
-    SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr *)&zero_addr);
-    return [self initWithRef:ref];
-}
++(instancetype)reachabilityWithHostname:(NSString*)hostname
+{
+    SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithName(NULL, [hostname UTF8String]);
+    if (ref) 
+    {
+        id reachability = [[self alloc] initWithReachabilityRef:ref];
 
-- (instancetype)initWithRef:(SCNetworkReachabilityRef)ref {
-    if (!ref) return nil;
-    self = super.init;
-    if (!self) return nil;
-    _ref = ref;
-    _allowWWAN = YES;
-    if (NSFoundationVersionNumber >= NSFoundationVersionNumber_iOS_7_0) {
-        _networkInfo = [CTTelephonyNetworkInfo new];
+        return reachability;
     }
-    return self;
+    
+    return nil;
 }
 
-- (void)dealloc {
-    self.notifyBlock = nil;
-    self.scheduled = NO;
-    CFRelease(self.ref);
-}
-
-- (void)setScheduled:(BOOL)scheduled {
-    if (_scheduled == scheduled) return;
-    _scheduled = scheduled;
-    if (scheduled) {
-        SCNetworkReachabilityContext context = { 0, (__bridge void *)self, NULL, NULL, NULL };
-        SCNetworkReachabilitySetCallback(self.ref, SCReachabilityCallback, &context);
-        SCNetworkReachabilitySetDispatchQueue(self.ref, [self.class sharedQueue]);
-    } else {
-        SCNetworkReachabilitySetDispatchQueue(self.ref, NULL);
++(instancetype)reachabilityWithAddress:(void *)hostAddress
+{
+    SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr*)hostAddress);
+    if (ref) 
+    {
+        id reachability = [[self alloc] initWithReachabilityRef:ref];
+        
+        return reachability;
     }
+    
+    return nil;
 }
 
-- (SCNetworkReachabilityFlags)flags {
-    SCNetworkReachabilityFlags flags = 0;
-    SCNetworkReachabilityGetFlags(self.ref, &flags);
-    return flags;
++(instancetype)reachabilityForInternetConnection
+{
+    struct sockaddr_in zeroAddress;
+    bzero(&zeroAddress, sizeof(zeroAddress));
+    zeroAddress.sin_len = sizeof(zeroAddress);
+    zeroAddress.sin_family = AF_INET;
+    
+    return [self reachabilityWithAddress:&zeroAddress];
 }
 
-- (SCReachabilityStatus)status {
-    return SCReachabilityStatusFromFlags(self.flags, self.allowWWAN);
-}
-
-- (SCReachabilityWWANStatus)wwanStatus {
-    if (!self.networkInfo) return SCReachabilityWWANStatusNone;
-    NSString *status = self.networkInfo.currentRadioAccessTechnology;
-    if (!status) return SCReachabilityWWANStatusNone;
-    static NSDictionary *dic;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSMutableDictionary *temp = @{CTRadioAccessTechnologyGPRS : @(SCReachabilityWWANStatus2G),  // 2.5G   171Kbps
-                                      CTRadioAccessTechnologyEdge : @(SCReachabilityWWANStatus2G),  // 2.75G  384Kbps
-                                      CTRadioAccessTechnologyWCDMA : @(SCReachabilityWWANStatus3G), // 3G     3.6Mbps/384Kbps
-                                      CTRadioAccessTechnologyHSDPA : @(SCReachabilityWWANStatus3G), // 3.5G   14.4Mbps/384Kbps
-                                      CTRadioAccessTechnologyHSUPA : @(SCReachabilityWWANStatus3G), // 3.75G  14.4Mbps/5.76Mbps
-                                      CTRadioAccessTechnologyCDMA1x : @(SCReachabilityWWANStatus3G), // 2.5G
-                                      CTRadioAccessTechnologyCDMAEVDORev0 : @(SCReachabilityWWANStatus3G),
-                                      CTRadioAccessTechnologyCDMAEVDORevA : @(SCReachabilityWWANStatus3G),
-                                      CTRadioAccessTechnologyCDMAEVDORevB : @(SCReachabilityWWANStatus3G),
-                                      CTRadioAccessTechnologyeHRPD : @(SCReachabilityWWANStatus3G),
-                                      CTRadioAccessTechnologyLTE : @(SCReachabilityWWANStatus4G)   //// LTE:3.9G 150M/75M  LTE-Advanced:4G 300M/150M
-        }.mutableCopy;
-        
-        if (@available(iOS 14.0, *)) {
-            temp[CTRadioAccessTechnologyNRNSA] = @(SCReachabilityWWANStatus5G);
-            temp[CTRadioAccessTechnologyNR] = @(SCReachabilityWWANStatus5G);
-        }
-        
-        dic = temp.copy;
-        
-
-    });
-    NSNumber *num = dic[status];
-    if (num != nil) return num.unsignedIntegerValue;
-    else return SCReachabilityWWANStatusNone;
-}
-
-- (BOOL)isReachable {
-    return self.status != SCReachabilityStatusNone;
-}
-
-+ (instancetype)reachability {
-    return self.new;
-}
-
-+ (instancetype)reachabilityForLocalWifi {
++(instancetype)reachabilityForLocalWiFi
+{
     struct sockaddr_in localWifiAddress;
     bzero(&localWifiAddress, sizeof(localWifiAddress));
-    localWifiAddress.sin_len = sizeof(localWifiAddress);
-    localWifiAddress.sin_family = AF_INET;
-    localWifiAddress.sin_addr.s_addr = htonl(IN_LINKLOCALNETNUM);
-    SCReachability *one = [self reachabilityWithAddress:(const struct sockaddr *)&localWifiAddress];
-    one.allowWWAN = NO;
-    return one;
+    localWifiAddress.sin_len            = sizeof(localWifiAddress);
+    localWifiAddress.sin_family         = AF_INET;
+    // IN_LINKLOCALNETNUM is defined in <netinet/in.h> as 169.254.0.0
+    localWifiAddress.sin_addr.s_addr    = htonl(IN_LINKLOCALNETNUM);
+    
+    return [self reachabilityWithAddress:&localWifiAddress];
 }
 
-+ (instancetype)reachabilityWithHostname:(NSString *)hostname {
-    SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithName(NULL, [hostname UTF8String]);
-    return [[self alloc] initWithRef:ref];
++(instancetype)reachabilityWithURL:(NSURL*)url
+{
+    id reachability;
+
+    NSString *host = url.host;
+    BOOL isIpAddress = [self isIpAddress:host];
+
+    if (isIpAddress)
+    {
+        NSNumber *port = url.port ?: [url.scheme isEqualToString:@"https"] ? @(443) : @(80);
+
+        struct sockaddr_in address;
+        address.sin_len = sizeof(address);
+        address.sin_family = AF_INET;
+        address.sin_port = htons([port intValue]);
+        address.sin_addr.s_addr = inet_addr([host UTF8String]);
+
+        reachability = [self reachabilityWithAddress:&address];
+    }
+    else
+    {
+        reachability = [self reachabilityWithHostname:host];
+    }
+
+    return reachability;
 }
 
-+ (instancetype)reachabilityWithAddress:(const struct sockaddr *)hostAddress {
-    SCNetworkReachabilityRef ref = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr *)hostAddress);
-    return [[self alloc] initWithRef:ref];
++(BOOL)isIpAddress:(NSString*)host
+{
+    struct in_addr pin;
+    return 1 == inet_aton([host UTF8String], &pin);
 }
 
-- (void)setNotifyBlock:(void (^)(SCReachability *reachability))notifyBlock {
-    _notifyBlock = [notifyBlock copy];
-    self.scheduled = (self.notifyBlock != nil);
+
+// Initialization methods
+
+-(instancetype)initWithReachabilityRef:(SCNetworkReachabilityRef)ref
+{
+    self = [super init];
+    if (self != nil) 
+    {
+        self.reachableOnWWAN = YES;
+        self.reachabilityRef = ref;
+
+        // We need to create a serial queue.
+        // We allocate this once for the lifetime of the notifier.
+
+        self.reachabilitySerialQueue = dispatch_queue_create("com.tonymillion.reachability", NULL);
+    }
+    
+    return self;    
+}
+
+-(void)dealloc
+{
+    [self stopNotifier];
+
+    if(self.reachabilityRef)
+    {
+        CFRelease(self.reachabilityRef);
+        self.reachabilityRef = nil;
+    }
+
+	self.reachableBlock          = nil;
+    self.unreachableBlock        = nil;
+    self.reachabilityBlock       = nil;
+    self.reachabilitySerialQueue = nil;
+}
+
+#pragma mark - Notifier Methods
+
+// Notifier 
+// NOTE: This uses GCD to trigger the blocks - they *WILL NOT* be called on THE MAIN THREAD
+// - In other words DO NOT DO ANY UI UPDATES IN THE BLOCKS.
+//   INSTEAD USE dispatch_async(dispatch_get_main_queue(), ^{UISTUFF}) (or dispatch_sync if you want)
+
+-(BOOL)startNotifier
+{
+    // allow start notifier to be called multiple times
+    if(self.reachabilityObject && (self.reachabilityObject == self))
+    {
+        return YES;
+    }
+
+
+    SCNetworkReachabilityContext    context = { 0, NULL, NULL, NULL, NULL };
+    context.info = (__bridge void *)self;
+
+    if(SCNetworkReachabilitySetCallback(self.reachabilityRef, TMReachabilityCallback, &context))
+    {
+        // Set it as our reachability queue, which will retain the queue
+        if(SCNetworkReachabilitySetDispatchQueue(self.reachabilityRef, self.reachabilitySerialQueue))
+        {
+            // this should do a retain on ourself, so as long as we're in notifier mode we shouldn't disappear out from under ourselves
+            // woah
+            self.reachabilityObject = self;
+            return YES;
+        }
+        else
+        {
+#ifdef DEBUG
+            NSLog(@"SCNetworkReachabilitySetDispatchQueue() failed: %s", SCErrorString(SCError()));
+#endif
+
+            // UH OH - FAILURE - stop any callbacks!
+            SCNetworkReachabilitySetCallback(self.reachabilityRef, NULL, NULL);
+        }
+    }
+    else
+    {
+#ifdef DEBUG
+        NSLog(@"SCNetworkReachabilitySetCallback() failed: %s", SCErrorString(SCError()));
+#endif
+    }
+
+    // if we get here we fail at the internet
+    self.reachabilityObject = nil;
+    return NO;
+}
+
+-(void)stopNotifier
+{
+    // First stop, any callbacks!
+    SCNetworkReachabilitySetCallback(self.reachabilityRef, NULL, NULL);
+    
+    // Unregister target from the GCD serial dispatch queue.
+    SCNetworkReachabilitySetDispatchQueue(self.reachabilityRef, NULL);
+
+    self.reachabilityObject = nil;
+}
+
+#pragma mark - reachability tests
+
+// This is for the case where you flick the airplane mode;
+// you end up getting something like this:
+//Reachability: WR ct-----
+//Reachability: -- -------
+//Reachability: WR ct-----
+//Reachability: -- -------
+// We treat this as 4 UNREACHABLE triggers - really apple should do better than this
+
+#define testcase (kSCNetworkReachabilityFlagsConnectionRequired | kSCNetworkReachabilityFlagsTransientConnection)
+
+-(BOOL)isReachableWithFlags:(SCNetworkReachabilityFlags)flags
+{
+    BOOL connectionUP = YES;
+    
+    if(!(flags & kSCNetworkReachabilityFlagsReachable))
+        connectionUP = NO;
+    
+    if( (flags & testcase) == testcase )
+        connectionUP = NO;
+    
+#if	TARGET_OS_IPHONE
+    if(flags & kSCNetworkReachabilityFlagsIsWWAN)
+    {
+        // We're on 3G.
+        if(!self.reachableOnWWAN)
+        {
+            // We don't want to connect when on 3G.
+            connectionUP = NO;
+        }
+    }
+#endif
+    
+    return connectionUP;
+}
+
+-(BOOL)isReachable
+{
+    SCNetworkReachabilityFlags flags;  
+    
+    if(!SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags))
+        return NO;
+    
+    return [self isReachableWithFlags:flags];
+}
+
+-(BOOL)isReachableViaWWAN 
+{
+#if	TARGET_OS_IPHONE
+
+    SCNetworkReachabilityFlags flags = 0;
+    
+    if(SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags))
+    {
+        // Check we're REACHABLE
+        if(flags & kSCNetworkReachabilityFlagsReachable)
+        {
+            // Now, check we're on WWAN
+            if(flags & kSCNetworkReachabilityFlagsIsWWAN)
+            {
+                return YES;
+            }
+        }
+    }
+#endif
+    
+    return NO;
+}
+
+-(BOOL)isReachableViaWiFi 
+{
+    SCNetworkReachabilityFlags flags = 0;
+    
+    if(SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags))
+    {
+        // Check we're reachable
+        if((flags & kSCNetworkReachabilityFlagsReachable))
+        {
+#if	TARGET_OS_IPHONE
+            // Check we're NOT on WWAN
+            if((flags & kSCNetworkReachabilityFlagsIsWWAN))
+            {
+                return NO;
+            }
+#endif
+            return YES;
+        }
+    }
+    
+    return NO;
+}
+
+
+// WWAN may be available, but not active until a connection has been established.
+// WiFi may require a connection for VPN on Demand.
+-(BOOL)isConnectionRequired
+{
+    return [self connectionRequired];
+}
+
+-(BOOL)connectionRequired
+{
+    SCNetworkReachabilityFlags flags;
+	
+	if(SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags))
+    {
+		return (flags & kSCNetworkReachabilityFlagsConnectionRequired);
+	}
+    
+    return NO;
+}
+
+// Dynamic, on demand connection?
+-(BOOL)isConnectionOnDemand
+{
+	SCNetworkReachabilityFlags flags;
+	
+	if (SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags))
+    {
+		return ((flags & kSCNetworkReachabilityFlagsConnectionRequired) &&
+				(flags & (kSCNetworkReachabilityFlagsConnectionOnTraffic | kSCNetworkReachabilityFlagsConnectionOnDemand)));
+	}
+	
+	return NO;
+}
+
+// Is user intervention required?
+-(BOOL)isInterventionRequired
+{
+    SCNetworkReachabilityFlags flags;
+	
+	if (SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags))
+    {
+		return ((flags & kSCNetworkReachabilityFlagsConnectionRequired) &&
+				(flags & kSCNetworkReachabilityFlagsInterventionRequired));
+	}
+	
+	return NO;
+}
+
+
+#pragma mark - reachability status stuff
+
+-(SCNetworkStatus)currentReachabilityStatus
+{
+    if([self isReachable])
+    {
+        if([self isReachableViaWiFi])
+            return SCReachableViaWiFi;
+        
+#if	TARGET_OS_IPHONE
+        return SCReachableViaWWAN;
+#endif
+    }
+    
+    return SCNotReachable;
+}
+
+-(SCNetworkReachabilityFlags)reachabilityFlags
+{
+    SCNetworkReachabilityFlags flags = 0;
+    
+    if(SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags)) 
+    {
+        return flags;
+    }
+    
+    return 0;
+}
+
+-(NSString*)currentReachabilityString
+{
+	SCNetworkStatus temp = [self currentReachabilityStatus];
+	
+	if(temp == SCReachableViaWWAN)
+	{
+        // Updated for the fact that we have CDMA phones now!
+		return NSLocalizedString(@"Cellular", @"");
+	}
+	if (temp == SCReachableViaWiFi) 
+	{
+		return NSLocalizedString(@"WiFi", @"");
+	}
+	
+	return NSLocalizedString(@"No Connection", @"");
+}
+
+-(NSString*)currentReachabilityFlags
+{
+    return reachabilityFlags([self reachabilityFlags]);
+}
+
+- (SCWWANType)currentWWANType
+{
+    CTTelephonyNetworkInfo *info = [[CTTelephonyNetworkInfo alloc] init];
+    NSString *currentStatus = info.currentRadioAccessTechnology;
+    
+    if ([currentStatus isEqualToString:CTRadioAccessTechnologyGPRS] ||
+        [currentStatus isEqualToString:CTRadioAccessTechnologyEdge] ||
+        [currentStatus isEqualToString:CTRadioAccessTechnologyCDMA1x]) {
+        
+        return SCWWANType2G;
+    }
+    
+    
+    if ([currentStatus isEqualToString:CTRadioAccessTechnologyWCDMA]||
+        [currentStatus isEqualToString:CTRadioAccessTechnologyHSDPA] ||
+        [currentStatus isEqualToString:CTRadioAccessTechnologyHSUPA] ||
+        [currentStatus isEqualToString:CTRadioAccessTechnologyeHRPD] ||
+        [currentStatus isEqualToString:CTRadioAccessTechnologyCDMAEVDORev0] ||
+        [currentStatus isEqualToString:CTRadioAccessTechnologyCDMAEVDORevA] ||
+        [currentStatus isEqualToString:CTRadioAccessTechnologyCDMAEVDORevB]) {
+        
+        return SCWWANType3G;
+    }
+
+    if ([currentStatus isEqualToString:CTRadioAccessTechnologyLTE]) {
+        
+        return SCWWANType4G;
+    }
+    
+    if (@available(iOS 14.1, *)) {
+        if ([currentStatus isEqualToString:CTRadioAccessTechnologyNRNSA] ||
+            [currentStatus isEqualToString:CTRadioAccessTechnologyNR]) {
+            
+            return SCWWANType5G;
+        }
+    }
+    
+    return SCWWANTypeUnKnown;
+}
+
+#pragma mark - Callback function calls this method
+
+-(void)reachabilityChanged:(SCNetworkReachabilityFlags)flags
+{
+    if([self isReachableWithFlags:flags])
+    {
+        if(self.reachableBlock)
+        {
+            self.reachableBlock(self);
+        }
+    }
+    else
+    {
+        if(self.unreachableBlock)
+        {
+            self.unreachableBlock(self);
+        }
+    }
+    
+    if(self.reachabilityBlock)
+    {
+        self.reachabilityBlock(self, flags);
+    }
+    
+    // this makes sure the change notification happens on the MAIN THREAD
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:kSCReachabilityChangedNotification 
+                                                            object:self];
+    });
+}
+
+#pragma mark - Debug Description
+
+- (NSString *) description
+{
+    NSString *description = [NSString stringWithFormat:@"<%@: %p (%@)>",
+                             NSStringFromClass([self class]), self, [self currentReachabilityFlags]];
+    return description;
 }
 
 @end

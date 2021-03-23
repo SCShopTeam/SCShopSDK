@@ -177,35 +177,39 @@ typedef NS_ENUM(NSInteger, SCNetApiType) {
 //网络状态
 + (NSString *)networkType
 {
-    SCReachability *y = [SCReachability reachabilityWithHostname:@"www.baidu.com"];
-    NSUInteger netStatus = y.status;
+    SCReachability *reachability = [SCReachability reachabilityWithHostname:@"www.baidu.com"];
+    SCNetworkStatus internetStatus = [reachability currentReachabilityStatus];
+    
+    NSString *type = @"0";
 
-    if (netStatus == SCReachabilityStatusWiFi) {
-        return @"1";
+    if (internetStatus == SCReachableViaWiFi) { //wifi
+        type = @"1";
+
+    }else if (internetStatus == SCReachableViaWWAN) { //流量
+        SCWWANType wwanType = [reachability currentWWANType];
         
-    }else if(netStatus == SCReachabilityStatusWWAN){
-        NSUInteger wwamStatus = y.wwanStatus;
-        switch (wwamStatus) {
-            case SCReachabilityWWANStatus2G:
-                return @"2";//@"2G";
+        switch (wwanType) {
+            case SCWWANType2G:
+                type = @"2";
                 break;
-            case SCReachabilityWWANStatus3G:
-                return @"3";//@"3G";
+            case SCWWANType3G:
+                type = @"3";
                 break;
-            case SCReachabilityWWANStatus4G:
-                return @"4";//@"4G";
+            case SCWWANType4G:
+                type = @"4";
                 break;
-            case SCReachabilityWWANStatus5G:
-                return @"5";//@"5G";
+            case SCWWANType5G:
+                type = @"5";
                 break;
+                
             default:
-                return @"0";//@"WWAM";
                 break;
         }
         
-    }else{
-        return @"0";
     }
+    
+    return type;
+
 }
 
 @end

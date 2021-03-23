@@ -7,6 +7,7 @@
 //
 
 #import "SCCartViewModel.h"
+#import "SCCartStoreCell.h"
 
 NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
 
@@ -27,12 +28,20 @@ NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
         }
         NSArray *businesses = responseObject[B_RESULT][key];
         
-        [self.cartList removeAllObjects];
+        if (!self.cartList) {
+            self.cartList = [NSMutableArray arrayWithCapacity:businesses.count];
+            
+        }else {
+            [self.cartList removeAllObjects];
+        }
+
         for (NSDictionary *dict in businesses) {
             if (!VALID_DICTIONARY(dict)) {
                 continue;
             }
             SCCartModel *model = [SCCartModel yy_modelWithDictionary:dict];
+            //计算高度
+            model.rowHeight = [SCCartStoreCell calculateRowHeight:model];
             [self.cartList addObject:model];
         }
         if (completion) {
@@ -111,14 +120,6 @@ NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
         NSString *url = NSStringFormat(@"http://wap.js.10086.cn/ex/%@mall/pages/order.html?goodsNum=%@&num=%@&objPrice=%@",(IS_RELEASE_ENVIRONMENT ? @"" : @"test/"),goodsNum,num,objPrice);
         return url;
     }
-}
-
-- (NSMutableArray<SCCartModel *> *)cartList
-{
-    if (!_cartList) {
-        _cartList = [NSMutableArray array];
-    }
-    return _cartList;
 }
 
 @end

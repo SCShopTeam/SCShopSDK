@@ -1,14 +1,14 @@
 //
-//  SCGoodStoreModel.m
+//  SCGoodStoresModel.m
 //  shopping
 //
 //  Created by gejunyu on 2020/8/19.
 //  Copyright © 2020 jsmcc. All rights reserved.
 //
 
-#import "SCGoodStoreModel.h"
+#import "SCGoodStoresModel.h"
 
-@implementation SCGoodStoreModel
+@implementation SCGoodStoresModel
 
 + (NSDictionary<NSString *,id> *)modelContainerPropertyGenericClass
 {

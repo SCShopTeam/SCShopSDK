@@ -49,7 +49,7 @@
 //地市列表
 - (void)requestAreaList:(void (^)(NSString *areaName))areaBlock;
 {
-    __block NSString *defaultName = [SCLocationService sharedInstance].city ?: @"南京";
+    __block NSString *defaultName = [SCLocationService sharedInstance].city;
     
     [SCNetworkManager POST:SC_AREA_LIST_AT parameters:nil success:^(id  _Nullable responseObject) {
         if (![SCNetworkTool checkResult:responseObject key:nil forClass:NSArray.class failure:nil]) {
@@ -459,7 +459,7 @@
 
 - (NSDictionary *)getParams
 {
-    NSString *busiRegCityCode = VALID_STRING(self.busiRegCityCode) ? self.busiRegCityCode : ([SCLocationService sharedInstance].cityCode ?: @"14");
+    NSString *busiRegCityCode = VALID_STRING(self.busiRegCityCode) ? self.busiRegCityCode : ([SCLocationService sharedInstance].cityCode);
     
     NSDictionary *page        = @{@"pageNum": NSStringFormat(@"%li",(self.page > 0 ? self.page : 1)),
                                   @"pageSize": NSStringFormat(@"%i",kCountCurPage)};

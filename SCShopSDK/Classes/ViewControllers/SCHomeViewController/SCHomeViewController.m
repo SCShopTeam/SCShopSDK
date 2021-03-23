@@ -13,8 +13,8 @@
 #import "SCHomeTopCell.h"
 #import "SCHomeBannerCell.h"
 #import "SCHomeGridCell.h"
-#import "SCHomeRecommendStoreCell.h"
-#import "SCHomeGoodStoreCell.h"
+#import "SCHomeStoreCell.h"
+#import "SCHomeGoodStoresCell.h"
 #import "SCHomeAdCell.h"
 #import "SCHomeTagCell.h"
 #import "SCShoppingManager.h"
@@ -29,8 +29,8 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     SCHomeRowTop,         //顶部标签
     SCHomeRowBanner,      //轮播
     SCHomeRowGrid,        //宫格
-    SCHomeRowRecommend,   //推荐门店
-    SCHomeRowGood,        //发现好店
+    SCHomeRowStore,       //推荐门店
+    SCHomeRowGoodStores,  //发现好店
     SCHomeRowAd,          //广告
     SCHomeRowTags,        //分类标签
     SCHomeRowItems        //商品
@@ -41,8 +41,8 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 //部分楼层高度
 #define kNavBarH     (SCREEN_FIX(48) + STATUS_BAR_HEIGHT)
 #define kGridH       (self.viewModel.gridList ? kHomeGridRowH : 0)
-#define kRecommendH  [SCHomeRecommendStoreCell getRowHeight]
-#define kGoodH       [SCHomeGoodStoreCell getRowHeight:self.viewModel.goodStoreList.count]
+#define kStoreH      0
+#define kGoodH       [SCHomeGoodStoresCell getRowHeight:self.viewModel.goodStoreList.count]
 
 
 @interface SCHomeViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -96,7 +96,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     [super viewWillAppear:animated];
     //每次进入页面判断用户是否变化，比如登录，或者退出登录，发生变化需要刷新当前页数据
     if (self.viewModel.userHasChanged) {
-        [self refreshCurrentPage];
+        [self requestData];
     }
 }
 
@@ -104,25 +104,23 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 #pragma mark -request
 - (void)requestData
 {
-    //刷新
-    [self refreshCurrentPage];
+    //请求触点   只请求一次
+    if (!self.viewModel.gridList) [self requestTouchData];
     
-    //下面数据只打开时请求一次
-    //请求触点
-    [self requestTouchData];
-    
-    //请求分类
-    [self requestCategoryData];
-}
-
-- (void)refreshCurrentPage  //刷新当前页数据
-{
     //推荐门店
     [self requestRecommendStoreData];
+    
     //发现好店
     [self requestGoodStoreData];
-    //商品
-    [_itemsView refresh];
+    
+    //分类只请求一次  后面再调用只刷新商品列表
+    if (!self.viewModel.categoryList) {
+        [self requestCategoryData]; //请求分类
+        
+    }else {
+        [_itemsView refresh]; //刷新商品
+    }
+
 }
 
 - (void)requestTouchData
@@ -139,9 +137,9 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 
 - (void)requestRecommendStoreData
 {
-    [self.viewModel requestRecommendStoreData:^(NSString * _Nullable errorMsg) {
-       
-    }];
+//    [self.viewModel requestRecommendStoreData:^(NSString * _Nullable errorMsg) {
+//        [self.tableView reloadData];
+//    }];
 }
 
 - (void)requestGoodStoreData
@@ -166,7 +164,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 #pragma mark -UITableViewDelegate, UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    self.maxOffsetY = kHomeTopRowH + kHomeBannerRowH + kGridH + kRecommendH + kGoodH + kHomeAdRowH;
+    self.maxOffsetY = kHomeTopRowH + kHomeBannerRowH + kGridH + kStoreH + kGoodH + kHomeAdRowH;
     
     return kRowNum;
 }
@@ -216,10 +214,10 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     }else if (row == SCHomeRowGrid) { //grid
         return kGridH;
         
-    }else if (row == SCHomeRowRecommend) { //recommend
-        return kRecommendH;
+    }else if (row == SCHomeRowStore) { //recommend
+        return kStoreH;
         
-    }else if (row == SCHomeRowGood) { //goodshop
+    }else if (row == SCHomeRowGoodStores) { //goodshop
         return kGoodH;
         
     }else if (row == SCHomeRowAd) { //ad
@@ -308,30 +306,30 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         return gridCell;
     }
     
-    if (row == SCHomeRowRecommend) {
-        SCHomeRecommendStoreCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeRecommendStoreCell.class) forIndexPath:indexPath];
-        [cell setData]; //假数据
+    if (row == SCHomeRowStore) {
+        SCHomeStoreCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeStoreCell.class) forIndexPath:indexPath];
+        cell.model = self.viewModel.storeModel;
         
         @weakify(self)
-        cell.serviceBlock = ^{
+        cell.serviceBlock = ^(NSString * _Nonnull url) {
             @strongify(self)
-            [self pushToNewPage:@"" title:@""];
+            [self pushToNewPage:url title:@"客服"];
         };
         
-        cell.telBlock = ^{
-            [SCUtilities call:@""];
+        cell.phoneBlock = ^(NSString * _Nonnull phone) {
+            [SCUtilities call:phone];
         };
         
-        cell.enterStoreBlock = ^{
+        cell.enterStoreBlock = ^(SCHomeStoreModel * _Nonnull model) {
           @strongify(self)
-            [self pushToNewPage:@"" title:@""];
+            [self pushToNewPage:model.storeLink title:@""];
         };
         
         return cell;
     }
     
-    if (row == SCHomeRowGood) {
-        SCHomeGoodStoreCell *goodCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeGoodStoreCell.class) forIndexPath:indexPath];
+    if (row == SCHomeRowGoodStores) {
+        SCHomeGoodStoresCell *goodCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeGoodStoresCell.class) forIndexPath:indexPath];
         
         goodCell.goodStoreList = self.viewModel.goodStoreList;
         @weakify(self)
@@ -553,8 +551,8 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         [_tableView registerClass:SCHomeTopCell.class            forCellReuseIdentifier:NSStringFromClass(SCHomeTopCell.class)];
         [_tableView registerClass:SCHomeBannerCell.class         forCellReuseIdentifier:NSStringFromClass(SCHomeBannerCell.class)];
         [_tableView registerClass:SCHomeGridCell.class           forCellReuseIdentifier:NSStringFromClass(SCHomeGridCell.class)];
-        [_tableView registerClass:SCHomeRecommendStoreCell.class forCellReuseIdentifier:NSStringFromClass(SCHomeRecommendStoreCell.class)];
-        [_tableView registerClass:SCHomeGoodStoreCell.class      forCellReuseIdentifier:NSStringFromClass(SCHomeGoodStoreCell.class)];
+        [_tableView registerClass:SCHomeStoreCell.class forCellReuseIdentifier:NSStringFromClass(SCHomeStoreCell.class)];
+        [_tableView registerClass:SCHomeGoodStoresCell.class      forCellReuseIdentifier:NSStringFromClass(SCHomeGoodStoresCell.class)];
         [_tableView registerClass:SCHomeAdCell.class             forCellReuseIdentifier:NSStringFromClass(SCHomeAdCell.class)];
         [_tableView registerClass:SCHomeTagCell.class            forCellReuseIdentifier:NSStringFromClass(SCHomeTagCell.class)];
         [_tableView registerClass:UITableViewCell.class          forCellReuseIdentifier:NSStringFromClass(UITableViewCell.class)];
@@ -590,15 +588,14 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         @weakify(self)
         _moreView.selectBlock = ^(SCShopMoreType type) {
           @strongify(self)
-            if (type > 1) { //刷新
-                [self refreshCurrentPage];
-                
-            }else { //消息，意见
+            if (type == SCShopMoreTypeMessage || type == SCShopMoreTypeSuggest) { //消息，建议
                 SCShoppingManager *manager = [SCShoppingManager sharedInstance];
                 if ([manager.delegate respondsToSelector:@selector(scMoreSelect:nav:)]) {
                     [manager.delegate scMoreSelect:type nav:self.navigationController];
                 }
                 
+            }else {  //刷新
+                [self requestData];
             }
             
         };

@@ -8,6 +8,7 @@
 
 #import "SCWSHeaderButton.h"
 #import "SCWitStoreGoodModel.h"
+#import "SCHomeStoreModel.h"
 
 @interface SCWSHeaderButton ()
 @property (nonatomic, strong) UIImageView *icon;
@@ -21,18 +22,18 @@
 
 @implementation SCWSHeaderButton
 
-- (void)setModel:(SCWitStoreGoodModel *)model
+- (void)setWitGoodModel:(SCWitStoreGoodModel *)witGoodModel
 {
-    _model = model;
+    _witGoodModel = witGoodModel;
 
     //图片
-    [self.icon sd_setImageWithURL:[NSURL URLWithString:model.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER];
+    [self.icon sd_setImageWithURL:[NSURL URLWithString:witGoodModel.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER];
     
     //标题
-    self.titleLabel.text = model.goodsName;
+    self.titleLabel.text = witGoodModel.goodsName;
     
     //价格
-    CGFloat price = model.wholesalePrice/1000*1.f;
+    CGFloat price = witGoodModel.wholesalePrice/1000*1.f;
     self.priceLabel.text = [SCUtilities removeFloatSuffix:price];
     [self.priceLabel sizeToFit];
     
@@ -48,19 +49,22 @@
     self.yuanLabel.bottom = self.priceLabel.bottom;
 }
 
-- (void)getData
+- (void)setHomeGoodsModel:(SCHomeGoodsModel *)homeGoodsModel
 {
+    _homeGoodsModel = homeGoodsModel;
+    
     //图片
-    self.icon.image = IMG_PLACE_HOLDER;
+    [self.icon sd_setImageWithURL:[NSURL URLWithString:homeGoodsModel.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER];
     
     //标题
-    self.titleLabel.text = @"小米手机";
+    self.titleLabel.text = homeGoodsModel.goodsName;
     
     //划线价
-    self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:2009 font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
+    CGFloat oldPrice = homeGoodsModel.guidePrice/1000*1.f;
+    self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:oldPrice font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
     
     //价格
-    CGFloat price = 1799000/1000*1.f;
+    CGFloat price = homeGoodsModel.activityPrice/1000*1.f;
     self.priceLabel.text = [SCUtilities removeFloatSuffix:price];
     [self.priceLabel sizeToFit];
     

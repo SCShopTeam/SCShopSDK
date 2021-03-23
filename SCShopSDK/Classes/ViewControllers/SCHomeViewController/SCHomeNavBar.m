@@ -30,14 +30,11 @@
 - (void)prepareUI
 {
     self.backgroundColor = HEX_RGB(@"#F2270C");
-    
-    SCLocationService *ls = [SCLocationService new];
-    [ls startLocation:^(NSString * _Nullable longitude, NSString * _Nullable latitude) {
-        if (VALID_STRING(ls.city)) {
-            [self.locationIcon setTitle:ls.city forState:UIControlStateNormal];
-        }
+
+    [[SCLocationService sharedInstance] startLocation:^(SCLocationService * _Nonnull ls) {
+        [self.locationIcon setTitle:ls.city forState:UIControlStateNormal];
     }];
-    
+
     [self moreButton];
 }
 

@@ -476,7 +476,7 @@
         
         temp[userInfo.phoneNumber] = cacheDatas;
         
-        [SCCacheManager cacheObject:temp forKey:cacheKey];
+        [SCCacheManager cacheObject:temp forKey:cacheKey withTimeoutInterval:60*60];//缓存保留1小时
         
         if (successBlock) {
             successBlock(commodityList, originDatas);

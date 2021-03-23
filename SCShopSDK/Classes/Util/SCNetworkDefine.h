@@ -9,6 +9,7 @@
 #ifndef SCNetworkDefine_h
 #define SCNetworkDefine_h
 
+#pragma mark -host
 //是否是正式环境
 #define IS_RELEASE_ENVIRONMENT   YES
 //host
@@ -19,7 +20,7 @@
 #define A_MEMBER_HOST (IS_RELEASE_ENVIRONMENT ? @"https://wx.apollojs.cn/membersrv/api/othersystem/terminal/v1.0" : @"https://cnr.asiainfo.com/membersrv/api/othersystem/terminal/v1.0")
 
 
-
+#pragma mark -参数
 //b2c接口 参数
 #define B_SUCCESS_CODE      @"0"
 #define B_CODE              @"resCode"
@@ -46,7 +47,7 @@
 #define A_RESULT            @"result"
 
 
-
+#pragma mark -跳转地址
 //优惠券
 #define SC_MYCOUPON_URL  @"https://wap.js.10086.cn/kqzx/resource/wap/html_mycard/my_mall_coupon.html"
 //客服
@@ -60,7 +61,7 @@
 
 //门店订单详情
 //#define SC_APOLLO_ORDER_DETAIL(orderId) [NSString stringWithFormat:@"https://cnr.asiainfo.com/cnr-web/orderDetail?orderId=%@&terminal=1",orderId] //废弃
-/*-----------------------------请求地址都写在下方----------------------------*/
+#pragma mark -----------------------------请求地址都写在下方----------------------------
 //登录
 #define SC_LOGIN   NSStringFormat(@"%@/user/user/login",BASE_HOST)
 //购物车列表
@@ -79,8 +80,12 @@
 #define SC_FAVORITE_DELETE          NSStringFormat(@"%@/user/favorite/delete",BASE_HOST)
 //推荐店铺 (现发现好店)
 #define SC_SHOP_RECOMMEND           NSStringFormat(@"%@/user/shop/recommend",BASE_HOST)
-//推荐门店 (新) http://ip/mallb2c/api/v1/ apollo/queryStoreFloor
-#define SC_STORE_FLOOR             NSStringFormat(@"%@/user/apollo/queryStoreFloor",BASE_HOST)
+//推荐门店 (新) http://ip/mallb2c/api/v1/ apollo/queryStoreFloor    NSStringFormat(@"%@/user/apollo/queryFloorGoods",BASE_HOST)
+#define SC_STORE_FLOOR              @"https://cnr.asiainfo.com/membersrv/innerapi/terminal/v1.0/queryStoreFloor"
+//门店商品      http://ip/mallb2c/api/v1/ apollo/queryFloorGoods   NSStringFormat(@"%@/user/apollo/queryStoreFloor",BASE_HOST)
+#define SC_FLOOR_GOODS              @"https://cnr.asiainfo.com/activitysrv/innerapi/terminal/v1.0/queryFloorGoods"
+//门店客服      http://ip/mallb2c/api/v1/ apollo/customerService   NSStringFormat(@"%@/user/apollo/customerService",BASE_HOST)
+#define SC_CUSTOMER_SERVICE         @"https://cnr.asiainfo.com/membersrv/innerapi/terminal/v1.0/customerService"
 
 //地址列表EDIT
 #define SC_ADDRESS_LIST NSStringFormat(@"%@/user/address/list",BASE_HOST)

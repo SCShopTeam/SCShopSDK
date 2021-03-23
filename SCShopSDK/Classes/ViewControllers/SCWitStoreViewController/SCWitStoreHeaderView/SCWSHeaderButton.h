@@ -8,14 +8,15 @@
 
 #import <UIKit/UIKit.h>
 @class SCWitStoreGoodModel;
+@class SCHomeGoodsModel;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCWSHeaderButton : UIControl
 
-@property (nonatomic, strong) SCWitStoreGoodModel *model;
+@property (nonatomic, strong) SCWitStoreGoodModel *witGoodModel;
 
-- (void)getData; //假数据
+@property (nonatomic, strong) SCHomeGoodsModel *homeGoodsModel;
 
 @end
 

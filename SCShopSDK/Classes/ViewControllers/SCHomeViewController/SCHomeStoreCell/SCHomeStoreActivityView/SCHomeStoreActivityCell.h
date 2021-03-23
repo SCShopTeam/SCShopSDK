@@ -1,5 +1,5 @@
 //
-//  SCRecommendActivityCell.h
+//  SCHomeStoreActivityCell.h
 //  shopping
 //
 //  Created by gejunyu on 2021/3/4.
@@ -10,9 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SCRecommendActivityCell : UICollectionViewCell
+@interface SCHomeStoreActivityCell : UICollectionViewCell
 
-- (void)getData;//假数据
+@property (nonatomic, strong) NSArray *models;
 
 @end
 
