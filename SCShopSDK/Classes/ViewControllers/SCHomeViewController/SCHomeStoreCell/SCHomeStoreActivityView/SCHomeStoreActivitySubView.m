@@ -13,15 +13,22 @@
 @property (nonatomic, strong) UIImageView *icon;
 @property (nonatomic, strong) UILabel *oldPriceLabel;
 @property (nonatomic, strong) UILabel *priceLabel;
+@property (nonatomic, strong) UIButton *preferentialFeeButton;  //膨胀折扣
+@property (nonatomic, strong) UIButton *groupPersonCountButton; //成团人数
+@property (nonatomic, strong) SCHomeGoodsModel *model;
 
 @end
 
 @interface SCActivityCountdownView : UIView //倒计时
-@property (nonatomic, copy) NSString *startTime;
+@property (nonatomic, assign) NSInteger countdownSeconds;
+@property (nonatomic, strong) UILabel *hourLabel;
+@property (nonatomic, strong) UILabel *minuteLabel;
+@property (nonatomic, strong) UILabel *secondLabel;
+@property (nonatomic, weak) NSTimer *timer;
+- (void)startCountdown:(NSString *)endTime;
 @end
 
-
-//临时用    
+ 
 @interface SCHomeStoreActivitySubView ()
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *sellPointLabel;
@@ -29,8 +36,8 @@
 @property (nonatomic, strong) SCActivityCountdownView *countdownView;
 @property (nonatomic, strong) NSArray <SCActivityItemView *> *itemViewList; //商品
 
-@property (nonatomic, strong) UIButton *pushButton;
-@property (nonatomic, strong) UIButton *pushIcon;
+@property (nonatomic, strong) UIButton *activityButton;
+@property (nonatomic, strong) UIImageView *activityIcon;
 
 @end
 
@@ -44,76 +51,34 @@
     return self;
 }
 
-- (void)setModel:(id)model
+- (void)setModel:(SCHomeActivityModel *)model
 {
     _model = model;
     
-    NSString *title     = @"";   //标题
-    NSString *sellPoint = @"";   //卖点
-    NSString *startTime = @"";   //直播开始时间
-    UIColor *textColor  = HEX_RGB(@"#007FFF"); //主题，卖点文字颜色
-    NSString *topic     = @"";   //主题
-    NSArray <SCHomeGoodsModel *> *goodsList = @[];
-    
-    if ([model isKindOfClass:SCHomeLiveModel.class]) {
-        SCHomeLiveModel *liveModel = (SCHomeLiveModel *)model;
-        title     = liveModel.livePlayerName;
-        sellPoint = liveModel.livePlayerSellPoint;
-        startTime = liveModel.startTime;
-        textColor = HEX_RGB(@"#FF1448");
-        topic     = liveModel.livePlayerTopic;
-        goodsList = liveModel.liveGoodsList;
-        
-    }else if ([model isKindOfClass:SCHomeLimitedModel.class]) {
-        SCHomeLimitedModel *limitedModel = (SCHomeLimitedModel *)model;
-        title     = limitedModel.limitedName;
-        sellPoint = limitedModel.limitedSellPoint;
-        topic     = limitedModel.limitedTopic;
-        goodsList = limitedModel.limitedGoodsList;
-        
-    }else if ([model isKindOfClass:SCHomePresaleModel.class]) {
-        SCHomePresaleModel *presaleModel = (SCHomePresaleModel *)model;
-        title     = presaleModel.presaleName;
-        sellPoint = presaleModel.presalePoint;
-        topic     = presaleModel.presaleTopic;
-        goodsList = presaleModel.presaleGoodsList;
-        
-    }else if ([model isKindOfClass:SCHomeGroupModel.class]) {
-        SCHomeGroupModel *groupModel = (SCHomeGroupModel *)model;
-        title     = groupModel.groupName;
-        sellPoint = groupModel.groupSellPoint;
-        topic     = groupModel.groupTopic;
-        goodsList = groupModel.groupGoodsList;
-        
-    }else if ([model isKindOfClass:SCHomeActivityModel.class]) {
-        SCHomeActivityModel *activityModel = (SCHomeActivityModel *)model;
-        title     = activityModel.activityName;
-        sellPoint = activityModel.activityPoints;
-        textColor = HEX_RGB(@"#FF1448");
-        topic     = activityModel.topic;
-        
-    }
-    
     //标题
-    self.titleLabel.text = title;
+    self.titleLabel.text = model.name;
     [self.titleLabel sizeToFit];
     
+    
+    UIColor *textColor = (model.type == SCHomeActivityTypeLimited || model.type == SCHomeActivityTypeActivity) ? HEX_RGB(@"#FF1448") : HEX_RGB(@"#007FFF");
+    
     // 卖点 /倒计时
-    if (startTime.length > 0) { //倒计时
+    if (model.type == SCHomeActivityTypeLimited) { //倒计时
         self.sellPointLabel.hidden = YES;
         self.countdownView.hidden = NO;
         
-        self.countdownView.startTime = startTime;
+        [self.countdownView startCountdown:model.endTime];
         self.countdownView.left = self.titleLabel.right + SCREEN_FIX(5);
         
     }else {  //卖点
         self.sellPointLabel.hidden = NO;
         self.countdownView.hidden = YES;
+        [self.countdownView startCountdown:@""];
         
-        NSString *sp = sellPoint;
-        self.sellPointLabel.text = sp;
+//        NSString *sp = model.sellPoint.length > 5 ? [model.sellPoint substringToIndex:5] : model.sellPoint; //最多5个字
         self.sellPointLabel.left = self.titleLabel.right + SCREEN_FIX(3.5);
-        self.sellPointLabel.width = [sp calculateWidthWithFont:self.sellPointLabel.font height: self.sellPointLabel.height] + SCREEN_FIX(12);
+        self.sellPointLabel.text = model.sellPoint;
+        self.sellPointLabel.width = [model.sellPoint calculateWidthWithFont:self.sellPointLabel.font height:self.sellPointLabel.height] + SCREEN_FIX(12);
         
         self.sellPointLabel.textColor = textColor;
         self.sellPointLabel.layer.borderColor = textColor.CGColor;
@@ -122,58 +87,53 @@
     
     
     //主题
-    self.topicLabel.text = topic;
+    self.topicLabel.text = model.topic;
     self.topicLabel.textColor = textColor;
     [self.topicLabel sizeToFit];
     
     
-    //是否是优惠券,抽奖
-    BOOL hideItems = [model isKindOfClass:SCHomeActivityModel.class];
-    
-    if (hideItems) {
+    //活动
+    if (model.type == SCHomeActivityTypeActivity) {
         for (SCActivityItemView *itemView in self.itemViewList) {
             itemView.hidden = YES;
         }
-        self.pushIcon.hidden = NO;
-        self.pushButton.hidden = NO;
+        self.activityIcon.hidden = NO;
+        self.activityButton.hidden = NO;
 
-        [self.pushIcon sd_setImageWithURL:[NSURL URLWithString:((SCHomeActivityModel *) model).imageUrl] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
-        
+        [self.activityIcon sd_setImageWithURL:[NSURL URLWithString:model.imageUrl] placeholderImage:IMG_PLACE_HOLDER];
         
     }else {
-        self.pushIcon.hidden = YES;
-        self.pushButton.hidden = YES;
-        
+        self.activityIcon.hidden = YES;
+        self.activityButton.hidden = YES;
         
         //商品
         [self.itemViewList enumerateObjectsUsingBlock:^(SCActivityItemView * _Nonnull itemView, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (goodsList.count == 0) {
+            if (model.goodsList.count == 0) {
                 itemView.hidden = YES;
                 
             }else {
                 itemView.hidden = NO;
                 
                 //固定显示两个商品，如果不足两个，重复显示第一个
-                NSInteger index = (idx >= goodsList.count ? 0 : idx);
+                NSInteger index = (idx >= model.goodsList.count ? 0 : idx);
+                SCHomeGoodsModel *goodsModel = model.goodsList[index];
                 
-                SCHomeGoodsModel *goodsModel = goodsList[index];
+                itemView.model = goodsModel;
                 
-                [itemView.icon sd_setImageWithURL:[NSURL URLWithString:goodsModel.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER];
-                itemView.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:(goodsModel.guidePrice/1000*1.f) font:itemView.oldPriceLabel.font color:itemView.oldPriceLabel.textColor];
-                itemView.priceLabel.text = [NSString stringWithFormat:@"¥%@", [SCUtilities removeFloatSuffix:goodsModel.activityPrice/1000*1.f]];
+                @weakify(self)
+                [itemView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+                   @strongify(self)
+                    if ([self.delegate respondsToSelector:@selector(pushToGoodsList:)]) {
+                        [self.delegate pushToGoodsList:model];
+                    }
+                }];
+                
             }
 
-            
-
-            
-            
         }];
     }
-    
 
-    
 }
-
 
 
 
@@ -244,31 +204,38 @@
     return _itemViewList;
 }
 
-- (UIButton *)pushButton
+- (UIButton *)activityButton
 {
-    if (!_pushButton) {
-        _pushButton = [[UIButton alloc] initWithFrame:CGRectMake(SCREEN_FIX(12), SCREEN_FIX(87), SCREEN_FIX(79.5), SCREEN_FIX(21))];
-        [_pushButton setBackgroundImage:SCIMAGE(@"home_orange") forState:UIControlStateNormal];
-        _pushButton.titleLabel.font = SCFONT_SIZED_FIX(12);
-        [_pushButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [_pushButton setTitle:@"立即领券 >" forState:UIControlStateNormal];
-        _pushButton.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 1, 0);
-        [self addSubview:_pushButton];
+    if (!_activityButton) {
+        _activityButton = [[UIButton alloc] initWithFrame:CGRectMake(SCREEN_FIX(12), SCREEN_FIX(87), SCREEN_FIX(79.5), SCREEN_FIX(21))];
+        [_activityButton setBackgroundImage:SCIMAGE(@"home_orange") forState:UIControlStateNormal];
+        _activityButton.titleLabel.font = SCFONT_SIZED_FIX(12);
+        [_activityButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_activityButton setTitle:@"立即领券 >" forState:UIControlStateNormal];
+        _activityButton.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 1, 0);
+        [self addSubview:_activityButton];
+        
+        @weakify(self)
+        [_activityButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+           @strongify(self)
+            if (self.model && [self.delegate respondsToSelector:@selector(pushToActivityPage:)]) {
+                [self.delegate pushToActivityPage:self.model];
+            }
+        }];
         
     }
-    return _pushButton;
+    return _activityButton;
 }
 
-- (UIButton *)pushIcon
+- (UIImageView *)activityIcon
 {
-    if (!_pushIcon) {
+    if (!_activityIcon) {
         CGFloat wh = SCREEN_FIX(110);
-        _pushIcon = [[UIButton alloc] initWithFrame:CGRectMake(SCREEN_FIX(67), SCREEN_FIX(30), wh, wh)];
-        _pushIcon.adjustsImageWhenHighlighted = NO;
-        [self addSubview:_pushIcon];
-        [self insertSubview:_pushIcon belowSubview:self.pushButton];
+        _activityIcon = [[UIImageView alloc] initWithFrame:CGRectMake(SCREEN_FIX(67), SCREEN_FIX(30), wh, wh)];
+        [self addSubview:_activityIcon];
+        [self insertSubview:_activityIcon belowSubview:self.activityButton];
     }
-    return _pushIcon;
+    return _activityIcon;
 }
 
 @end
@@ -277,6 +244,27 @@
 
 
 @implementation SCActivityItemView
+- (void)setModel:(SCHomeGoodsModel *)model
+{
+    _model = model;
+    
+    [self.icon sd_setImageWithURL:[NSURL URLWithString:model.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER];
+    self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:(model.guidePrice/1000*1.f) font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
+    self.priceLabel.text = [NSString stringWithFormat:@"¥%@", [SCUtilities removeFloatSuffix:model.activityPrice/1000*1.f]];
+    
+    self.preferentialFeeButton.hidden  = YES;
+    self.groupPersonCountButton.hidden = YES;
+    
+    if (model.parentType == SCHomeActivityTypePresale) {
+        self.preferentialFeeButton.hidden = NO;
+        [self.preferentialFeeButton setTitle:[NSString stringWithFormat:@"%@%li",model.offerType,model.preferentialFee] forState:UIControlStateNormal];
+        
+    }else if (model.parentType == SCHomeActivityTypeGroup) {
+        self.groupPersonCountButton.hidden = NO;
+        [self.groupPersonCountButton setTitle:[NSString stringWithFormat:@"%li人团",model.groupPersonCount] forState:UIControlStateNormal];
+    }
+
+}
 
 - (UIImageView *)icon
 {
@@ -316,15 +304,41 @@
     return _oldPriceLabel;
 }
 
+- (UIButton *)preferentialFeeButton
+{
+    if (!_preferentialFeeButton) {
+        _preferentialFeeButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(54), SCREEN_FIX(14))];
+        _preferentialFeeButton.centerX = self.icon.centerX;
+        _preferentialFeeButton.bottom  = self.icon.bottom;
+        [_preferentialFeeButton setBackgroundImage:SCIMAGE(@"home_fee") forState:UIControlStateNormal];
+        _preferentialFeeButton.titleLabel.font = SCFONT_SIZED_FIX(8);
+        [_preferentialFeeButton setTitleColor:HEX_RGB(@"#FF1448") forState:UIControlStateNormal];
+        _preferentialFeeButton.userInteractionEnabled = NO;
+        [self addSubview:_preferentialFeeButton];
+        
+    }
+    return _preferentialFeeButton;
+}
+
+- (UIButton *)groupPersonCountButton
+{
+    if (!_groupPersonCountButton) { //home_group_num 32 17
+        _groupPersonCountButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(32), SCREEN_FIX(17))];
+        _groupPersonCountButton.centerX = self.icon.centerX;
+        _groupPersonCountButton.bottom  = self.icon .bottom - SCREEN_FIX(3.5);
+        _groupPersonCountButton.titleLabel.font = SCFONT_SIZED_FIX(9);
+        [_groupPersonCountButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        _groupPersonCountButton.userInteractionEnabled = NO;
+        [self addSubview:_groupPersonCountButton];
+        
+    }
+    return _groupPersonCountButton;
+}
 
 @end
 
 
 @implementation SCActivityCountdownView
-{
-    NSMutableArray *_labelList;
-}
-
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -338,7 +352,7 @@
 
 - (void)prepareUI
 {
-    _labelList = [NSMutableArray arrayWithCapacity:3];
+    NSMutableArray *temp = [NSMutableArray arrayWithCapacity:3];
     
     CGFloat wh = self.height;
     CGFloat m = (self.width - wh*3)/2;
@@ -351,7 +365,7 @@
             label.centerY = self.height/2 - 1;
             label.textAlignment = NSTextAlignmentCenter;
             label.textColor = HEX_RGB(@"#FF1448");
-            label.font = SCFONT_SIZED_FIX(11);
+            label.font = SCFONT_SIZED_FIX(10);
             label.text = @":";
             [self addSubview:label];
             x = label.right;
@@ -361,30 +375,95 @@
             label.textAlignment = NSTextAlignmentCenter;
             label.backgroundColor = HEX_RGB(@"#FF1448");
             label.textColor = [UIColor whiteColor];
-            label.font = SCFONT_SIZED_FIX(11);
+            label.font = SCFONT_SIZED_FIX(10);
             label.layer.cornerRadius = SCREEN_FIX(3);
             label.layer.masksToBounds = YES;
             [self addSubview:label];
             x = label.right;
-            [_labelList addObject:label];
+            [temp addObject:label];
         }
     }
+    
+    _hourLabel   = temp[0];
+    _minuteLabel = temp[1];
+    _secondLabel = temp[2];
 }
 
-- (void)setStartTime:(NSString *)startTime
+- (void)startCountdown:(NSString *)endTime
 {
-    if (_labelList.count < 3) {
+    [self invalidateTimer];
+    
+    if (!VALID_STRING(endTime)) {
+        self.countdownSeconds = 0;
         return;
     }
     
-    UILabel *hourLabel = _labelList[0];
-    hourLabel.text = @"12";
+    NSDate *endDate = [[NSDate alloc] initWithTimeIntervalSince1970:(endTime.integerValue/1000)];
     
-    UILabel *minuteLabel = _labelList[1];
-    minuteLabel.text = @"48";
+    NSDate *today = [NSDate date];
+
+    NSTimeInterval time = [endDate timeIntervalSinceDate:today];
     
-    UILabel *secondLabel = _labelList[2];
-    secondLabel.text = @"59";
+    if (time < 0) {
+        self.countdownSeconds = 0;
+        
+    }else {
+        self.countdownSeconds = time;
+        [self setupTimer];
+    }
+}
+
+#pragma mark -timer
+- (void)invalidateTimer
+{
+    [_timer invalidate];
+    _timer = nil;
+}
+
+- (void)setupTimer
+{
+    [self invalidateTimer];
+    
+    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(countDown) userInfo:nil repeats:YES];
+    
+    _timer = timer;
+    
+    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+}
+
+- (void)countDown
+{
+    if (self.countdownSeconds*1.f <= 0.9999) {
+        [self invalidateTimer];
+    }
+    
+    self.countdownSeconds--;
+
+
+
+}
+
+- (void)setCountdownSeconds:(NSInteger)countdownSeconds
+{
+    _countdownSeconds = countdownSeconds;
+
+    //format of hour
+    NSString *str_hour = [NSString stringWithFormat:@"%02ld",countdownSeconds/3600];
+    self.hourLabel.text = str_hour;
+    //format of minute
+    NSString *str_minute = [NSString stringWithFormat:@"%02ld",(countdownSeconds%3600)/60];
+    self.minuteLabel.text = str_minute;
+    //format of second
+    NSString *str_second = [NSString stringWithFormat:@"%02ld",countdownSeconds%60];
+    self.secondLabel.text = str_second;
+    
+    
+    
+}
+
+- (void)dealloc
+{
+    [self invalidateTimer];
 }
 
 @end

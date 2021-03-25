@@ -10,13 +10,14 @@
 #import "SCHomeStoreTopView.h"
 #import "SCHomeStoreActivityView.h"
 #import "SCHomeStoreCouponView.h"
+#import "SCHomeStoreProtocol.h"
 
 #define kTopH      SCREEN_FIX(64.5)
 #define kMargin    SCREEN_FIX(1)
 #define kActivityH SCREEN_FIX(159.5)
 #define kCouponH   SCREEN_FIX(165.5)
 
-@interface SCHomeStoreCell ()
+@interface SCHomeStoreCell () <SCHomeStoreProtocol>
 @property (nonatomic, strong) SCHomeStoreTopView *topView;
 @property (nonatomic, strong) SCHomeStoreActivityView *activityView;
 @property (nonatomic, strong) SCHomeStoreCouponView *couponView;
@@ -68,34 +69,70 @@
     self.couponView.model = model;
 }
 
+#pragma mark -SCHomeStoreProtocol
+//电话
+- (void)call
+{
+    if (_callBlock) {
+        _callBlock(self.model.contactPhone);
+    }
+}
+
+//客服
+- (void)pushToService
+{
+    if (_pushBlock) {
+        _pushBlock(self.model.serviceUrl);
+    }
+}
+
+//店铺主页
+- (void)pushToStorePage
+{
+    if (_pushBlock) {
+        _pushBlock(self.model.storeLink);
+    }
+}
+
+//跳转本店优惠商品详情
+- (void)pushToGoodDetail:(SCHomeGoodsModel *)model
+{
+    if (_pushBlock) {
+        _pushBlock(model.goodsDetailUrl);
+    }
+}
+
+//跳转商品页
+- (void)pushToGoodsList:(SCHomeActivityModel *)model
+{
+    if (_pushBlock) {
+        _pushBlock(model.link);
+    }
+}
+
+//跳转活动链接
+- (void)pushToActivityPage:(SCHomeActivityModel *)model
+{
+    if (_pushBlock) {
+        _pushBlock(model.link);
+    }
+}
+
+//跳转直播
+- (void)pushToLivePage:(SCHomeActivityModel *)model
+{
+    if (_pushBlock) {
+        _pushBlock(model.link);
+    }
+}
+
 #pragma mark -ui
 - (SCHomeStoreTopView *)topView
 {
     if (!_topView) {
         _topView = [[SCHomeStoreTopView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, kTopH)];
+        _topView.delegate = self;
         [self.contentView addSubview:_topView];
-        
-        @weakify(self)
-        _topView.enterStoreBlock = ^{
-            @strongify(self)
-            if (self.enterStoreBlock) {
-                self.enterStoreBlock(self.model);
-            }
-        };
-        
-        _topView.phoneBlock = ^{
-          @strongify(self)
-            if (self.phoneBlock) {
-                self.phoneBlock(self.model.contactPhone);
-            }
-        };
-        
-        _topView.serviceBlock = ^{
-          @strongify(self)
-            if (self.serviceBlock) {
-                self.serviceBlock(self.model.serviceUrl);
-            }
-        };
         
     }
     return _topView;
@@ -105,6 +142,7 @@
 {
     if (!_activityView) {
         _activityView = [[SCHomeStoreActivityView alloc] initWithFrame:CGRectMake(0, self.topView.bottom + kMargin, SCREEN_WIDTH, kActivityH)];
+        _activityView.delegate = self;
         [self.contentView addSubview:_activityView];
     }
     return _activityView;
@@ -114,15 +152,7 @@
 {
     if (!_couponView) {
         _couponView = [[SCHomeStoreCouponView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, kCouponH)];
-        
-        @weakify(self)
-        _couponView.pushBlock = ^{
-          @strongify(self)
-            if (self.enterStoreBlock) {
-                self.enterStoreBlock(self.model);
-            }
-        };
-        
+        _couponView.delegate = self;
         [self.contentView addSubview:_couponView];
     }
     return _couponView;

@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 //部分楼层高度
 #define kNavBarH     (SCREEN_FIX(48) + STATUS_BAR_HEIGHT)
 #define kGridH       (self.viewModel.gridList ? kHomeGridRowH : 0)
-#define kStoreH      0
+#define kStoreH  [SCHomeStoreCell getRowHeight:self.viewModel.storeModel]
 #define kGoodH       [SCHomeGoodStoresCell getRowHeight:self.viewModel.goodStoreList.count]
 
 
@@ -137,9 +137,9 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 
 - (void)requestRecommendStoreData
 {
-//    [self.viewModel requestRecommendStoreData:^(NSString * _Nullable errorMsg) {
-//        [self.tableView reloadData];
-//    }];
+    [self.viewModel requestRecommendStoreData:^(NSString * _Nullable errorMsg) {
+        [self.tableView reloadData];
+    }];
 }
 
 - (void)requestGoodStoreData
@@ -270,17 +270,16 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         SCHomeBannerCell *bannerCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeBannerCell.class) forIndexPath:indexPath];
         bannerCell.bannerList = self.viewModel.bannerList;
         
-        @weakify(self)
         bannerCell.showblock = ^(NSInteger index, SCHomeTouchModel * _Nonnull model) {
-            @strongify(self)
-            [self.viewModel touchShow:model];
+            [SCUtilities touchShow:model];
         };
         
+        @weakify(self)
         bannerCell.selectBlock = ^(NSInteger index, SCHomeTouchModel * _Nonnull model) {
             @strongify(self)
             [self pushToNewPage:model.linkUrl title:model.contentName];
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_A0%li",index+3) url:model.linkUrl inPage:NSStringFromClass(self.class)];
-            [self.viewModel touchClick:model];
+            [SCUtilities touchClick:model];
         };
         
         return bannerCell;
@@ -292,12 +291,11 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         
         gridCell.gridList = self.viewModel.gridList;
 
-        @weakify(self)
         gridCell.touchShowBlock = ^(SCHomeTouchModel * _Nonnull model) {
-            @strongify(self)
-            [self.viewModel touchShow:model];
+            [SCUtilities touchShow:model];
         };
         
+        @weakify(self)
         gridCell.selectBlock = ^(NSInteger index) {
             @strongify(self)
             [self gridSelect:index];
@@ -311,20 +309,15 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         cell.model = self.viewModel.storeModel;
         
         @weakify(self)
-        cell.serviceBlock = ^(NSString * _Nonnull url) {
+        cell.pushBlock = ^(NSString * _Nonnull url) {
             @strongify(self)
-            [self pushToNewPage:url title:@"客服"];
+            [self pushToNewPage:url title:@""];
         };
         
-        cell.phoneBlock = ^(NSString * _Nonnull phone) {
-            [SCUtilities call:phone];
+        cell.callBlock = ^(NSString * _Nonnull url) {
+            [SCUtilities call:url];
         };
-        
-        cell.enterStoreBlock = ^(SCHomeStoreModel * _Nonnull model) {
-          @strongify(self)
-            [self pushToNewPage:model.storeLink title:@""];
-        };
-        
+
         return cell;
     }
     
@@ -360,17 +353,16 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         
         adCell.adList = self.viewModel.adList;
 
-        @weakify(self)
         adCell.touchShowBlock = ^(SCHomeTouchModel * _Nonnull model) {
-          @strongify(self)
-            [self.viewModel touchShow:model];
+            [SCUtilities touchShow:model];
         };
         
+        @weakify(self)
         adCell.selectBlock = ^(NSInteger index, SCHomeTouchModel * _Nonnull touchModel) {
             @strongify(self)
             [self pushToNewPage:touchModel.linkUrl title:touchModel.contentName];
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_D0%li",index+1) url:touchModel.linkUrl inPage:NSStringFromClass(self.class)];
-            [self.viewModel touchClick:touchModel];
+            [SCUtilities touchClick:touchModel];
         };
         
         return adCell;
@@ -465,7 +457,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     }
     
     //触点回调
-    [self.viewModel touchClick:model];
+    [SCUtilities touchClick:model];
     
 }
 
@@ -481,7 +473,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     //侧边弹窗
     SCHomeTouchModel *sideModel = self.viewModel.popupDict[@(SCPopupTypeSide)];
     if (sideModel) {
-        [self.viewModel touchShow:sideModel];
+        [SCUtilities touchShow:sideModel];
         CGFloat w = SCREEN_FIX(62.5);
         SCHomePopupView *sidePopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(self.view.width-w, 0, w, SCREEN_FIX(78))];
         sidePopupView.centerY = self.tableView.centerY;
@@ -493,14 +485,14 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         sidePopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
             @strongify(self)
             [self pushToNewPage:model.linkUrl title:model.contentName];
-            [self.viewModel touchClick:model];
+            [SCUtilities touchClick:model];
         };
     }
     
     //底部弹窗
     SCHomeTouchModel *bottomModel = self.viewModel.popupDict[@(SCPopupTypeBottom)];
     if (bottomModel) {
-        [self.viewModel touchShow:bottomModel];
+        [SCUtilities touchShow:bottomModel];
         SCHomePopupView *bottomPopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, SCREEN_FIX(200))];
         bottomPopupView.bottom = self.tableView.bottom;
         [self.view addSubview:bottomPopupView];
@@ -510,7 +502,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         bottomPopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
             @strongify(self)
             [self pushToNewPage:model.linkUrl title:model.contentName];
-            [self.viewModel touchClick:model];
+            [SCUtilities touchClick:model];
         };
     }
     
@@ -518,7 +510,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     //中心弹窗
     SCHomeTouchModel *centerModel = self.viewModel.popupDict[@(SCPopupTypeCenter)];
     if (centerModel) {
-        [self.viewModel touchShow:centerModel];
+        [SCUtilities touchShow:centerModel];
         SCHomePopupView *centerPopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(285), SCREEN_FIX(400))];
         centerPopupView.center = self.tableView.center;
         [self.view addSubview:centerPopupView];
@@ -528,7 +520,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         centerPopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
             @strongify(self)
             [self pushToNewPage:model.linkUrl title:model.contentName];
-            [self.viewModel touchClick:model];
+            [SCUtilities touchClick:model];
         };
         
     }
@@ -563,7 +555,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
             _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         } else {
             self.automaticallyAdjustsScrollViewInsets = NO;
-            
+             
         }
     }
     return _tableView;

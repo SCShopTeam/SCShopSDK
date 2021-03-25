@@ -42,12 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 //发现好店
 - (void)requestGoodStoreList:(SCHttpRequestCompletion)completion;
 
-//弹窗
-//触点展示
-- (void)touchShow:(SCHomeTouchModel *)model;
-//触点点击
-- (void)touchClick:(SCHomeTouchModel *)model;
-
 //分类
 - (void)requestCategoryList:(SCHttpRequestCompletion)completion;
 

@@ -11,10 +11,12 @@
 #import "SCShoppingManager.h"
 #import "UIDevice+SCExtension.h"
 #import "SCLocationService.h"
+#import "SCHomeTouchModel.h"
 
 @interface SCUtilities ()
 AS_SINGLETON(SCUtilities)
 @property (nonatomic, weak) UITabBarController *tabBarVc;
+@property (nonatomic, strong) SCUserInfo *lastUser;
 @end
 
 @implementation SCUtilities
@@ -318,134 +320,6 @@ DEF_SINGLETON(SCUtilities)
     }
 }
 
-+ (void)tapticEngineShake
-{
-    if (@available(iOS 10.0, *)) {
-        UIImpactFeedbackGenerator *generator = [[UIImpactFeedbackGenerator alloc] initWithStyle: UIImpactFeedbackStyleMedium];
-        [generator prepare];
-        [generator impactOccurred];
-    }
-}
-
-
-
-+(NSData *)convetToNeed:(NSString *)hexString{
-    int j=0;
-    Byte bytes[8];  ///3ds key的Byte 数组， 128位 22
-    for(int i=0;i<[hexString length];i++)
-    {
-        int int_ch;  /// 两位16进制数转化后的10进制数
-        
-        unichar hex_char1 = [hexString characterAtIndex:i]; ////两位16进制数中的第一位(高位*16)
-        
-        int int_ch1;
-        
-        if(hex_char1 >= '0' && hex_char1 <='9')
-            
-            int_ch1 = (hex_char1-48)*16;   //// 0 的Ascll - 48
-        
-        else if(hex_char1 >= 'A' && hex_char1 <='F')
-            
-            int_ch1 = (hex_char1-55)*16; //// A 的Ascll - 65
-        
-        else
-            
-            int_ch1 = (hex_char1-87)*16; //// a 的Ascll - 97
-        
-        i++;
-        
-        unichar hex_char2 = [hexString characterAtIndex:i]; ///两位16进制数中的第二位(低位)
-        
-        int int_ch2;
-        
-        if(hex_char2 >= '0' && hex_char2 <='9')
-            
-            int_ch2 = (hex_char2-48); //// 0 的Ascll - 48
-        
-        else if(hex_char1 >= 'A' && hex_char1 <='F')
-            
-            int_ch2 = hex_char2-55; //// A 的Ascll - 65
-        
-        else
-            
-            int_ch2 = hex_char2-87; //// a 的Ascll - 97
-        
-        
-        
-        int_ch = int_ch1+int_ch2;
-        
-//        NSLog(@"int_ch=%d",int_ch);
-        
-        bytes[j] = int_ch;  ///将转化后的数放入Byte数组里
-        
-        j++;
-        
-    }
-    
-    NSData *newData = [[NSData alloc] initWithBytes:bytes length:8];//22
-    return newData;
-}
-
-
-+(NSString *) myLuckyKeyString {
-    
-    NSString * first = @"78777465";
-    NSString * second = @"63243335";
-    NSString * total = [NSString stringWithFormat:@"%@%@",first,second];
-    
-    return [[NSString alloc] initWithData:[SCUtilities convetToNeed:total] encoding:NSUTF8StringEncoding];
-    
-}
-
-+ (NSString *)getTimeIntervalSince1970
-{
-    NSTimeInterval nowtime = [[NSDate date] timeIntervalSince1970]*1000;
-    long long theTime = [[NSNumber numberWithDouble:nowtime] longLongValue];
-    NSString *curTime = [NSString stringWithFormat:@"%llu",theTime];
-    return curTime;
-}
-
-
-//得到当前日期
-+ (NSString *)getCurrentDate:(NSDate *)date
-{
-    NSDateFormatter *format = [SCUtilities dateFormatterWithFormatString:@"yyyyMMdd"];
-//    format.dateFormat = @"yyyyMMdd";
-    NSString *strDate = [format stringFromDate:date];
-    return strDate;
-}
-
-//获取时间全格式
-+ (NSString *)getTimeInterValDate:(NSDate *)date
-{
-    NSDateFormatter *formatter = [SCUtilities dateFormatterWithFormatString:@"yyyyMMddHHmmssSSSSSS"];
-//    [formatter setDateFormat:@"yyyyMMddHHmmssSSSSSS"];
-    return [formatter stringFromDate:date];
-}
-
-// 标准时间
-+ (NSString *)getTimeStandardDate:(NSDate *)date
-{
-    NSDateFormatter *formatter = [SCUtilities dateFormatterWithFormatString:@"yyyy-MM-dd HH:mm:ss"];
-//    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    return [formatter stringFromDate:date];
-}
-
-
-//// 获取当前域名对应DNS
-//+ (NSString*)getDomainDNS : (NSString*)strDomain
-//{
-//    if ([[CheckIpv6Manager sharedManager] getCurrentIsIpv6])
-//    {
-//        return @"2409:8020:5c00:400::ffff";
-//    }
-//    else
-//    {
-//        return @"221.178.251.170";
-//    }
-//}
-
-
 #pragma mark 添加的具体参数
 + (NSString *)suffixParameters :(NSString*)requesturl
 {
@@ -539,27 +413,6 @@ DEF_SINGLETON(SCUtilities)
             deviceID = @"";
         }
         return deviceID;
-}
-
-
-+ (NSString *)addParametersToURL:(NSString *)urlStr withCurrentTime:(NSString *)currentTime;
-{
-    urlStr =  [urlStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    /*必传参数
-     *OS
-     *IP
-     *TS
-     *IMEI （OpenUDID）
-     *IDFA
-     */
-    NSString *imei = [self IDFA]; //用户终端的 IMEI，15 位数字 OS=1 时， MAC/MAC1/IDFA /OpenUDID 至少 一项必填
-    NSString *idfa = [self IDFA]; //iOS IDFA 适用于 iOS6 及以上
-    NSString *replacedStr = [urlStr stringByReplacingOccurrencesOfString:@"__IMEI__"withString:imei];
-    replacedStr = [replacedStr stringByReplacingOccurrencesOfString:@"__IDFA__"withString:idfa];
-    replacedStr = [replacedStr stringByReplacingOccurrencesOfString:@"__OS__"withString:@"1"];
-    replacedStr = [replacedStr stringByReplacingOccurrencesOfString:@"__TS__"withString:currentTime];
-    replacedStr = [replacedStr stringByReplacingOccurrencesOfString:@"__UUID__"withString:[NSString stringWithUUID]];
-    return  [replacedStr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 }
 
 //!head头参数认证是否拼接
@@ -698,12 +551,50 @@ DEF_SINGLETON(SCUtilities)
 //    return authToken;
 //}
 
+//插码
 + (void)scXWMobStatMgrStr:(NSString *)coding url:(NSString *)url inPage:(NSString *)className
 {
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     
     if ([manager.delegate respondsToSelector:@selector(scXWMobStatMgrStr:url:inPage:)]) {
         [manager.delegate scXWMobStatMgrStr:coding url:url inPage:className];
+    }
+}
+
+//触点展示
++ (void)touchShow:(id)touch
+{
+    
+    NSDictionary *dict;
+    if ([touch isKindOfClass:SCHomeTouchModel.class]) {
+        dict = [touch getParams];
+        
+    }else if (VALID_DICTIONARY(touch)) {
+        dict = touch;
+    }
+    
+    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
+    
+    if (dict && [manager.delegate respondsToSelector:@selector(scADTouchShow:)]) {
+        [manager.delegate scADTouchShow:dict];
+    }
+}
+
+//触点点击
++ (void)touchClick:(id)touch
+{
+    NSDictionary *dict;
+    if ([touch isKindOfClass:SCHomeTouchModel.class]) {
+        dict = [touch getParams];
+        
+    }else if (VALID_DICTIONARY(touch)) {
+        dict = touch;
+    }
+    
+    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
+    
+    if (dict && [manager.delegate respondsToSelector:@selector(scADTouchClick:)]) {
+        [manager.delegate scADTouchClick:dict];
     }
 }
 
@@ -723,7 +614,6 @@ DEF_SINGLETON(SCUtilities)
     [[UIApplication sharedApplication].keyWindow addSubview:callWebview];
 
 }
-
 
 + (void)postLoginSuccessNotification //登录成功
 {

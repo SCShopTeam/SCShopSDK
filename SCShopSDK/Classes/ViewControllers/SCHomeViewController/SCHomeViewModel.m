@@ -39,8 +39,8 @@
 - (BOOL)userHasChanged
 {
     SCUserInfo *currentUser = [SCUserInfo currentUser];
-
-    BOOL hasChanged =  _lastUserInfo && (currentUser.phoneNumber != _lastUserInfo.phoneNumber || currentUser.isLogin != _lastUserInfo.isLogin);
+    
+    BOOL hasChanged = _lastUserInfo && (![currentUser.phoneNumber isEqualToString:_lastUserInfo.phoneNumber] || currentUser.isLogin != _lastUserInfo.isLogin);
     
     _lastUserInfo = currentUser;
     
@@ -169,6 +169,7 @@
         return;
     }
     
+    //有手机号，有定位才可以请求
     [[SCLocationService sharedInstance] startLocation:^(SCLocationService * _Nonnull ls) {
         [self requestRecommendStoreDataWithLongitude:ls.longitude latitude:ls.latitude userInfo:userInfo completion:completion];
     }];
@@ -184,20 +185,29 @@
     [SCRequestParams shareInstance].requestNum = @"apollo.queryFloorGoods";
     
     [SCNetworkManager POST:SC_STORE_FLOOR parameters:param success:^(id  _Nullable responseObject) {
+        self.storeModel = nil;
+        
         if (![SCNetworkTool checkResult:responseObject key:nil forClass:NSDictionary.class completion:completion]) {
-            self.storeModel = nil;
             return;
         }
         
         NSDictionary *result = responseObject[B_RESULT];
         SCHomeStoreModel *storeModel = [SCHomeStoreModel yy_modelWithDictionary:result];
         
-        if (storeModel.storeId) {
-            [self requestRecommendGoodsData:storeModel userInfo:userInfo completion:completion];
-            [self requestStoreService:storeModel userInfo:userInfo];
+        if (!storeModel.storeId) {
+            self.storeModel = storeModel;
+            if (completion) {
+                completion(nil);
+            }
+            return;
         }
         
-
+        //请求完门店信息接口，还有三个接口需要请求
+        //商品接口
+        [self requestRecommendGoodsData:storeModel userInfo:userInfo completion:completion];
+        
+        //客服接口
+        [self requestStoreService:storeModel userInfo:userInfo];
         
     } failure:^(NSString * _Nullable errorMsg) {
         self.storeModel = nil;
@@ -210,30 +220,58 @@
 
 - (void)requestRecommendGoodsData:(SCHomeStoreModel *)storeModel userInfo:(SCUserInfo *)userInfo completion:(SCHttpRequestCompletion)completion
 {
-    NSDictionary *param = @{@"storeId": storeModel.storeId,
-                            @"areaNum": userInfo.uan,
-                            @"floorType": @"1、2"};
-    
     [SCRequestParams shareInstance].requestNum = @"apollo.queryFloorGoods";
     
-    [SCNetworkManager POST:SC_FLOOR_GOODS parameters:param success:^(id  _Nullable responseObject) {
+    dispatch_group_t group = dispatch_group_create();
+    
+    //接口1 ： 门店优惠
+    dispatch_group_enter(group);
+    NSDictionary *param1 = @{@"storeId": storeModel.storeId,
+                            @"areaNum": userInfo.uan,
+                            @"floorType": @"1"};
+    
+    
+    
+    [SCNetworkManager POST:SC_FLOOR_GOODS parameters:param1 success:^(id  _Nullable responseObject) {
         if ([SCNetworkTool checkResult:responseObject key:nil forClass:NSDictionary.class completion:nil]) {
-            //数据处理
-            [storeModel parsingActivityModelsFromData:responseObject[B_RESULT]];
-           
+            [storeModel parsingTopGoodsModelsFromData:responseObject[B_RESULT]];
         }
         
-        self.storeModel = storeModel;
-        
-        if (completion) {
-            completion(nil);
-        }
+        dispatch_group_leave(group);
         
     } failure:^(NSString * _Nullable errorMsg) {
+        dispatch_group_leave(group);
+    }];
+    
+    
+    //接口2 ： 活动
+    dispatch_group_enter(group);
+    NSDictionary *param2 = @{@"storeId": storeModel.storeId,
+                            @"areaNum": userInfo.uan,
+                            @"floorType": @"2"};
+    
+    
+    
+    [SCNetworkManager POST:SC_FLOOR_GOODS parameters:param2 success:^(id  _Nullable responseObject) {
+        if ([SCNetworkTool checkResult:responseObject key:nil forClass:NSDictionary.class completion:nil]) {
+            [storeModel parsingActivityModelsFromData:responseObject[B_RESULT]];
+        }
+        
+        dispatch_group_leave(group);
+        
+    } failure:^(NSString * _Nullable errorMsg) {
+        dispatch_group_leave(group);
+    }];
+    
+    
+    //请求完
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        self.storeModel = storeModel;
         if (completion) {
             completion(nil);
         }
-    }];
+        
+    });
 }
 
 - (void)requestStoreService:(SCHomeStoreModel *)storeModel userInfo:(SCUserInfo *)userInfo
@@ -326,29 +364,6 @@
             completion(errorMsg);
         }
     }];
-}
-
-#pragma mark -弹窗触点
-//触点展示
-- (void)touchShow:(SCHomeTouchModel *)model
-{
-    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
-    
-    if ([manager.delegate respondsToSelector:@selector(scADTouchShow:)]) {
-        NSDictionary *dict = [model getParams];
-        [manager.delegate scADTouchShow:dict];
-    }
-}
-
-//触点点击
-- (void)touchClick:(SCHomeTouchModel *)model
-{
-    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
-    
-    if ([manager.delegate respondsToSelector:@selector(scADTouchClick:)]) {
-        NSDictionary *dict = [model getParams];
-        [manager.delegate scADTouchClick:dict];
-    }
 }
 
 #pragma mark -分类

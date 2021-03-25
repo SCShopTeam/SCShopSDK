@@ -80,11 +80,14 @@
 #define SC_FAVORITE_DELETE          NSStringFormat(@"%@/user/favorite/delete",BASE_HOST)
 //推荐店铺 (现发现好店)
 #define SC_SHOP_RECOMMEND           NSStringFormat(@"%@/user/shop/recommend",BASE_HOST)
-//推荐门店 (新) http://ip/mallb2c/api/v1/ apollo/queryStoreFloor    NSStringFormat(@"%@/user/apollo/queryFloorGoods",BASE_HOST)
+//推荐门店 (新)
+//#define SC_STORE_FLOOR              NSStringFormat(@"%@/user/apollo/queryFloorGoods",BASE_HOST)
 #define SC_STORE_FLOOR              @"https://cnr.asiainfo.com/membersrv/innerapi/terminal/v1.0/queryStoreFloor"
-//门店商品      http://ip/mallb2c/api/v1/ apollo/queryFloorGoods   NSStringFormat(@"%@/user/apollo/queryStoreFloor",BASE_HOST)
+//门店商品
+//#define SC_FLOOR_GOODS              NSStringFormat(@"%@/user/apollo/queryStoreFloor",BASE_HOST)
 #define SC_FLOOR_GOODS              @"https://cnr.asiainfo.com/activitysrv/innerapi/terminal/v1.0/queryFloorGoods"
-//门店客服      http://ip/mallb2c/api/v1/ apollo/customerService   NSStringFormat(@"%@/user/apollo/customerService",BASE_HOST)
+//门店客服
+//#define SC_CUSTOMER_SERVICE         NSStringFormat(@"%@/user/apollo/customerService",BASE_HOST)
 #define SC_CUSTOMER_SERVICE         @"https://cnr.asiainfo.com/membersrv/innerapi/terminal/v1.0/customerService"
 
 //地址列表EDIT

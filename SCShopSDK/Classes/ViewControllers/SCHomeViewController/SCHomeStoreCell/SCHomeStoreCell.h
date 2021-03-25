@@ -15,9 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) SCHomeStoreModel *model;
 
-@property (nonatomic, copy) void (^enterStoreBlock)(SCHomeStoreModel *model);
-@property (nonatomic, copy) void (^phoneBlock)(NSString *phone);
-@property (nonatomic, copy) void (^serviceBlock)(NSString *url);
+@property (nonatomic, copy) void (^pushBlock)(NSString *url);
+@property (nonatomic, copy) void (^callBlock)(NSString *url);
 
 + (CGFloat)getRowHeight:(SCHomeStoreModel *)model;
 

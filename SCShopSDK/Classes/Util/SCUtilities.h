@@ -74,30 +74,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (UINavigationController *)currentNavigationController;
 + (UIViewController *)currentViewController;
 
-//震动
-+ (void)tapticEngineShake;
-
-
-+(NSString *) myLuckyKeyString;
-+(NSData *)convetToNeed:(NSString *)hexString;
-
-//UTC 时间戳， 自 1970 年起 的毫秒数
-+ (NSString *)getTimeIntervalSince1970;
-//得到当前日期
-+ (NSString *)getCurrentDate:(NSDate *)date;
-
-// 标准时间 yyyy-MM-dd HH:mm:ss
-+ (NSString *)getTimeStandardDate:(NSDate *)date;
-//获取data的日期和时间yyyyMMddHHmmssSSSSSS
-+ (NSString *)getTimeInterValDate:(NSDate *)date;
-
-
 + (NSString *)suffixParameters :(NSString*)requesturl;
 
 + (NSString *)IDFA;
-
-//广告平台url后面拼接参数
-+ (NSString *)addParametersToURL:(NSString *)urlStr withCurrentTime:(NSString *)currentTime;
 
 //!head头参数认证是否拼接
 + (NSString*)headjointparam:(NSString*)param paramName:(NSString*)paramName currentUrl:(NSString*)currentUrl;
@@ -109,6 +88,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 //提交插码
 + (void)scXWMobStatMgrStr:(NSString *)coding url:(NSString *)url inPage:(NSString *)className;
+
+//触点展示
++ (void)touchShow:(id)touch;
+
+//触点点击
++ (void)touchClick:(id)touch;
 
 //拨打电话
 + (void)call:(NSString *)phoneNum;

@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UIImageView *qiangIcon;
 @property (nonatomic, strong) UILabel *yuanLabel;
 @property (nonatomic, strong) UILabel *oldPriceLabel;
+@property (nonatomic, strong) UIImageView *tagIcon;
 
 @end
 
@@ -54,7 +55,22 @@
     _homeGoodsModel = homeGoodsModel;
     
     //图片
-    [self.icon sd_setImageWithURL:[NSURL URLWithString:homeGoodsModel.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER];
+    [self.icon sd_setImageWithURL:[NSURL URLWithString:homeGoodsModel.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+        CGFloat bigWh = self.titleLabel.top;
+        CGFloat imgWh = MIN(bigWh, image.size.height);
+        self.icon.size = CGSizeMake(imgWh, imgWh);
+        self.icon.centerX = self.width/2;
+    }];
+    
+    //标签
+    [self.tagIcon sd_setImageWithURL:[NSURL URLWithString:homeGoodsModel.goodsLabel] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+        if (image) {
+            CGFloat w = MIN(image.size.width, SCREEN_FIX(25));
+            CGFloat h = (image.size.height/image.size.width)*w;
+            self.tagIcon.size = CGSizeMake(w, h);
+        }
+    }];
+    
     
     //标题
     self.titleLabel.text = homeGoodsModel.goodsName;
@@ -89,11 +105,21 @@
     return _icon;
 }
 
+- (UIImageView *)tagIcon
+{
+    if (!_tagIcon) {
+        _tagIcon = [[UIImageView alloc] initWithFrame:CGRectMake(SCREEN_FIX(20), 0, 0, 0)];
+        
+        [self addSubview:_tagIcon];
+    }
+    return _tagIcon ;
+}
+
 - (UILabel *)titleLabel
 {
     if (!_titleLabel) {
         CGFloat x = SCREEN_FIX(10);
-        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(x, self.icon.bottom+SCREEN_FIX(13), self.width-x*2, SCREEN_FIX(15))];
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(x, SCREEN_FIX(64), self.width-x*2, SCREEN_FIX(15))];
         _titleLabel.font = SCFONT_SIZED(11);
         _titleLabel.textColor = [UIColor blackColor];
         _titleLabel.textAlignment = NSTextAlignmentCenter;

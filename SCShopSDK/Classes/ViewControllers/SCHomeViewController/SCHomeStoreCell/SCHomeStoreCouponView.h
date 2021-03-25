@@ -7,15 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SCHomeStoreProtocol.h"
 @class SCHomeStoreModel;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCHomeStoreCouponView : UIView
 
+@property (nonatomic, weak) id <SCHomeStoreProtocol> delegate;
+
 @property (nonatomic, strong) SCHomeStoreModel *model;
 
-@property (nonatomic, copy) void (^pushBlock)(void);
 
 @end
 

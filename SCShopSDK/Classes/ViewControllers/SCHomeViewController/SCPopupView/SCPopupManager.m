@@ -81,11 +81,11 @@ DEF_SINGLETON(SCPopupManager)
         return NO;
     }
     
-    NSString *periodType     = touchModel.extraParam[@"periodType"];                             //周期类型 eg:MONTH
-    NSInteger periodMaxCount = [(touchModel.extraParam[@"periodCount"] ?: @0) integerValue];     //周期内最大次数
-    NSInteger dayMaxCount    = [(touchModel.extraParam[@"cpmMax"] ?: @0) integerValue];          //每天显示最大次数
+    NSString *periodType     = [touchModel.extraParam sc_safeStringValueForKey:@"periodType"];        //周期类型 eg:MONTH
+    NSInteger periodMaxCount = [touchModel.extraParam sc_safeIntegerValueForKey:@"integerValue"];     //周期内最大次数
+    NSInteger dayMaxCount    = [touchModel.extraParam sc_safeIntegerValueForKey:@"cpmMax"];           //每天显示最大次数
     
-    if (!VALID_STRING(periodType)) {
+    if (periodType.length == 0) {
         return NO;
     }
     
@@ -196,7 +196,7 @@ DEF_SINGLETON(SCPopupManager)
             [deleteList addObject:nId];
             
         }else {
-            NSString *dateStr = [rs stringForColumn:kDateKey];
+            NSString *dateStr = [rs stringForColumn:kDateKey] ?:@"";
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:dateStr.integerValue];
             
             if (![self dateHasShowed:date inPeriod:periodType]) {

@@ -14,73 +14,68 @@
 @property (nonatomic, strong) UIView *textBg;
 @property (nonatomic, strong) UIImageView *icon;
 @property (nonatomic, strong) UILabel *textLabel;
-- (void)setImageUrl:(NSString *)url peopleNum:(NSInteger)peopleNum;
+@property (nonatomic, strong) SCHomeActivityModel *model;
 @end
 
 @interface SCHomeStoreActivityCell ()
 @property (nonatomic, strong) SCRecommendLiveView *liveView; //直播图
-@property (nonatomic, strong) UILabel *peopleNumLabel;
+@property (nonatomic, strong) NSArray <SCHomeStoreActivitySubView *> *subViewList;
 
 @end
 
 @implementation SCHomeStoreActivityCell
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        [self prepareUI];
-    }
-    return self;
-}
-
-- (void)prepareUI
-{
-    //两个活动位
-    for (int i=0; i<2; i++) {
-        CGFloat w = self.width/2;
-        SCHomeStoreActivitySubView *view = [[SCHomeStoreActivitySubView alloc] initWithFrame:CGRectMake(w*i, 0, w, self.height)];
-        
-        view.tag = 100+i;
-        [self.contentView addSubview:view];
-    }
-    
-    //分隔线
-    UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_FIX(10.5), 1, SCREEN_FIX(133))];
-    line.centerX = self.width/2;
-    line.backgroundColor = HEX_RGB(@"#EEEEEE");
-    [self.contentView addSubview:line];
-
-}
-
-- (void)setModels:(NSArray *)models
+- (void)setModels:(NSArray<SCHomeActivityModel *> *)models
 {
     _models = models;
     
     if (models.count < 2) {
+        for (SCHomeStoreActivitySubView *subView in self.subViewList) {
+            subView.hidden = YES;
+        }
         return;
     }
     
-    [models enumerateObjectsUsingBlock:^(id  _Nonnull model, NSUInteger idx, BOOL * _Nonnull stop) {
-        SCHomeStoreActivitySubView *subView = [self.contentView viewWithTag:(100+idx)];
-        if (!subView) {
-            *stop = YES;
-        }
+    [self.subViewList enumerateObjectsUsingBlock:^(SCHomeStoreActivitySubView * _Nonnull subView, NSUInteger idx, BOOL * _Nonnull stop) {
+        SCHomeActivityModel *model = models[idx];
         
-        if (idx == 1 && [model isKindOfClass:SCHomeLiveModel.class]) { //右侧的直播占位
+        if (idx == 1 && model.type == SCHomeActivityTypeLive) { //右侧的直播位
             self.liveView.hidden = NO;
             subView.hidden = YES;
-            SCHomeLiveModel *liveModel = (SCHomeLiveModel *)model;
-            [self.liveView setImageUrl:liveModel.liveImageUrl peopleNum:liveModel.liveAudience];
+            self.liveView.model = model;
             
         }else {
             self.liveView.hidden = YES;
             subView.hidden = NO;
+            subView.delegate = self.delegate;
             subView.model = model;
         }
-        
+            
     }];
 
+}
+
+#pragma mark -ui
+- (NSArray<SCHomeStoreActivitySubView *> *)subViewList
+{
+    if (!_subViewList) {
+        //两个活动位
+        NSMutableArray *temp = [NSMutableArray arrayWithCapacity:2];
+        for (int i=0; i<2; i++) {
+            CGFloat w = self.width/2;
+            SCHomeStoreActivitySubView *view = [[SCHomeStoreActivitySubView alloc] initWithFrame:CGRectMake(w*i, 0, w, self.height)];
+            [self.contentView addSubview:view];
+            [temp addObject:view];
+        }
+        _subViewList = temp.copy;
+        
+        //分隔线
+        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_FIX(10.5), 1, SCREEN_FIX(133))];
+        line.centerX = self.width/2;
+        line.backgroundColor = HEX_RGB(@"#EEEEEE");
+        [self.contentView addSubview:line];
+    }
+    return _subViewList;
 }
 
 - (SCRecommendLiveView *)liveView
@@ -90,30 +85,32 @@
         _liveView = [[SCRecommendLiveView alloc] initWithFrame:CGRectMake(self.width - SCREEN_FIX(23) - wh, SCREEN_FIX(9), wh, wh)];
         _liveView.adjustsImageWhenHighlighted = NO;
         [self.contentView addSubview:_liveView];
+        
+        @weakify(self)
+        [_liveView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+           @strongify(self)
+            if (self.liveView.model && [self.delegate respondsToSelector:@selector(pushToLivePage:)]) {
+                [self.delegate pushToLivePage:self.liveView.model];
+            }
+        }];
 
     }
     return _liveView;
 }
 
 
-//
-//UIView *titleBg = [[UIView alloc] initWithFrame:CGRectMake(SCREEN_FIX(6), SCREEN_FIX(7.5), SCREEN_FIX(65.5), SCREEN_FIX(15))];
-//titleBg.backgroundColor = [UIColor colorWithWhite:1 alpha:0.5];
-//titleBg.layer.cornerRadius = titleBg.height/2;
-//[_liveView addSubview:titleBg];
-////        home_reccommend_live
-//UIImageView *icon = [UIImageView alloc]
-
 @end
 
 
 @implementation SCRecommendLiveView
 
-- (void)setImageUrl:(NSString *)url peopleNum:(NSInteger)peopleNum
+- (void)setModel:(SCHomeActivityModel *)model
 {
-    [self sd_setBackgroundImageWithURL:[NSURL URLWithString:url] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
+    _model = model;
     
-    self.textLabel.text = [NSString stringWithFormat:@"%li",peopleNum];
+    [self sd_setBackgroundImageWithURL:[NSURL URLWithString:model.imageUrl] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
+    
+    self.textLabel.text = [NSString stringWithFormat:@"%li",model.liveAudience];
     [self.textLabel sizeToFit];
     self.textLabel.width += SCREEN_FIX(8.5);
     self.textBg.width = self.textLabel.right;

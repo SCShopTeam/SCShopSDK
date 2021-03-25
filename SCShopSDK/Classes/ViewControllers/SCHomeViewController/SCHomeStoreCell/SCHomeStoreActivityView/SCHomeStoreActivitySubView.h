@@ -7,12 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SCHomeStoreProtocol.h"
+@class SCHomeActivityModel;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCHomeStoreActivitySubView : UIView
 
-@property (nonatomic, strong) id model;
+@property (nonatomic, weak) id <SCHomeStoreProtocol> delegate;
+
+@property (nonatomic, strong) SCHomeActivityModel *model;
 
 
 @end

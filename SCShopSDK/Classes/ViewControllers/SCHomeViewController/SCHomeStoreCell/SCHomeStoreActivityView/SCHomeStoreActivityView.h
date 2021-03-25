@@ -7,10 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SCHomeStoreProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SCHomeStoreActivityView : UIView;
+
+@property (nonatomic, weak) id <SCHomeStoreProtocol> delegate;
 
 @property (nonatomic, copy) NSArray *activityList;
 

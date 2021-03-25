@@ -35,24 +35,31 @@
 {
     _model = model;
 
+    //如果没有优惠券，或者优惠券类型是1 ,就显示提示语
+    BOOL hideCoupons = model.couponList.count == 0 || [model.couponList.firstObject.couId isEqualToString:@"1"];
     
-    BOOL hasCoupons = model.couponList.count;
+    NSMutableArray *temp = [NSMutableArray arrayWithCapacity:2];
     
-    //提示
-    self.tipLabel.hidden = hasCoupons;
+    if (hideCoupons) {
+        self.tipLabel.hidden = NO;
+        NSString *tipStr = model.couponList.count > 0 ? model.couponList.firstObject.limitDesc : @"逛智慧门店，立享会员服务";
+        self.tipLabel.text = tipStr;
+        self.tipLabel.width = [tipStr calculateWidthWithFont:self.tipLabel.font height:self.tipLabel.height] + SCREEN_FIX(12);
+        
+    }else {
+        self.tipLabel.hidden = YES;
+        [model.couponList enumerateObjectsUsingBlock:^(SCHomeCouponModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (idx < 2) { //最多显示两个标签
+                [temp addObject:obj.limitDesc];
+            }
+        }];
+    }
 
     //优惠券
     __block CGFloat x = self.couponIcon.right + SCREEN_FIX(4.5);
-    
-    NSMutableArray *temp = [NSMutableArray arrayWithCapacity:2];
-    [model.couponList enumerateObjectsUsingBlock:^(SCHomeCouponModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (idx < 2) { //最多显示两个
-            [temp addObject:obj.limitDesc];
-        }
-    }];
-    
+
     [self.couponLabelList enumerateObjectsUsingBlock:^(UILabel * _Nonnull label, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (idx >= temp.count || !hasCoupons) {
+        if (idx >= temp.count || hideCoupons) {
             label.hidden = YES;
             
         }else {
@@ -67,7 +74,7 @@
         }
     }];
     
-    //按钮
+    //商品
     [self.itemButtonList enumerateObjectsUsingBlock:^(SCWSHeaderButton * _Nonnull btn, NSUInteger idx, BOOL * _Nonnull stop) {
         if (idx >= model.topGoodsList.count) {
             btn.hidden = YES;
@@ -76,6 +83,15 @@
             btn.hidden = NO;
             SCHomeGoodsModel *goodsModel = model.topGoodsList[idx];
             btn.homeGoodsModel = goodsModel;
+            
+            @weakify(self)
+            [btn sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+                @strongify(self)
+                if ([self.delegate respondsToSelector:@selector(pushToGoodDetail:)]) {
+                    [self.delegate pushToGoodDetail:goodsModel];
+                }
+                
+            }];
         }
     }];
 
@@ -119,7 +135,6 @@
         _tipLabel.textAlignment = NSTextAlignmentCenter;
         _tipLabel.font = SCFONT_SIZED_FIX(10);
         _tipLabel.textColor = HEX_RGB(@"#FF7E15");
-        _tipLabel.text = @"迎智慧门店，立享会员服务";
         [self addSubview:_tipLabel];
     }
     return _tipLabel;
@@ -162,8 +177,8 @@
         @weakify(self)
         [_moreButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
             @strongify(self)
-            if (self.pushBlock) {
-                self.pushBlock();
+            if ([self.delegate respondsToSelector:@selector(pushToStorePage)]) {
+                [self.delegate pushToStorePage];
             }
         }];
         

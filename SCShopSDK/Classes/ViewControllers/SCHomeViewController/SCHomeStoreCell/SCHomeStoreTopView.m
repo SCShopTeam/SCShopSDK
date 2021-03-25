@@ -93,8 +93,8 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
-    if (self.enterStoreBlock) {
-        self.enterStoreBlock();
+    if ([self.delegate respondsToSelector:@selector(pushToStorePage)]) {
+        [self.delegate pushToStorePage];
     }
 }
 
@@ -142,9 +142,9 @@
         
         @weakify(self)
         [_phonebutton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
-           @strongify(self)
-            if (self.phoneBlock) {
-                self.phoneBlock();
+            @strongify(self)
+            if ([self.delegate respondsToSelector:@selector(call)]) {
+                [self.delegate call];
             }
         }];
     }
@@ -163,8 +163,8 @@
         @weakify(self)
         [_serviceButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
            @strongify(self)
-            if (self.serviceBlock) {
-                self.serviceBlock();
+            if ([self.delegate respondsToSelector:@selector(pushToService)]) {
+                [self.delegate pushToService];
             }
         }];
     }

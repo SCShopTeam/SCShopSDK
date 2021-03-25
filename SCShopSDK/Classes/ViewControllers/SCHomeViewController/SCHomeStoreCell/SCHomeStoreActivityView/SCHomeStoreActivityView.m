@@ -9,6 +9,8 @@
 #import "SCHomeStoreActivityView.h"
 #import "SCHomeStoreActivityCell.h"
 
+static NSInteger kTotalCount = 9999;
+
 @interface SCHomeStoreActivityView () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) UIPageControl *pageControl;
@@ -48,12 +50,14 @@
     [self.collectionView reloadData];
     
     self.pageControl.numberOfPages = activityList.count;
+    
+    [self setupTimer];
 }
 
 #pragma mark -UICollectionViewDelegate, UICollectionViewDataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return _activityList.count > 1 ? 999 : _activityList.count;//可循环滚动
+    return _activityList.count > 1 ? kTotalCount : _activityList.count;//可循环滚动
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -61,6 +65,7 @@
     NSInteger index = indexPath.row%_activityList.count;
     
     SCHomeStoreActivityCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(SCHomeStoreActivityCell.class) forIndexPath:indexPath];
+    cell.delegate = self.delegate;
     
     NSArray *models = _activityList[index];
     cell.models = models;
@@ -70,12 +75,73 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-    NSInteger index = self.collectionView.contentOffset.x/self.collectionView.width;
-    index = index%_activityList.count;
+    NSInteger page = [self currentCollectionIndex]%_activityList.count;
     
-    self.pageControl.currentPage = index;
+    self.pageControl.currentPage = page;
+    
+    [self setupTimer];
 }
 
+- (NSInteger)currentCollectionIndex
+{
+    NSInteger index = self.collectionView.contentOffset.x/self.collectionView.width;
+    return index;
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    [self invalidateTimer];
+}
+
+#pragma mark -timer
+- (void)invalidateTimer
+{
+    [_timer invalidate];
+    _timer = nil;
+}
+
+- (void)setupTimer
+{
+    [self invalidateTimer]; //创建定时器前先停止定时器，不然会出现僵尸定时器，导致轮播频率错误
+    
+    if (self.activityList.count <= 1) {
+        return;
+    }
+    
+    @weakify(self)
+    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:4 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        @strongify(self)
+        NSInteger nextIndex = [self currentCollectionIndex] + 1;
+        
+        if (nextIndex > kTotalCount) {
+            nextIndex = kTotalCount*0.5;
+        }
+        [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:nextIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+        NSInteger page = nextIndex%self.activityList.count;
+        
+        self.pageControl.currentPage = page;
+        
+    }];
+    
+    _timer = timer;
+    
+    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+}
+
+//解决当父View释放时，当前视图因为被Timer强引用而不能释放的问题
+- (void)willMoveToSuperview:(UIView *)newSuperview
+{
+    if (!newSuperview) {
+        [self invalidateTimer];
+    }
+}
+
+//解决当timer释放后 回调scrollViewDidScroll时访问野指针导致崩溃
+- (void)dealloc
+{
+    _collectionView.delegate = nil;
+    _collectionView.dataSource = nil;
+}
 
 #pragma mark -ui
 - (UICollectionView *)collectionView
