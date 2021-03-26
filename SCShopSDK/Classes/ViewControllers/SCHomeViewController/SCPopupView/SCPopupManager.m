@@ -81,9 +81,9 @@ DEF_SINGLETON(SCPopupManager)
         return NO;
     }
     
-    NSString *periodType     = [touchModel.extraParam sc_safeStringValueForKey:@"periodType"];        //周期类型 eg:MONTH
-    NSInteger periodMaxCount = [touchModel.extraParam sc_safeIntegerValueForKey:@"integerValue"];     //周期内最大次数
-    NSInteger dayMaxCount    = [touchModel.extraParam sc_safeIntegerValueForKey:@"cpmMax"];           //每天显示最大次数
+    NSString *periodType     = [touchModel.extraParam safeStringValueForKey:@"periodType"];        //周期类型 eg:MONTH
+    NSInteger periodMaxCount = [touchModel.extraParam safeIntegerValueForKey:@"integerValue"];     //周期内最大次数
+    NSInteger dayMaxCount    = [touchModel.extraParam safeIntegerValueForKey:@"cpmMax"];           //每天显示最大次数
     
     if (periodType.length == 0) {
         return NO;

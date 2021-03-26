@@ -40,9 +40,9 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 #define kRowNum      (SCHomeRowItems + 1)
 //部分楼层高度
 #define kNavBarH     (SCREEN_FIX(48) + STATUS_BAR_HEIGHT)
-#define kGridH       (self.viewModel.gridList ? kHomeGridRowH : 0)
-#define kStoreH  [SCHomeStoreCell getRowHeight:self.viewModel.storeModel]
-#define kGoodH       [SCHomeGoodStoresCell getRowHeight:self.viewModel.goodStoreList.count]
+//#define kGridH       (self.viewModel.gridList ? kHomeGridRowH : 0)
+//#define kStoreH      [SCHomeStoreCell getRowHeight:self.viewModel.storeModel]
+//#define kGoodH       [SCHomeGoodStoresCell getRowHeight:self.viewModel.goodStoreList.count]
 
 
 @interface SCHomeViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -164,7 +164,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 #pragma mark -UITableViewDelegate, UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    self.maxOffsetY = kHomeTopRowH + kHomeBannerRowH + kGridH + kStoreH + kGoodH + kHomeAdRowH;
+    self.maxOffsetY = kHomeTopRowH + kHomeBannerRowH + self.viewModel.gridRowHeight + self.viewModel.storeRowHeight + self.viewModel.goodStoresRowHeight + kHomeAdRowH;
     
     return kRowNum;
 }
@@ -212,13 +212,13 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         return kHomeBannerRowH;
         
     }else if (row == SCHomeRowGrid) { //grid
-        return kGridH;
+        return self.viewModel.gridRowHeight;
         
     }else if (row == SCHomeRowStore) { //recommend
-        return kStoreH;
+        return self.viewModel.storeRowHeight;
         
     }else if (row == SCHomeRowGoodStores) { //goodshop
-        return kGoodH;
+        return self.viewModel.goodStoresRowHeight;
         
     }else if (row == SCHomeRowAd) { //ad
         return kHomeAdRowH;

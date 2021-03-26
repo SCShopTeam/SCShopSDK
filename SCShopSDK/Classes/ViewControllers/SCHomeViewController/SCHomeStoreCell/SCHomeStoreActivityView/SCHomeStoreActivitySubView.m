@@ -257,7 +257,10 @@
     
     if (model.parentType == SCHomeActivityTypePresale) {
         self.preferentialFeeButton.hidden = NO;
-        [self.preferentialFeeButton setTitle:[NSString stringWithFormat:@"%@%li",model.offerType,model.preferentialFee] forState:UIControlStateNormal];
+        if (model.offerType && model.preferentialFee>0) {
+            [self.preferentialFeeButton setTitle:[NSString stringWithFormat:@"定金抵扣%li",model.preferentialFee] forState:UIControlStateNormal];
+        }
+        
         
     }else if (model.parentType == SCHomeActivityTypeGroup) {
         self.groupPersonCountButton.hidden = NO;

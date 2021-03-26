@@ -28,8 +28,8 @@
 
 - (BOOL)modelCustomTransformFromDictionary:(NSDictionary *)dic
 {
-    self.isJSMobile = [dic sc_safeIntegerValueForKey:@"isJSMobile"];
-    self.isLogin    = [dic sc_safeIntegerValueForKey:@"isLogin"];
+    self.isJSMobile = [dic safeIntegerValueForKey:@"isJSMobile"];
+    self.isLogin    = [dic safeIntegerValueForKey:@"isLogin"];
     
     return YES;
 }

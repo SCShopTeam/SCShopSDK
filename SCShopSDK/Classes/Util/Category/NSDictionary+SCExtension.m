@@ -10,35 +10,35 @@
 
 @implementation NSDictionary (SCExtension)
 
-- (nonnull NSString *)sc_safeStringValueForKey:(NSString *)key
+- (nonnull NSString *)safeStringValueForKey:(NSString *)key
 {
     id value = self[key];
     
     return VALID_STRING(value) ? value : [NSString string];
 }
 
-- (nonnull NSArray *)sc_safeArrayValueForKey:(NSString *)key
+- (nonnull NSArray *)safeArrayValueForKey:(NSString *)key
 {
     id value = self[key];
     
     return VALID_ARRAY(value) ? value : [NSArray array];
 }
 
-- (nonnull NSDictionary *)sc_safeDictionaryValueForKey:(NSString *)key
+- (nonnull NSDictionary *)safeDictionaryValueForKey:(NSString *)key
 {
     id value = self[key];
     
     return VALID_DICTIONARY(value) ? value : [NSDictionary dictionary];
 }
 
-- (nonnull NSNumber *)sc_safeNumberValueForKey:(NSString *)key
+- (nonnull NSNumber *)safeNumberValueForKey:(NSString *)key
 {
     id value = self[key];
     
     return [value isKindOfClass:NSNumber.class] ? value : @0;
 }
 
-- (NSInteger)sc_safeIntegerValueForKey:(NSString *)key
+- (NSInteger)safeIntegerValueForKey:(NSString *)key
 {
     id value = self[key];
     

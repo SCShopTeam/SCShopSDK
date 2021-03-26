@@ -20,10 +20,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *topList;
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *bannerList;
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *gridList;
+@property (nonatomic, assign, readonly) CGFloat gridRowHeight;
+
 @property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *adList;                     //广告
 @property (nonatomic, strong, readonly) NSDictionary <NSNumber *, SCHomeTouchModel *> *popupDict; //弹窗
 @property (nonatomic, strong ,readonly) SCHomeStoreModel *storeModel;               //推荐门店
+@property (nonatomic, assign, readonly) CGFloat storeRowHeight;
+
 @property (nonatomic, strong, readonly) NSArray <SCGoodStoresModel *> *goodStoreList;              //发现好店
+@property (nonatomic, assign, readonly) CGFloat goodStoresRowHeight;
 
 @property (nonatomic, strong, readonly) NSArray <SCCategoryModel *> *categoryList;                //分类
 

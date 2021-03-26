@@ -114,57 +114,57 @@
     switch (type) {
         case SCHomeActivityTypeLive:
         {
-            model.name         = [data sc_safeStringValueForKey:@"livePlayerName"];
-            model.topic        = [data sc_safeStringValueForKey:@"livePlayerTopic"];
-            model.sellPoint    = [data sc_safeStringValueForKey:@"livePlayerSellPoint"];
-            model.liveAudience = [data sc_safeIntegerValueForKey:@"liveAudience"];
-            model.link         = [data sc_safeStringValueForKey:@"livePlayerUrl"];
-            model.startTime    = [data sc_safeStringValueForKey:@"startTime"];
-            model.endTime      = [data sc_safeStringValueForKey:@"endTime"];
-            model.imageUrl     = [data sc_safeStringValueForKey:@"liveImageUrl"];
+            model.name         = [data safeStringValueForKey:@"livePlayerName"];
+            model.topic        = [data safeStringValueForKey:@"livePlayerTopic"];
+            model.sellPoint    = [data safeStringValueForKey:@"livePlayerSellPoint"];
+            model.liveAudience = [data safeIntegerValueForKey:@"liveAudience"];
+            model.link         = [data safeStringValueForKey:@"livePlayerUrl"];
+            model.startTime    = [data safeStringValueForKey:@"startTime"];
+            model.endTime      = [data safeStringValueForKey:@"endTime"];
+            model.imageUrl     = [data safeStringValueForKey:@"liveImageUrl"];
             model.goodsList    = [SCHomeGoodsModel parsingModelsFromData:data[@"liveGoodsList"] parentType:type];
         }
             break;
         case SCHomeActivityTypeLimited:
         {
-            model.name      = [data sc_safeStringValueForKey:@"limitedName"];
-            model.topic     = [data sc_safeStringValueForKey:@"limitedTopic"];
-            model.sellPoint = [data sc_safeStringValueForKey:@"limitedSellPoint"];
-            model.link      = [data sc_safeStringValueForKey:@"limitedUrl"];
-            model.startTime = [data sc_safeStringValueForKey:@"startTime"];
-            model.endTime   = [data sc_safeStringValueForKey:@"endTime"];
+            model.name      = [data safeStringValueForKey:@"limitedName"];
+            model.topic     = [data safeStringValueForKey:@"limitedTopic"];
+            model.sellPoint = [data safeStringValueForKey:@"limitedSellPoint"];
+            model.link      = [data safeStringValueForKey:@"limitedUrl"];
+            model.startTime = [data safeStringValueForKey:@"startTime"];
+            model.endTime   = [data safeStringValueForKey:@"endTime"];
             model.goodsList = [SCHomeGoodsModel parsingModelsFromData:data[@"limitedGoodsList"] parentType:type];
         }
             break;
         case SCHomeActivityTypePresale:
         {
-            model.name            = [data sc_safeStringValueForKey:@"presaleName"];
-            model.topic           = [data sc_safeStringValueForKey:@"presaleTopic"];
-            model.sellPoint       = [data sc_safeStringValueForKey:@"presalePoint"];
-            model.link            = [data sc_safeStringValueForKey:@"presaleUrl"];
-            model.offerType       = [data sc_safeStringValueForKey:@"offerType"];
-            model.preferentialFee = [data sc_safeIntegerValueForKey:@"preferentialFee"];
+            model.name            = [data safeStringValueForKey:@"presaleName"];
+            model.topic           = [data safeStringValueForKey:@"presaleTopic"];
+            model.sellPoint       = [data safeStringValueForKey:@"presalePoint"];
+            model.link            = [data safeStringValueForKey:@"presaleUrl"];
+            model.offerType       = [data safeStringValueForKey:@"offerType"];
+            model.preferentialFee = [data safeIntegerValueForKey:@"preferentialFee"];
             model.goodsList       = [SCHomeGoodsModel parsingModelsFromData:data[@"presaleGoodsList"] parentType:type];
         }
             break;
         case SCHomeActivityTypeGroup:
         {
-            model.name             = [data sc_safeStringValueForKey:@"groupName"];
-            model.topic            = [data sc_safeStringValueForKey:@"groupTopic"];
-            model.sellPoint        = [data sc_safeStringValueForKey:@"groupSellPoint"];
-            model.link             = [data sc_safeStringValueForKey:@"groupUrl"];
-            model.groupPersonCount = [data sc_safeIntegerValueForKey:@"groupPersonCount"];
+            model.name             = [data safeStringValueForKey:@"groupName"];
+            model.topic            = [data safeStringValueForKey:@"groupTopic"];
+            model.sellPoint        = [data safeStringValueForKey:@"groupSellPoint"];
+            model.link             = [data safeStringValueForKey:@"groupUrl"];
+            model.groupPersonCount = [data safeIntegerValueForKey:@"groupPersonCount"];
             model.goodsList        = [SCHomeGoodsModel parsingModelsFromData:data[@"groupGoodsList"] parentType:type];
         }
             break;
         case SCHomeActivityTypeActivity:
         {
-            model.name       = [data sc_safeStringValueForKey:@"activityName"];
-            model.topic      = [data sc_safeStringValueForKey:@"topic"];
-            model.sellPoint  = [data sc_safeStringValueForKey:@"activityPoints"];
-            model.link       = [data sc_safeStringValueForKey:@"activityLink"];
-            model.imageUrl   = [data sc_safeStringValueForKey:@"imageUrl"];
-            model.activityId = [data sc_safeStringValueForKey:@"activityId"];
+            model.name       = [data safeStringValueForKey:@"activityName"];
+            model.topic      = [data safeStringValueForKey:@"topic"];
+            model.sellPoint  = [data safeStringValueForKey:@"activityPoints"];
+            model.link       = [data safeStringValueForKey:@"activityLink"];
+            model.imageUrl   = [data safeStringValueForKey:@"imageUrl"];
+            model.activityId = [data safeStringValueForKey:@"activityId"];
         }
             break;
             

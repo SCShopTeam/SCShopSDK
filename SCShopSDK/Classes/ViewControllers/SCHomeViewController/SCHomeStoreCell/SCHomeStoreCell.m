@@ -42,7 +42,7 @@
     CGFloat height = 0;
     
     if (model) {
-        height = kTopH + (model.activityList.count > 0 ? (kMargin+kActivityH) : 0) + kMargin + kCouponH;
+        height = kTopH + (model.activityList.count > 0 ? (kMargin+kActivityH) : 0) + (kMargin + kCouponH);
     }
     
     return height;

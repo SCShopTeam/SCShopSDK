@@ -10,6 +10,9 @@
 #import "SCShoppingManager.h"
 #import "SCPopupManager.h"
 #import "SCLocationService.h"
+#import "SCHomeStoreCell.h"
+#import "SCHomeGridCell.h"
+#import "SCHomeGoodStoresCell.h"
 
 @interface SCHomeViewModel ()
 @property (nonatomic, strong) SCUserInfo *lastUserInfo;
@@ -53,28 +56,28 @@
 - (void)requestTouchData:(UIViewController *)viewController success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
 {
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
-
+    
     if (![manager.delegate respondsToSelector:@selector(scADTouchDataFrom:backData:)]) {
         if (failure) {
             failure(@"delegate null");
         }
         return;
     }
-
+    
     [manager.delegate scADTouchDataFrom:viewController backData:^(id  _Nonnull touchData) {
         if (!VALID_DICTIONARY(touchData)) {
             if (failure) {
                 failure(@"get touch failure");
             }
-
+            
         }else {
             [self parsingTouchData:touchData];
             if (success) {
                 success(nil);
             }
-
+            
         }
-
+        
     }];
 }
 
@@ -101,10 +104,11 @@
         if (models.count > 0) {
             [mulArr addObject:models.firstObject];
         }
-
+        
     }
     
     self.gridList = mulArr.copy;
+    _gridRowHeight = self.gridList.count > 0 ? kHomeGridRowH : 0;
     
     //banner
     NSMutableArray *bannerModels = [SCHomeTouchModel createModelsWithDict:result[@"SCDBBANNER_I"]];
@@ -227,8 +231,8 @@
     //接口1 ： 门店优惠
     dispatch_group_enter(group);
     NSDictionary *param1 = @{@"storeId": storeModel.storeId,
-                            @"areaNum": userInfo.uan,
-                            @"floorType": @"1"};
+                             @"areaNum": userInfo.uan,
+                             @"floorType": @"1"};
     
     
     
@@ -247,8 +251,8 @@
     //接口2 ： 活动
     dispatch_group_enter(group);
     NSDictionary *param2 = @{@"storeId": storeModel.storeId,
-                            @"areaNum": userInfo.uan,
-                            @"floorType": @"2"};
+                             @"areaNum": userInfo.uan,
+                             @"floorType": @"2"};
     
     
     
@@ -307,10 +311,17 @@
         storeModel.serviceUrl = url;
         
         self.serviceUrlCaches[cacheKey] = url; //缓存
-
+        
     } failure:^(NSString * _Nullable errorMsg) {
-
+        
     }];
+}
+
+- (void)setStoreModel:(SCHomeStoreModel *)storeModel
+{
+    _storeModel = storeModel;
+    
+    _storeRowHeight = [SCHomeStoreCell getRowHeight:storeModel];
 }
 
 #pragma mark -发现好店
@@ -328,10 +339,11 @@
                             @"latitude": latitude?:@""};
     
     [SCRequestParams shareInstance].requestNum = @"shop.recommend";
-
+    
     [SCNetworkManager POST:SC_SHOP_RECOMMEND parameters:param success:^(id  _Nullable responseObject) {
         NSString *key = @"shopList";
         if (![SCNetworkTool checkResult:responseObject key:key forClass:NSArray.class completion:completion]) {
+            self.goodStoreList = nil;
             return;
         }
         
@@ -344,12 +356,12 @@
                 continue;
             }
             SCGoodStoresModel *model = [SCGoodStoresModel yy_modelWithDictionary:dict];
-
+            
             if (model.shopInfo.isFindGood) {   //发现好店
                 [mulArr addObject:model];
                 
             }
-
+            
         }
         
         self.goodStoreList = mulArr;
@@ -366,6 +378,13 @@
     }];
 }
 
+- (void)setGoodStoreList:(NSArray<SCGoodStoresModel *> *)goodStoreList
+{
+    _goodStoreList = goodStoreList;
+    
+    _goodStoresRowHeight = [SCHomeGoodStoresCell getRowHeight:goodStoreList.count];
+}
+
 #pragma mark -分类
 - (void)requestCategoryList:(SCHttpRequestCompletion)completion
 {
@@ -376,7 +395,7 @@
             self.categoryList.firstObject.selected = YES; //默认第一个选中
             
         }
-
+        
         
         if (completion) {
             completion(nil);

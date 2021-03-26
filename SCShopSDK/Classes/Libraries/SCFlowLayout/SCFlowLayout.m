@@ -57,7 +57,7 @@
     //每个section的页码的总数
     NSInteger actualLo = 0;
     for (NSString *key in [_sectionDic allKeys]) {
-        actualLo += [_sectionDic sc_safeIntegerValueForKey:key];
+        actualLo += [_sectionDic safeIntegerValueForKey:key];
     }
     
     
@@ -121,7 +121,7 @@
         NSInteger actualLo = 0;
         //将每个section中的页数相加
         for (NSString *key in [_sectionDic allKeys]) {
-            actualLo += [_sectionDic sc_safeIntegerValueForKey:key];
+            actualLo += [_sectionDic safeIntegerValueForKey:key];
         }
         //获取到的最后的数减去最后一组的页码数
         actualLo -= [_sectionDic[[NSString stringWithFormat:@"%ld", [_sectionDic allKeys].count-1]] integerValue];

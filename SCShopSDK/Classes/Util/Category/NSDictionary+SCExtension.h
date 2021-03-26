@@ -12,11 +12,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSDictionary (SCExtension)
 
-- (nonnull NSString *)sc_safeStringValueForKey:(NSString *)key;
-- (nonnull NSArray *)sc_safeArrayValueForKey:(NSString *)key;
-- (nonnull NSDictionary *)sc_safeDictionaryValueForKey:(NSString *)key;
-- (nonnull NSNumber *)sc_safeNumberValueForKey:(NSString *)key;
-- (NSInteger)sc_safeIntegerValueForKey:(NSString *)key;
+- (nonnull NSString *)safeStringValueForKey:(NSString *)key;
+- (nonnull NSArray *)safeArrayValueForKey:(NSString *)key;
+- (nonnull NSDictionary *)safeDictionaryValueForKey:(NSString *)key;
+- (nonnull NSNumber *)safeNumberValueForKey:(NSString *)key;
+- (NSInteger)safeIntegerValueForKey:(NSString *)key;
 
 
 @end
