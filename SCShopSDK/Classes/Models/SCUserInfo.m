@@ -34,6 +34,14 @@
     return YES;
 }
 
+- (NSString *)phoneNumber
+{
+    if (!_phoneNumber) {
+        _phoneNumber = @"";
+    }
+    return _phoneNumber;
+}
+
 - (NSString *)brandBusiNum
 {
     if ([_bjn isEqualToString:@"QQT"]) {
