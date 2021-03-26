@@ -28,7 +28,7 @@
 - (void)startCountdown:(NSString *)endTime;
 @end
 
- 
+
 @interface SCHomeStoreActivitySubView ()
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *sellPointLabel;
@@ -46,7 +46,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-
+        
     }
     return self;
 }
@@ -75,7 +75,7 @@
         self.countdownView.hidden = YES;
         [self.countdownView startCountdown:@""];
         
-//        NSString *sp = model.sellPoint.length > 5 ? [model.sellPoint substringToIndex:5] : model.sellPoint; //最多5个字
+        //        NSString *sp = model.sellPoint.length > 5 ? [model.sellPoint substringToIndex:5] : model.sellPoint; //最多5个字
         self.sellPointLabel.left = self.titleLabel.right + SCREEN_FIX(3.5);
         self.sellPointLabel.text = model.sellPoint;
         self.sellPointLabel.width = [model.sellPoint calculateWidthWithFont:self.sellPointLabel.font height:self.sellPointLabel.height] + SCREEN_FIX(12);
@@ -99,7 +99,7 @@
         }
         self.activityIcon.hidden = NO;
         self.activityButton.hidden = NO;
-
+        
         [self.activityIcon sd_setImageWithURL:[NSURL URLWithString:model.imageUrl] placeholderImage:IMG_PLACE_HOLDER];
         
     }else {
@@ -122,17 +122,17 @@
                 
                 @weakify(self)
                 [itemView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
-                   @strongify(self)
+                    @strongify(self)
                     if ([self.delegate respondsToSelector:@selector(pushToGoodsList:)]) {
                         [self.delegate pushToGoodsList:model];
                     }
                 }];
                 
             }
-
+            
         }];
     }
-
+    
 }
 
 
@@ -155,7 +155,7 @@
         _sellPointLabel.centerY = self.titleLabel.centerY;
         _sellPointLabel.layer.cornerRadius = _sellPointLabel.height/2;
         _sellPointLabel.layer.borderWidth = 1;
-//        _sellPointLabel.layer.masksToBounds = YES;
+        //        _sellPointLabel.layer.masksToBounds = YES;
         _sellPointLabel.font = SCFONT_SIZED_FIX(10);
         _sellPointLabel.textAlignment = NSTextAlignmentCenter;
         [self addSubview:_sellPointLabel];
@@ -189,7 +189,7 @@
         NSMutableArray *temp = [NSMutableArray arrayWithCapacity:2];
         
         CGFloat w = SCREEN_FIX(65);
-    //    CGFloat h = SCREEN_FIX(95);
+        //    CGFloat h = SCREEN_FIX(95);
         CGFloat edge = SCREEN_FIX(21); //屏幕边距
         CGFloat margin = self.width - edge*2 - w*2;
         
@@ -217,7 +217,7 @@
         
         @weakify(self)
         [_activityButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
-           @strongify(self)
+            @strongify(self)
             if (self.model && [self.delegate respondsToSelector:@selector(pushToActivityPage:)]) {
                 [self.delegate pushToActivityPage:self.model];
             }
@@ -252,21 +252,21 @@
     self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:(model.guidePrice/1000*1.f) font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
     self.priceLabel.text = [NSString stringWithFormat:@"¥%@", [SCUtilities removeFloatSuffix:model.wholesalePrice/1000*1.f]];
     
-    self.preferentialFeeButton.hidden  = YES;
-    self.groupPersonCountButton.hidden = YES;
+    _preferentialFeeButton.hidden  = YES;
+    _groupPersonCountButton.hidden = YES;
     
     if (model.parentType == SCHomeActivityTypePresale) {
-        self.preferentialFeeButton.hidden = NO;
-        if (model.offerType && model.preferentialFee>0) {
-            [self.preferentialFeeButton setTitle:[NSString stringWithFormat:@"定金抵扣%li",model.preferentialFee] forState:UIControlStateNormal];
+        if (model.offerType.length > 0 && model.preferentialFee > 0) {
+            self.preferentialFeeButton.hidden = NO;
+            [self.preferentialFeeButton setTitle:[NSString stringWithFormat:@"%@%li",model.offerType,model.preferentialFee] forState:UIControlStateNormal];
+            
         }
-        
         
     }else if (model.parentType == SCHomeActivityTypeGroup) {
         self.groupPersonCountButton.hidden = NO;
         [self.groupPersonCountButton setTitle:[NSString stringWithFormat:@"%li人团",model.groupPersonCount] forState:UIControlStateNormal];
     }
-
+    
 }
 
 - (UIImageView *)icon
@@ -314,7 +314,7 @@
         _preferentialFeeButton.centerX = self.icon.centerX;
         _preferentialFeeButton.bottom  = self.icon.bottom;
         [_preferentialFeeButton setBackgroundImage:SCIMAGE(@"home_fee") forState:UIControlStateNormal];
-        _preferentialFeeButton.titleLabel.font = SCFONT_SIZED_FIX(8);
+        _preferentialFeeButton.titleLabel.font = SCFONT_SIZED_FIX(7);
         [_preferentialFeeButton setTitleColor:HEX_RGB(@"#FF1448") forState:UIControlStateNormal];
         _preferentialFeeButton.userInteractionEnabled = NO;
         [self addSubview:_preferentialFeeButton];
@@ -346,7 +346,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-//        sc_pink
+        //        sc_pink
         [self prepareUI];
         
     }
@@ -404,7 +404,7 @@
     NSDate *endDate = [[NSDate alloc] initWithTimeIntervalSince1970:(endTime.integerValue/1000)];
     
     NSDate *today = [NSDate date];
-
+    
     NSTimeInterval time = [endDate timeIntervalSinceDate:today];
     
     if (time < 0) {
@@ -441,15 +441,15 @@
     }
     
     self.countdownSeconds--;
-
-
-
+    
+    
+    
 }
 
 - (void)setCountdownSeconds:(NSInteger)countdownSeconds
 {
     _countdownSeconds = countdownSeconds;
-
+    
     //format of hour
     NSString *str_hour = [NSString stringWithFormat:@"%02ld",countdownSeconds/3600];
     self.hourLabel.text = str_hour;
