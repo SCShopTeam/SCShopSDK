@@ -156,6 +156,7 @@ typedef NS_ENUM(NSInteger, SCNetApiType) {
     }
 }
 
+//简单区分是哪家公司的接口
 + (SCNetApiType)getApiType:(NSDictionary *)dict
 {
     NSArray *keys = [dict allKeys];
@@ -164,11 +165,11 @@ typedef NS_ENUM(NSInteger, SCNetApiType) {
     if ([keys containsObject:B_CODE]) {
         type = SCNetApiTypeB2C;
         
-    }else if ([keys containsObject:S_CODE]) {
-        type = SCNetApiTypeS;
+    }else if ([keys containsObject:A_CODE]) {
+        type = SCNetApiTypeApollo;
         
     }else {
-        type = SCNetApiTypeApollo;
+        type = SCNetApiTypeS;
     }
     
     return type;

@@ -56,7 +56,7 @@
     [_model updateData];
     //header
     self.topView.selected = _model.selectedAll;
-    self.topView.title = _model.busiName;
+    self.topView.title    = _model.busiName;
     
     //bottom
     self.bottomView.price      = _model.sumPrice;

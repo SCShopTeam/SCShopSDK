@@ -40,9 +40,6 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 #define kRowNum      (SCHomeRowItems + 1)
 //部分楼层高度
 #define kNavBarH     (SCREEN_FIX(48) + STATUS_BAR_HEIGHT)
-//#define kGridH       (self.viewModel.gridList ? kHomeGridRowH : 0)
-//#define kStoreH      [SCHomeStoreCell getRowHeight:self.viewModel.storeModel]
-//#define kGoodH       [SCHomeGoodStoresCell getRowHeight:self.viewModel.goodStoreList.count]
 
 
 @interface SCHomeViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -125,7 +122,6 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 
 - (void)requestTouchData
 {
-    
     [self.viewModel requestTouchData:self success:^(id  _Nullable responseObject) {
         [self.tableView reloadData];
         [self showPopup]; //展示弹窗
@@ -444,11 +440,8 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     if (model.isLogin.integerValue > 0 && ![SCUserInfo currentUser].isLogin) {
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
             [manager.delegate scLoginWithNav:self.navigationController back:^{
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//                    [self pushToNewPage:model.linkUrl title:model.contentName]; //>>标记  掌厅登录代理有bug,暂不执行该方法
-                    [SCUtilities postLoginSuccessNotification];
-                });
-                
+//                [self pushToNewPage:model.linkUrl title:model.contentName]; //>>标记  掌厅登录代理有bug,暂不执行该方法
+                [SCUtilities postLoginSuccessNotification];
             }];
         }
         
@@ -540,14 +533,14 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         _tableView.shouldRecognizeSimultaneouslyWithOtherGestureRecognizer = YES;
         [self.view addSubview:_tableView];
         
-        [_tableView registerClass:SCHomeTopCell.class            forCellReuseIdentifier:NSStringFromClass(SCHomeTopCell.class)];
-        [_tableView registerClass:SCHomeBannerCell.class         forCellReuseIdentifier:NSStringFromClass(SCHomeBannerCell.class)];
-        [_tableView registerClass:SCHomeGridCell.class           forCellReuseIdentifier:NSStringFromClass(SCHomeGridCell.class)];
-        [_tableView registerClass:SCHomeStoreCell.class forCellReuseIdentifier:NSStringFromClass(SCHomeStoreCell.class)];
-        [_tableView registerClass:SCHomeGoodStoresCell.class      forCellReuseIdentifier:NSStringFromClass(SCHomeGoodStoresCell.class)];
-        [_tableView registerClass:SCHomeAdCell.class             forCellReuseIdentifier:NSStringFromClass(SCHomeAdCell.class)];
-        [_tableView registerClass:SCHomeTagCell.class            forCellReuseIdentifier:NSStringFromClass(SCHomeTagCell.class)];
-        [_tableView registerClass:UITableViewCell.class          forCellReuseIdentifier:NSStringFromClass(UITableViewCell.class)];
+        [_tableView registerClass:SCHomeTopCell.class        forCellReuseIdentifier:NSStringFromClass(SCHomeTopCell.class)];
+        [_tableView registerClass:SCHomeBannerCell.class     forCellReuseIdentifier:NSStringFromClass(SCHomeBannerCell.class)];
+        [_tableView registerClass:SCHomeGridCell.class       forCellReuseIdentifier:NSStringFromClass(SCHomeGridCell.class)];
+        [_tableView registerClass:SCHomeStoreCell.class      forCellReuseIdentifier:NSStringFromClass(SCHomeStoreCell.class)];
+        [_tableView registerClass:SCHomeGoodStoresCell.class forCellReuseIdentifier:NSStringFromClass(SCHomeGoodStoresCell.class)];
+        [_tableView registerClass:SCHomeAdCell.class         forCellReuseIdentifier:NSStringFromClass(SCHomeAdCell.class)];
+        [_tableView registerClass:SCHomeTagCell.class        forCellReuseIdentifier:NSStringFromClass(SCHomeTagCell.class)];
+        [_tableView registerClass:UITableViewCell.class      forCellReuseIdentifier:NSStringFromClass(UITableViewCell.class)];
         
         //如果没有导航栏，会有滚动视图向下偏移20像素的bug,如下设置可以避免
         self.extendedLayoutIncludesOpaqueBars = YES;
@@ -602,7 +595,5 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     }
     return _viewModel;
 }
-
-
 
 @end

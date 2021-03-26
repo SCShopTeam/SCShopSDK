@@ -90,7 +90,6 @@ static SCRequestParams *params = nil;
     if ([SCUtilities isValidString:self.sessionId]) {
          dic[@"sessionId"] = self.sessionId;
     }
-   //@"79BDF3AC82684796B21053D570CC1C68@js.ac.10086.cn";
     
     return dic;
 }

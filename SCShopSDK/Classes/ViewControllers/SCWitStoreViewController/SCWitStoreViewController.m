@@ -328,7 +328,7 @@
         return;
     }
     
-    [SCAreaSelectView show:self.viewModel.areaList selectBlock:^(SCAreaModel * _Nonnull model) {
+    [SCAreaSelectView showIn:self areaList:self.viewModel.areaList selectBlock:^(SCAreaModel * _Nonnull model) {
         //区域名称
         [self.areaBtn setTitle:model.name forState:UIControlStateNormal];
         //区域编码

@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) CGFloat rowHeight;
 
 //是否是阿波罗商户
-@property (nonatomic, assign) BOOL isApollo;
+@property (nonatomic, assign, readonly) BOOL isApollo;
 
 @property (nonatomic, copy) void (^updateSelectBlock)(SCCartModel *model);
 

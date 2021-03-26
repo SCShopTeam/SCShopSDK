@@ -44,11 +44,11 @@
     return self;
 }
 
-+ (void)calculateRowHeight:(SCWitStoreModel *)model
++ (CGFloat)calculateRowHeight:(SCWitStoreModel *)model
 {
     CGFloat h = kVerEdge*2 + kInfoH + (model.line ? kOrderH : 0);
     
-    model.rowHeight = h;
+    return h;
 }
 
 - (void)layoutSubviews

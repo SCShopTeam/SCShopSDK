@@ -92,12 +92,16 @@
 #pragma mark -action
 - (void)favouriteDelete:(NSInteger)row
 {
+    if (row >= self.viewModel.favouriteList.count) {
+        return;
+    }
+    
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:@"确定要删除该商品吗" message:nil preferredStyle:UIAlertControllerStyleAlert];
     
     [ac addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [self showLoading];
         SCFavouriteModel *model = self.viewModel.favouriteList[row];
-        [SCRequest requestFavoriteDelete:model.favNum itemNum:model.itemNum success:^(id  _Nullable responseObject) {
+        [self.viewModel requestFavoriteDelete:model success:^(id  _Nullable responseObject) {
             [self stopLoading];
             [self.viewModel.favouriteList removeObjectAtIndex:row];
             [self.tableView reloadData];
@@ -108,7 +112,9 @@
         } failure:^(NSString * _Nullable errorMsg) {
             [self stopLoading];
             [self showWithStatus:errorMsg];
+            
         }];
+
     }]];
     
     [ac addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];

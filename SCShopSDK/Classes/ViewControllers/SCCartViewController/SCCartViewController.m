@@ -60,12 +60,8 @@
 
 #pragma mark -UICollectionViewDelegate, UICollectionViewDataSource
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
-{
-    CGFloat height = 0;
-    
-    if (self.viewModel.cartList) {
-        height = VALID_ARRAY(self.viewModel.cartList) ? 0 : SCREEN_FIX(200); //空数据提示
-    }
+{   
+    CGFloat height = VALID_ARRAY(self.viewModel.cartList) ? 0 : SCREEN_FIX(200); //空数据提示
 
     return CGSizeMake(collectionView.width, height);
     
@@ -76,8 +72,6 @@
     return CGSizeMake(collectionView.width, self.recommendView.height);
 }
 
-
-
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) { //header 空数据提示
@@ -85,6 +79,7 @@
         @weakify(self)
         header.pushBlock = ^{
             @strongify(self)
+
             [self.navigationController pushViewController:[SCLifeViewController new] animated:YES];
         };
         
@@ -171,12 +166,13 @@
 - (void)requestDelete:(SCCartItemModel *)item
 {
     [self showLoading];
-    [SCRequest requestCartDelete:item.cartItemNum itemNum:item.itemNum success:^(id  _Nullable responseObject) {
+    [self.viewModel requestCartDelete:item success:^(id  _Nullable responseObject) {
         [self requestData];
         
     } failure:^(NSString * _Nullable errorMsg) {
         [self stopLoading];
         [self showWithStatus:errorMsg];
+        
     }];
 }
 

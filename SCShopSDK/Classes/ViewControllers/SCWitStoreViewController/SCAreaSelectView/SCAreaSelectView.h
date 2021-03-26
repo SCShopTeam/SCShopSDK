@@ -15,7 +15,7 @@ typedef void(^SCAreaBlock)(SCAreaModel *model);
 
 @interface SCAreaSelectView : UIView
 
-+ (void)show:(NSArray <SCAreaModel *> *)areaList selectBlock:(SCAreaBlock)selectBlock;
++ (void)showIn:(UIViewController *)vc areaList:(NSArray <SCAreaModel *> *)areaList selectBlock:(SCAreaBlock)selectBlock;
 
 @end
 

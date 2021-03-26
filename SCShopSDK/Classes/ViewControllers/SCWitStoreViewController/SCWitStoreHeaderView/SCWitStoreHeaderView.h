@@ -15,11 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCWitStoreHeaderView : UIView
 @property (nonatomic, strong) SCWitStoreModel *model;
 
-@property (nonatomic, copy) void (^phoneBlock)(NSString *phone);                //电话
-@property (nonatomic, copy) void (^goodSelectBlock)(SCWitStoreGoodModel *goodModel);     //商品
-@property (nonatomic, copy) void (^orderBlock)(SCWitStoreModel *model); //立即取号
-@property (nonatomic, copy) void (^enterBlock)(SCWitStoreModel *model);     //进店逛逛
-@property (nonatomic, copy) void (^orderHistoryBlock)(void);            //排队记录
+@property (nonatomic, copy) void (^phoneBlock)(NSString *phone);                       //电话
+@property (nonatomic, copy) void (^goodSelectBlock)(SCWitStoreGoodModel *goodModel);   //商品
+@property (nonatomic, copy) void (^orderBlock)(SCWitStoreModel *model);                //立即取号
+@property (nonatomic, copy) void (^enterBlock)(SCWitStoreModel *model);                //进店逛逛
+@property (nonatomic, copy) void (^orderHistoryBlock)(void);                           //排队记录
 
 
 - (void)setGoodsList:(nullable NSArray <SCWitStoreGoodModel *> *)goodsList;  //推荐商品

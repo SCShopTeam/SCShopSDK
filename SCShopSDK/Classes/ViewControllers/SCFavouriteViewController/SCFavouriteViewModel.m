@@ -29,14 +29,8 @@
         
 
         NSArray *items = responseObject[B_RESULT][key];
-        
-        if (!self.favouriteList) {
-            self.favouriteList = [NSMutableArray arrayWithCapacity:items.count];
-            
-        }else {
-            [self.favouriteList removeAllObjects];
-        }
-        
+
+        [self.favouriteList removeAllObjects];
         for (NSDictionary *dict in items) {
             if (!VALID_DICTIONARY(dict)) {
                 continue;
@@ -44,6 +38,7 @@
             SCFavouriteModel *model = [SCFavouriteModel yy_modelWithDictionary:dict];
             [self.favouriteList addObject:model];
         }
+
         
         if (completion) {
             completion(nil);
@@ -70,6 +65,68 @@
         }
     }];
 
+}
+
+
+//删除商品
+- (void)requestFavoriteDelete:(SCFavouriteModel *)model success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
+{
+    if (!model || !VALID_STRING(model.favNum) || !VALID_STRING(model.itemNum)) {
+        if (failure) {
+            failure(@"param error");
+        }
+        return;
+    }
+    
+    NSDictionary *param = @{@"favNum": model.favNum,
+                            @"itemNum": model.itemNum};
+    
+    [SCRequestParams shareInstance].requestNum = @"favorite.delete";
+    [SCNetworkManager POST:SC_FAVORITE_DELETE parameters:param success:^(id  _Nullable responseObject) {
+        if (![SCNetworkTool checkCode:responseObject failure:failure]) {
+            return;
+        }
+        
+        if (success) {
+            success(nil);
+        }
+        
+    } failure:failure];
+}
+
+
+
+//新增商品 （不用）
++ (void)requestFavoriteAdd:(SCFavouriteModel *)model success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
+{
+    if (!model || !VALID_STRING(model.itemNum)) {
+        if (failure) {
+            failure(@"itemNum null");
+        }
+        return;
+    }
+    
+    NSDictionary *param = @{@"itemNum": model.itemNum};
+    
+    [SCRequestParams shareInstance].requestNum = @"favorite.add";
+    [SCNetworkManager POST:SC_FAVORITE_ADD parameters:param success:^(id  _Nullable responseObject) {
+        if (![SCNetworkTool checkCode:responseObject failure:failure]) {
+            return;
+        }
+        
+        if (success) {
+            success(nil);
+        }
+        
+    } failure:failure];
+}
+
+- (NSMutableArray<SCFavouriteModel *> *)favouriteList
+{
+    if (!_favouriteList) {
+        _favouriteList = [NSMutableArray array];
+    }
+    return _favouriteList;
 }
 
 

@@ -250,7 +250,7 @@
     
     [self.icon sd_setImageWithURL:[NSURL URLWithString:model.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER];
     self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:(model.guidePrice/1000*1.f) font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
-    self.priceLabel.text = [NSString stringWithFormat:@"¥%@", [SCUtilities removeFloatSuffix:model.wholesalePrice/1000*1.f]];
+    self.priceLabel.text = [NSString stringWithFormat:@"¥%@", [SCUtilities removeFloatSuffix:model.activityPrice/1000*1.f]];
     
     _preferentialFeeButton.hidden  = YES;
     _groupPersonCountButton.hidden = YES;

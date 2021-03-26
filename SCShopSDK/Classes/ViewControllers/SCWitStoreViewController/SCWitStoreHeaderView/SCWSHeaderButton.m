@@ -80,7 +80,7 @@
     self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:oldPrice font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
     
     //价格
-    CGFloat price = homeGoodsModel.activityPrice/1000*1.f;
+    CGFloat price = homeGoodsModel.wholesalePrice/1000*1.f;
     self.priceLabel.text = [SCUtilities removeFloatSuffix:price];
     [self.priceLabel sizeToFit];
     

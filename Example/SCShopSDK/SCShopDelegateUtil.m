@@ -161,7 +161,7 @@
                                @"phoneNumber":@"15251803168",
                                @"isJSMobile":@"1",
                                @"uan":@"14",
-                               @"cmtokenid": @"49A0EDF8D57C4E48BD339FCE66864511@js.ac.10086.cn",
+                               @"cmtokenid": @"7D27BC6D0B424353B0003DEEAAB622A3@js.ac.10086.cn",
                                @"name": @"测试号"
     };
     
@@ -169,16 +169,16 @@
 }
 
 //获取定位
-- (NSDictionary *)scGetLocationInfo
-{
-    NSDictionary *locationInfo = @{@"cityCode": @"14",
-                                   @"latitude": @32.05719667166901,
-                                   @"longitude": @118.7403349462312,
-                                   @"City": @"南京市",
-                                   @"locationAddress":@"江苏省南京市鼓楼区江东街道南京市鼓楼区草场门大街101号文荟大厦文荟大厦12楼"
-    };
-
-    return locationInfo;
-}
+//- (NSDictionary *)scGetLocationInfo
+//{
+//    NSDictionary *locationInfo = @{@"cityCode": @"14",
+//                                   @"latitude": @32.05719667166901,
+//                                   @"longitude": @118.7403349462312,
+//                                   @"City": @"南京市",
+//                                   @"locationAddress":@"江苏省南京市鼓楼区江东街道南京市鼓楼区草场门大街101号文荟大厦文荟大厦12楼"
+//    };
+//
+//    return locationInfo;
+//}
 
 @end

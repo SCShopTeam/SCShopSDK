@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) void (^scrollBlock)(NSInteger index);
 
+@property (nonatomic, copy) void (^selectBlock)(SCCommodityModel *model);
+
 - (void)setCurrentIndex:(NSInteger)currentIndex;
 
 

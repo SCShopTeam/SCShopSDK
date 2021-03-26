@@ -73,6 +73,14 @@
     SCStoreSubItemCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:[self cellId:indexPath.row] forIndexPath:indexPath];
     cell.tenantNum = self.tenantNum;
     cell.item = self.itemList[indexPath.row];
+    
+    @weakify(self)
+    cell.selectBlock = ^(SCCommodityModel * _Nonnull model) {
+      @strongify(self)
+        if (self.selectBlock) {
+            self.selectBlock(model);
+        }
+    };
 
     return cell;
 }

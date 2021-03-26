@@ -13,10 +13,10 @@
 - (BOOL)modelCustomTransformFromDictionary:(NSDictionary *)dic
 {
     if ([self.tenantType isEqualToString:@"1"]) {
-        self.tenantTypeStr = @"自营";
+        _tenantTypeStr = @"自营";
         
     }else if ([self.tenantType isEqualToString:@"3"]) {
-        self.tenantTypeStr = @"门店";
+        _tenantTypeStr = @"门店";
     }
     
     return YES;

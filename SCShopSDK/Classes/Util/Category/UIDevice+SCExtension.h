@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIDevice (SCExtension)
 
-//更新到iPhone SE2
+//更新到iPhone 12
 + (NSString *)machineModelName;
 
 + (BOOL)isJailbroken;

@@ -21,6 +21,7 @@
 
 
 #pragma mark -参数
+//商城接口涉及多家公司，参数名称都不一样
 //b2c接口 参数
 #define B_SUCCESS_CODE      @"0"
 #define B_CODE              @"resCode"

@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCUtilities : NSObject
 
-//判断是在shopping项目中开发调试，还是已经集成进SDK。开发测试用
+//判断是在shopping项目中开发调试，还是已经集成进SDK。仅开发测试用
 + (BOOL)isInShoppingDebug;
 
 //! 是否是有效的字典

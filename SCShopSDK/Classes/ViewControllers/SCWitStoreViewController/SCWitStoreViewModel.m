@@ -203,7 +203,7 @@
         }
         SCWitStoreModel *model = [SCWitStoreModel yy_modelWithDictionary:dict];
         //计算高度
-        [SCWitStoreCell calculateRowHeight:model];
+        model.rowHeight = [SCWitStoreCell calculateRowHeight:model];
         
         [mulArr addObject:model];
     }

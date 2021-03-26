@@ -17,7 +17,7 @@
 
 - (BOOL)modelCustomTransformFromDictionary:(NSDictionary *)dic
 {
-    self.isApollo = [self.busiType isEqualToString:@"3"];
+    _isApollo = [self.busiType isEqualToString:@"3"];
     
     return YES;
 }

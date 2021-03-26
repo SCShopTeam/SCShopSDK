@@ -96,10 +96,10 @@
 {
     NSArray *list = self.viewModel.commodityList;
     
-//    if (indexPath.row < list.count && _selectBlock) {
-//        SCCommodityModel *model = list[indexPath.row];
-//        _selectBlock(model);
-//    }
+    if (indexPath.row < list.count && _selectBlock) {
+        SCCommodityModel *model = list[indexPath.row];
+        _selectBlock(model);
+    }
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

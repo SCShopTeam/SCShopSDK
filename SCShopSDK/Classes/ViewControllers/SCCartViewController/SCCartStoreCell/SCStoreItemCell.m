@@ -8,6 +8,7 @@
 
 #import "SCStoreItemCell.h"
 #import "SCCartModel.h"
+#import "SCCartViewModel.h"
 
 static NSString *kAdd    = @"+";
 static NSString *kReduce = @"-";
@@ -124,7 +125,7 @@ static NSString *kReduce = @"-";
     NSInteger newNum = isAdd ? self.item.itemQuantity + 1 : self.item.itemQuantity - 1;
     
     [self showLoading];
-    [SCRequest requestCartMerge:self.item.cartItemNum itemNum:self.item.itemNum itemQuantity:newNum success:^(id  _Nullable responseObject) {
+    [SCCartViewModel requestCartMerge:self.item newItemQuantity:newNum success:^(id  _Nullable responseObject) {
         [self stopLoading];
         self.item.itemQuantity = newNum;
         self.numLabel.text = [NSString stringWithFormat:@"%li",(long)newNum];
@@ -134,7 +135,6 @@ static NSString *kReduce = @"-";
         [self stopLoading];
         [self showWithStatus:errorMsg];
     }];
-     
     
 //    isAdd ? self.item.itemQuantity++ : self.item.itemQuantity--;
 

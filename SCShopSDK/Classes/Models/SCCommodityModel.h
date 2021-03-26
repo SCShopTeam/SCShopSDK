@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,strong)NSString *detailUrl;
 
 //自定义
-@property (nonatomic, copy) NSString *tenantTypeStr;
+@property (nonatomic, copy, readonly) NSString *tenantTypeStr;
 
 + (NSArray <SCCommodityModel *> *)getModelsFrom:(NSArray *)datas;
 

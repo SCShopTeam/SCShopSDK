@@ -21,9 +21,8 @@
 
 @implementation SCAreaSelectView
 
-+ (void)show:(NSArray<SCAreaModel *> *)areaList selectBlock:(SCAreaBlock)selectBlock
++ (void)showIn:(UIViewController *)vc areaList:(NSArray<SCAreaModel *> *)areaList selectBlock:(SCAreaBlock)selectBlock
 {
-    UIViewController *vc = [SCUtilities currentViewController];
     if (!vc) {
         return;
     }

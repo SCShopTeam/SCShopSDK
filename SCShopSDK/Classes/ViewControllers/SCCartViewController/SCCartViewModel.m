@@ -12,7 +12,7 @@
 NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
 
 @interface SCCartViewModel ()
-@property (nonatomic, strong) NSMutableArray <SCCartModel *> *cartList;
+@property (nonatomic, strong) NSArray <SCCartModel *> *cartList;
 @property (nonatomic, strong) NSArray <SCCommodityModel *> *recommendList;
 @end
 
@@ -27,14 +27,9 @@ NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
             return;
         }
         NSArray *businesses = responseObject[B_RESULT][key];
-        
-        if (!self.cartList) {
-            self.cartList = [NSMutableArray arrayWithCapacity:businesses.count];
-            
-        }else {
-            [self.cartList removeAllObjects];
-        }
 
+        NSMutableArray *temp = [NSMutableArray arrayWithCapacity:businesses.count];
+        
         for (NSDictionary *dict in businesses) {
             if (!VALID_DICTIONARY(dict)) {
                 continue;
@@ -42,8 +37,11 @@ NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
             SCCartModel *model = [SCCartModel yy_modelWithDictionary:dict];
             //计算高度
             model.rowHeight = [SCCartStoreCell calculateRowHeight:model];
-            [self.cartList addObject:model];
+            [temp addObject:model];
         }
+        
+        self.cartList = temp.copy;
+        
         if (completion) {
             completion(nil);
         }
@@ -66,6 +64,65 @@ NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
         }
     }];
 
+}
+
+//商品 新增&修改
++ (void)requestCartMerge:(SCCartItemModel *)model newItemQuantity:(NSInteger)newItemQuantity success:(nonnull SCHttpRequestSuccess)success failure:(nonnull SCHttpRequestFailed)failure
+{
+    if (!model || !VALID_STRING(model.itemNum) || newItemQuantity <= 0) {
+        if (failure) {
+            failure(@"param error");
+        }
+        return;
+    }
+    
+    NSMutableDictionary *param = @{@"itemNum": model.itemNum,
+                                   @"itemQuantity":@(newItemQuantity)
+    }.mutableCopy;
+    
+    if (VALID_STRING(model.cartItemNum)) {
+        param[@"cartItemNum"] = model.cartItemNum;
+    }
+    
+    [SCRequestParams shareInstance].requestNum = @"cart.merge";
+    
+    [SCNetworkManager POST:SC_CART_MERGE parameters:param success:^(id  _Nullable responseObject) {
+        if (![SCNetworkTool checkCode:responseObject failure:failure]) {
+            return;
+        }
+        
+        if (success) {
+            success(nil);
+        }
+        
+    } failure:failure];
+}
+
+//商品 删除
+- (void)requestCartDelete:(SCCartItemModel *)model success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure
+{
+    if (!model || !VALID_STRING(model.cartItemNum) || !VALID_STRING(model.itemNum)) {
+        if (failure) {
+            failure(@"param error");
+        }
+        return;
+    }
+    
+    NSDictionary *param = @{@"cartItemNum": model.cartItemNum,
+                            @"itemNum": model.itemNum};
+    
+    [SCRequestParams shareInstance].requestNum = @"cart.delete";
+    [SCNetworkManager POST:SC_CART_DELETE parameters:param success:^(id  _Nullable responseObject) {
+        if (![SCNetworkTool checkCode:responseObject failure:failure]) {
+            return;
+        }
+        
+        if (success) {
+            success(nil);
+        }
+        
+    } failure:failure];
+    
 }
 
 //结算

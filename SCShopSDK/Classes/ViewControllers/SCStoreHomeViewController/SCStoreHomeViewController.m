@@ -196,6 +196,11 @@
           @strongify(self)
             self.siftView.currentIndex = index;
         };
+        
+        _itemsView.selectBlock = ^(SCCommodityModel * _Nonnull model) {
+            @strongify(self)
+            [SCURLSerialization gotoNewPage:model.detailUrl title:@"" navigation:self.navigationController];
+        };
     }
     return _itemsView;
 }

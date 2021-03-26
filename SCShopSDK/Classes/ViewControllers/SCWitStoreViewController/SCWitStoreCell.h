@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCWitStoreCell : UITableViewCell
 
-+ (void)calculateRowHeight:(SCWitStoreModel *)model;
++ (CGFloat)calculateRowHeight:(SCWitStoreModel *)model;
 
 //@property (nonatomic, copy) void (^enterBlock)(SCWitStoreModel *storeModel); //进店逛逛
 @property (nonatomic, copy) void (^phoneBlock)(NSString *phone);             //电话

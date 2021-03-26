@@ -39,13 +39,11 @@ DEF_SINGLETON(SCUtilities)
         return NO;
     }
     
-    NSString *debugCode = dict[@"SCShoppingDebugCode"];
-    
-    if (!debugCode || ![debugCode isEqualToString:@"xinwang_shopping_debug"]) {
-        return NO;
-    }
-    
-    return YES;
+    //debugCode: 1:SVN下的shopping工程   2:GIT下的SCShopSDK工程
+    NSInteger debugCode = [dict safeIntegerValueForKey:@"SCShopSDKDebug"];
+
+    return (debugCode == 1 || debugCode == 2);
+
 }
 
 + (BOOL)isValidDictionary:(id)object

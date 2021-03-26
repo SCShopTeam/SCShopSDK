@@ -38,18 +38,6 @@ typedef void(^SCCommodityBlock)(NSArray <SCCommodityModel *> *commodityList, NSA
 //省市县列表
 +(void)scAreaListWithLevel:(NSString *)level adminNum:(NSString*)adminNum block:(void(^)(BOOL success, NSDictionary *objDic, NSString *errMsg))callBack;
 
-//购物车新增/修改
-+ (void)requestCartMerge:(nullable NSString *)cartItemNum itemNum:(nonnull NSString *)itemNum itemQuantity:(NSInteger)itemQuantity success:(nullable SCHttpRequestSuccess)success failure:(nullable SCHttpRequestFailed)failure;
-
-//购物车 商品删除
-+ (void)requestCartDelete:(nonnull NSString *)cartItemNum itemNum:(nonnull NSString *)itemNum success:(nullable SCHttpRequestSuccess)success failure:(nullable SCHttpRequestFailed)failure;
-
-//用户 收藏商品 新增
-+ (void)requestFavoriteAdd:(nonnull NSString *)itemNum success:(nullable SCHttpRequestSuccess)success failure:(nullable SCHttpRequestFailed)failure;
-
-//用户 收藏商品 删除
-+ (void)requestFavoriteDelete:(nonnull NSString *)favNum itemNum:(NSString *)itemNum success:(nullable SCHttpRequestSuccess)success failure:(nullable SCHttpRequestFailed)failure;
-
 //收货地址列表
 +(void)scAddressList:(void(^_Nullable)(BOOL success, NSArray * _Nullable objArr, NSString * _Nullable errMsg))callBack;
 //收货地址 详情

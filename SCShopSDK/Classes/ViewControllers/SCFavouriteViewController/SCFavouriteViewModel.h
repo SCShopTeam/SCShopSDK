@@ -16,9 +16,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSMutableArray <SCFavouriteModel *> *favouriteList;
 @property (nonatomic, strong, readonly) NSArray <SCCommodityModel *> *recommendList;
 
+//收藏列表
 - (void)requestFavoriteList:(SCHttpRequestCompletion)completion;
 
+//推荐列表
 - (void)requestRecommend:(SCHttpRequestCompletion)completion;
+
+//删除商品
+- (void)requestFavoriteDelete:(SCFavouriteModel *)model success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
+
+//新增商品 （不用）
++ (void)requestFavoriteAdd:(SCFavouriteModel *)model success:(SCHttpRequestSuccess)success failure:(SCHttpRequestFailed)failure;
+
+
 
 @end
 
