@@ -325,12 +325,13 @@
 
 - (UIButton *)groupPersonCountButton
 {
-    if (!_groupPersonCountButton) { //home_group_num 32 17
+    if (!_groupPersonCountButton) {
         _groupPersonCountButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(32), SCREEN_FIX(17))];
         _groupPersonCountButton.centerX = self.icon.centerX;
         _groupPersonCountButton.bottom  = self.icon .bottom - SCREEN_FIX(3.5);
         _groupPersonCountButton.titleLabel.font = SCFONT_SIZED_FIX(9);
         [_groupPersonCountButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_groupPersonCountButton setBackgroundImage:SCIMAGE(@"home_group_num") forState:UIControlStateNormal];
         _groupPersonCountButton.userInteractionEnabled = NO;
         [self addSubview:_groupPersonCountButton];
         
