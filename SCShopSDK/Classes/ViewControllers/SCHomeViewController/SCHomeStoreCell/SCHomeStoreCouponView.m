@@ -88,7 +88,7 @@
             [btn sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
                 @strongify(self)
                 if ([self.delegate respondsToSelector:@selector(pushToGoodDetail:)]) {
-                    [self.delegate pushToGoodDetail:goodsModel];
+                    [self.delegate pushToGoodDetail:idx];
                 }
                 
             }];
@@ -177,8 +177,8 @@
         @weakify(self)
         [_moreButton sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
             @strongify(self)
-            if ([self.delegate respondsToSelector:@selector(pushToStorePage)]) {
-                [self.delegate pushToStorePage];
+            if ([self.delegate respondsToSelector:@selector(pushToMoreGoods)]) {
+                [self.delegate pushToMoreGoods];
             }
         }];
         

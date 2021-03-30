@@ -171,7 +171,8 @@
     }
     
     //需要登录
-    if ((code == SCJsmccCodeTabCart || code == SCJsmccCodeCart || SCJsmccCodeOrder) && ![SCUserInfo currentUser].isLogin) {
+    BOOL needLogin = code == SCJsmccCodeCart || code == SCJsmccCodeTabCart || code == SCJsmccCodeOrder;
+    if (needLogin && ![SCUserInfo currentUser].isLogin) {
         SCShoppingManager *manager = [SCShoppingManager sharedInstance];
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
             [manager.delegate scLoginWithNav:nav back:^ {

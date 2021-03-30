@@ -32,7 +32,6 @@
     if (self) {
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.backgroundColor = HEX_RGB(@"#EEEEEE");
-        
     }
     return self;
 }
@@ -54,6 +53,7 @@
 {
     _model = model;
     
+    self.contentView.hidden = !model;
     if (!model) {
         return;
     }
@@ -81,50 +81,61 @@
 //客服
 - (void)pushToService
 {
-    if (_pushBlock) {
-        _pushBlock(self.model.serviceUrl);
+    if (_serviceBlock) {
+        _serviceBlock(self.model.serviceUrl);
     }
 }
 
 //店铺主页
 - (void)pushToStorePage
 {
-    if (_pushBlock) {
-        _pushBlock(self.model.storeLink);
+    if (_storePageBlock) {
+        _storePageBlock(self.model.storeLink);
     }
 }
 
-//跳转本店优惠商品详情
-- (void)pushToGoodDetail:(SCHomeGoodsModel *)model
+//更多热销
+- (void)pushToMoreGoods
 {
-    if (_pushBlock) {
-        _pushBlock(model.goodsDetailUrl);
+    if (_moreGoodsBlock) {
+        _moreGoodsBlock(self.model.storeLink);
+    }
+}
+
+
+//跳转本店优惠商品详情
+- (void)pushToGoodDetail:(NSInteger)index
+{
+    if (_storeGoodsBlock && index < self.model.topGoodsList.count) {
+        SCHomeGoodsModel *model = self.model.topGoodsList[index];
+        _storeGoodsBlock(model.goodsDetailUrl, index);
     }
 }
 
 //跳转商品页
-- (void)pushToGoodsList:(SCHomeActivityModel *)model
+- (void)pushToGoodsList:(SCHomeActivityModel *)model index:(NSInteger)index
 {
-    if (_pushBlock) {
-        _pushBlock(model.link);
+    if (_activityGoodsBlock) {
+        _activityGoodsBlock(model.link, index);
     }
 }
 
 //跳转活动链接
 - (void)pushToActivityPage:(SCHomeActivityModel *)model
 {
-    if (_pushBlock) {
-        _pushBlock(model.link);
+    if (_activityLinkBlock) {
+        _activityLinkBlock(model.link, model.type);
     }
 }
 
 //跳转直播
 - (void)pushToLivePage:(SCHomeActivityModel *)model
 {
-    if (_pushBlock) {
-        _pushBlock(model.link);
+    if (!_activityLinkBlock) {
+        _activityLinkBlock(model.link, model.type);
     }
 }
+
 
 #pragma mark -ui
 - (SCHomeStoreTopView *)topView

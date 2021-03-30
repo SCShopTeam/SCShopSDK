@@ -84,7 +84,7 @@
 - (void)parsingTouchData:(NSDictionary *)result
 {
     //顶部按钮
-    NSArray *topIds = @[@"DBBQLFL", @"DBBQLHD"];
+    NSArray *topIds = @[@"DBBQLFL_I", @"DBBQLHD_I"];
     NSMutableArray *tempTops = [NSMutableArray arrayWithCapacity:topIds.count];
     
     for (NSString *topId in topIds) {

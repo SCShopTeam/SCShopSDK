@@ -108,23 +108,20 @@
         
         //商品
         [self.itemViewList enumerateObjectsUsingBlock:^(SCActivityItemView * _Nonnull itemView, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (model.goodsList.count == 0) {
+            if (idx >= model.goodsList.count) {
                 itemView.hidden = YES;
                 
             }else {
                 itemView.hidden = NO;
-                
-                //固定显示两个商品，如果不足两个，重复显示第一个
-                NSInteger index = (idx >= model.goodsList.count ? 0 : idx);
-                SCHomeGoodsModel *goodsModel = model.goodsList[index];
-                
+
+                SCHomeGoodsModel *goodsModel = model.goodsList[idx];
                 itemView.model = goodsModel;
                 
                 @weakify(self)
                 [itemView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
                     @strongify(self)
-                    if ([self.delegate respondsToSelector:@selector(pushToGoodsList:)]) {
-                        [self.delegate pushToGoodsList:model];
+                    if ([self.delegate respondsToSelector:@selector(pushToGoodsList: index:)]) {
+                        [self.delegate pushToGoodsList:model index:idx];
                     }
                 }];
                 
@@ -330,8 +327,8 @@
         _groupPersonCountButton.centerX = self.icon.centerX;
         _groupPersonCountButton.bottom  = self.icon .bottom - SCREEN_FIX(3.5);
         _groupPersonCountButton.titleLabel.font = SCFONT_SIZED_FIX(9);
-        [_groupPersonCountButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_groupPersonCountButton setBackgroundImage:SCIMAGE(@"home_group_num") forState:UIControlStateNormal];
+        [_groupPersonCountButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         _groupPersonCountButton.userInteractionEnabled = NO;
         [self addSubview:_groupPersonCountButton];
         

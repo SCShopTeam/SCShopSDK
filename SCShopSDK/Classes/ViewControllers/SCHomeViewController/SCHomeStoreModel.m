@@ -172,6 +172,12 @@
             break;
     }
     
+    //goodsList 只显示两个，如果只有1个，则重复显示
+    if (model.goodsList.count == 1) {
+        SCHomeGoodsModel *good = model.goodsList.firstObject;
+        model.goodsList = @[good, good];
+    }
+    
     return model;
     
 }

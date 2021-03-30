@@ -95,26 +95,6 @@ typedef NS_ENUM(NSInteger, SCLocationStatus) {
         [self stopLocation];
         return;
     }
-    
-    if (!_geocoder) {
-        _geocoder = [[CLGeocoder alloc] init];
-    }
-    
-    self.locationManager = [[CLLocationManager alloc]init];
-    self.locationManager.delegate = self;
-    //    定位精度（根据项目的要求来选择，精确越高，耗电量越大）
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    //    距离过滤（触发定位代理的方法）
-    self.locationManager.distanceFilter = 50.0f;
-    //    iOS8新方法
-    if (iOS8Later)
-    {
-        if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
-        {
-            [self.locationManager requestWhenInUseAuthorization];
-        }
-        //            [_locationManager requestAlwaysAuthorization];
-    }
 
     //    开启定位
     [self.locationManager startUpdatingLocation];
@@ -191,6 +171,31 @@ typedef NS_ENUM(NSInteger, SCLocationStatus) {
     [self.blockList removeAllObjects];
 
     
+}
+
+- (CLLocationManager *)locationManager
+{
+    if (!_locationManager) {
+        _locationManager = [CLLocationManager new];
+        _locationManager.delegate = self;
+        //    定位精度（根据项目的要求来选择，精确越高，耗电量越大）
+        _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+        //    距离过滤（触发定位代理的方法）
+        _locationManager.distanceFilter = 50.0f;
+
+        [_locationManager requestWhenInUseAuthorization];
+//        [_locationManager requestAlwaysAuthorization];
+        
+    }
+    return _locationManager;
+}
+
+- (CLGeocoder *)geocoder
+{
+    if (!_geocoder) {
+        _geocoder = [CLGeocoder new];
+    }
+    return _geocoder;
 }
 
 #pragma mark -参数设置

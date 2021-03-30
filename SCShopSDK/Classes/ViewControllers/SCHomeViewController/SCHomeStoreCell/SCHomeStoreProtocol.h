@@ -20,10 +20,12 @@
 - (void)pushToService;
 //店铺主页
 - (void)pushToStorePage;
+//更多热销
+- (void)pushToMoreGoods;
 //跳转本店优惠商品详情
-- (void)pushToGoodDetail:(SCHomeGoodsModel *)model;
+- (void)pushToGoodDetail:(NSInteger)index;
 //跳转商品页
-- (void)pushToGoodsList:(SCHomeActivityModel *)model;
+- (void)pushToGoodsList:(SCHomeActivityModel *)model index:(NSInteger)index;
 //跳转活动链接
 - (void)pushToActivityPage:(SCHomeActivityModel *)model;
 //跳转直播

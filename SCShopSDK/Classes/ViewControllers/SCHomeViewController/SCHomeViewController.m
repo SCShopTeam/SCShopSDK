@@ -300,23 +300,67 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         return gridCell;
     }
     
+    //推荐门店
     if (row == SCHomeRowStore) {
         SCHomeStoreCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeStoreCell.class) forIndexPath:indexPath];
         cell.model = self.viewModel.storeModel;
         
         @weakify(self)
-        cell.pushBlock = ^(NSString * _Nonnull url) {
+        //电话
+        cell.callBlock = ^(NSString * _Nonnull contactPhone) {
             @strongify(self)
-            [self pushToNewPage:url title:@""];
+            [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_F02" url:contactPhone inPage:NSStringFromClass(self.class)];
+            [SCUtilities call:contactPhone];
         };
         
-        cell.callBlock = ^(NSString * _Nonnull url) {
-            [SCUtilities call:url];
+        //客服
+        cell.serviceBlock = ^(NSString * _Nonnull serviceUrl) {
+            @strongify(self)
+            [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_F01" url:serviceUrl inPage:NSStringFromClass(self.class)];
+            [self pushToNewPage:serviceUrl title:@""];
+        };
+        
+        //门店首页 点击标题
+        cell.storePageBlock = ^(NSString * _Nonnull storeLink) {
+          @strongify(self)
+            [self pushToNewPage:storeLink title:@""];
+        };
+        
+        //更多热销
+        cell.moreGoodsBlock = ^(NSString * _Nonnull storeLink) {
+          @strongify(self)
+            [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_F06" url:storeLink inPage:NSStringFromClass(self.class)];
+            [self pushToNewPage:storeLink title:@""];
+        };
+        
+        //本店优惠商品
+        cell.storeGoodsBlock = ^(NSString * _Nonnull goodsDetailUrl, NSInteger index) {
+          @strongify(self)
+            [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_F0%li",index+7)   url:goodsDetailUrl inPage:NSStringFromClass(self.class)];
+            [self pushToNewPage:goodsDetailUrl title:@""];
+        };
+        
+        //活动商品
+        cell.activityGoodsBlock = ^(NSString * _Nonnull link, NSInteger index) {
+          @strongify(self)
+            [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_F0%li",index+3)   url:link inPage:NSStringFromClass(self.class)];
+            [self pushToNewPage:link title:@""];
+        };
+        
+        //活动链接
+        cell.activityLinkBlock = ^(NSString * _Nonnull link, SCHomeActivityType type) {
+          @strongify(self)
+            if (type == SCHomeActivityTypeLive || type == SCHomeActivityTypeActivity) {
+                [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_F05" url:link inPage:NSStringFromClass(self.class)];
+            }
+            
+            [self pushToNewPage:link title:@""];
         };
 
         return cell;
     }
     
+    //发现好店
     if (row == SCHomeRowGoodStores) {
         SCHomeGoodStoresCell *goodCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeGoodStoresCell.class) forIndexPath:indexPath];
         
@@ -344,6 +388,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         return goodCell;
     }
     
+    //广告
     if (row == SCHomeRowAd) {
         SCHomeAdCell *adCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeAdCell.class) forIndexPath:indexPath];
         
@@ -364,6 +409,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         return adCell;
     }
     
+    //标签
     if (row == SCHomeRowTags) {
         SCHomeTagCell *tagCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeTagCell.class) forIndexPath:indexPath];
         _tagView = tagCell.tagView;
@@ -379,6 +425,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         return tagCell;
     }
     
+    //商品
     if (row == SCHomeRowItems) {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(UITableViewCell.class) forIndexPath:indexPath];
         [cell.contentView addSubview:self.itemsView];
