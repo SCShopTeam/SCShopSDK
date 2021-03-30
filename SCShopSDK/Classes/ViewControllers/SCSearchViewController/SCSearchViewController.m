@@ -80,16 +80,22 @@
 {
     SCShopTableCell *cell = (SCShopTableCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCShopTableCell.class) forIndexPath:indexPath];
     
-    SCSearchItemModel *item = self.viewModel.itemList[indexPath.row];
-    cell.searchModel = item;
+    if (indexPath.row < self.viewModel.itemList.count) {
+        SCSearchItemModel *item = self.viewModel.itemList[indexPath.row];
+        cell.searchModel = item;
+    }
+
     
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SCSearchItemModel *item = self.viewModel.itemList[indexPath.row];
-    [SCURLSerialization gotoWebcustom:item.url title:/*item.title*/@"" navigation:self.navigationController];
+    if (indexPath.row < self.viewModel.itemList.count) {
+        SCSearchItemModel *item = self.viewModel.itemList[indexPath.row];
+        [SCURLSerialization gotoWebcustom:item.url title:/*item.title*/@"" navigation:self.navigationController];
+    }
+
 }
 
 

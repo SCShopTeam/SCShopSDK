@@ -81,9 +81,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
-    
-    [SCURLSerialization gotoWebcustom:model.detailUrl title:@"" navigation:[SCUtilities currentNavigationController]];
+    if (indexPath.row < self.viewModel.commodityList.count) {
+        SCCommodityModel *model = self.viewModel.commodityList[indexPath.row];
+        
+        [SCURLSerialization gotoWebcustom:model.detailUrl title:@"" navigation:[SCUtilities currentNavigationController]];
+    }
+
 }
 
 #pragma mark -ui

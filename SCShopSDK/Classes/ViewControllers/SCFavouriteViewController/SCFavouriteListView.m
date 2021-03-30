@@ -41,8 +41,11 @@
 {
     SCFavouriteCell *cell = (SCFavouriteCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCFavouriteCell.class) forIndexPath:indexPath];
     
-    SCFavouriteModel *model = self.favouriteList[indexPath.row];
-    cell.model = model;
+    if (indexPath.row < self.favouriteList.count) {
+        SCFavouriteModel *model = self.favouriteList[indexPath.row];
+        cell.model = model;
+    }
+
     return cell;
 }
 

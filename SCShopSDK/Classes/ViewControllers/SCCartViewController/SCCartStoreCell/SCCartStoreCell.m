@@ -78,8 +78,11 @@
 {
     SCStoreItemCell *cell = (SCStoreItemCell *)[tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCStoreItemCell.class) forIndexPath:indexPath];
     
-    SCCartItemModel *item = _model.cartItems[indexPath.row];
-    cell.item = item;
+    if (indexPath.row < _model.cartItems.count) {
+        SCCartItemModel *item = _model.cartItems[indexPath.row];
+        cell.item = item;
+    }
+
     
     @weakify(self)
     cell.numBlock = ^{
@@ -105,7 +108,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    if (self.rowClickBlock) {
+    if (self.rowClickBlock && indexPath.row < _model.cartItems.count) {
         SCCartItemModel *item = _model.cartItems[indexPath.row];
         self.rowClickBlock(item.categoryUrl);
     }

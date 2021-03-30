@@ -29,6 +29,8 @@ typedef NS_ENUM(NSInteger, SCLocationStatus) {
     SCLocationStatusFinish
 };
 
+static NSDictionary *kCityCodeDict;
+
 
 @interface SCLocationService()<CLLocationManagerDelegate>
 
@@ -47,6 +49,23 @@ typedef NS_ENUM(NSInteger, SCLocationStatus) {
 
 @synthesize city = _city;
 
++ (void)initialize
+{
+    kCityCodeDict = @{@"南京": @"14",
+                      @"苏州": @"11",
+                      @"无锡": @"19",
+                      @"常州": @"17",
+                      @"南通": @"20",
+                      @"镇江": @"18",
+                      @"扬州": @"23",
+                      @"泰州": @"21",
+                      @"徐州": @"16",
+                      @"盐城": @"22",
+                      @"淮安": @"12",
+                      @"连云港": @"15",
+                      @"宿迁": @"13"};
+}
+
 + (instancetype)sharedInstance
 {
     static SCLocationService *_s;
@@ -56,7 +75,6 @@ typedef NS_ENUM(NSInteger, SCLocationStatus) {
     });
     return _s;
 }
-
 
 #pragma mark - public
 - (void)startLocation:(SCLocationBlock)callBack
@@ -118,6 +136,9 @@ typedef NS_ENUM(NSInteger, SCLocationStatus) {
             //城市
             NSString *city = addressDictionary[@"City"];
             self.city = city;
+            
+            //城市编码
+            self.cityCode = kCityCodeDict[self.city];
 
             //详细地址
             NSString *state       = addressDictionary[@"State"];
@@ -201,16 +222,24 @@ typedef NS_ENUM(NSInteger, SCLocationStatus) {
 #pragma mark -参数设置
 - (void)setCity:(NSString *)city
 {
-    if ([city hasSuffix:@"市"]) {
+    if (!VALID_STRING(city)) {
+        _city = nil;
+        return;
+    }
+    
+    if ([city hasSuffix:@"市"]) { //把"市"移除
         city = [city substringToIndex:city.length -1];
     }
+    
+    //业务只涉及江苏省内城市
+    city = [kCityCodeDict.allKeys containsObject:city] ? city : nil;
     
     _city = city;
 }
 
 - (NSString *)city
 {
-    if (!_city) {
+    if (!VALID_STRING(_city)) {
         _city = @"南京";
     }
     return _city;
@@ -219,22 +248,7 @@ typedef NS_ENUM(NSInteger, SCLocationStatus) {
 - (NSString *)cityCode
 {
     if (!_cityCode) {
-        NSDictionary *dict = @{@"南京": @"14",
-                               @"苏州": @"11",
-                               @"无锡": @"19",
-                               @"常州": @"17",
-                               @"南通": @"20",
-                               @"镇江": @"18",
-                               @"扬州": @"23",
-                               @"泰州": @"21",
-                               @"徐州": @"16",
-                               @"盐城": @"22",
-                               @"淮安": @"12",
-                               @"连云港": @"15",
-                               @"宿迁": @"13"};
-        
-        _cityCode = dict[self.city];
-        
+        _cityCode = kCityCodeDict[self.city];
     }
     
     return _cityCode;

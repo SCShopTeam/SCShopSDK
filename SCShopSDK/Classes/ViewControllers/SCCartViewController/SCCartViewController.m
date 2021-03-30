@@ -11,7 +11,6 @@
 #import "SCCartStoreCell.h"
 #import "SCCartViewModel.h"
 #import "SCCartEmptyView.h"
-#import "SCLifeViewController.h"
 #import "SCRecommendItemView.h"
 
 #define kStoreSectionMargin SCREEN_FIX(11.5)
@@ -79,8 +78,7 @@
         @weakify(self)
         header.pushBlock = ^{
             @strongify(self)
-
-            [self.navigationController pushViewController:[SCLifeViewController new] animated:YES];
+            [SCURLSerialization gotoController:SC_JSMCC_PATH(SCJsmccCodeLife) navigation:self.navigationController];
         };
         
         return header;

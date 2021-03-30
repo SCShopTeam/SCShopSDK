@@ -68,15 +68,19 @@
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     SCShopCollectionCell *cell = (SCShopCollectionCell *)[collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(SCShopCollectionCell.class) forIndexPath:indexPath];
-    SCCommodityModel *model = self.list[indexPath.row];
-    cell.model = model;
+    
+    if (indexPath.row < self.list.count) {
+        SCCommodityModel *model = self.list[indexPath.row];
+        cell.model = model;
+    }
+
     
     return cell;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.selectBlock) {
+    if (self.selectBlock && indexPath.row < self.list.count) {
         SCCommodityModel *model = self.list[indexPath.row];
         self.selectBlock(model);
     }

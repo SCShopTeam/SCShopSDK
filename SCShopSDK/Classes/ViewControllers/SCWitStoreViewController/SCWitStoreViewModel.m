@@ -49,12 +49,13 @@
 //地市列表
 - (void)requestAreaList:(void (^)(NSString *areaName))areaBlock;
 {
-    __block NSString *defaultName = [SCLocationService sharedInstance].city;
+    __block NSString *cityName = [SCLocationService sharedInstance].city;
+    self.requestModel.busiRegCityCode = [SCLocationService sharedInstance].cityCode;
     
     [SCNetworkManager POST:SC_AREA_LIST_AT parameters:nil success:^(id  _Nullable responseObject) {
         if (![SCNetworkTool checkResult:responseObject key:nil forClass:NSArray.class failure:nil]) {
             if (areaBlock) {
-                areaBlock(defaultName);
+                areaBlock(cityName);
             }
             return;
         }
@@ -63,6 +64,7 @@
         
         NSArray *areaList = responseObject[A_RESULT];
         
+
         NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:areaList.count];
         for (NSDictionary *dict in areaList) {
             if (!VALID_DICTIONARY(dict)) {
@@ -70,23 +72,23 @@
             }
             SCAreaModel *model = [SCAreaModel yy_modelWithDictionary:dict];
             
-            if ([model.code isEqualToString:user.uan]) {
+            if (user.isLogin && [model.code isEqualToString:user.uan]) {
                 model.selected = YES;
                 self.requestModel.busiRegCityCode = model.code;
-                defaultName = model.name;
+                cityName = model.name;
             }
             
             [mulArr addObject:model];
         }
-        
+
         self.areaList = mulArr.copy;
         if (areaBlock) {
-            areaBlock(defaultName);
+            areaBlock(cityName);
         }
 
     } failure:^(NSString * _Nullable errorMsg) {
         if (areaBlock) {
-            areaBlock(defaultName);
+            areaBlock(cityName);
         }
     }];
 }

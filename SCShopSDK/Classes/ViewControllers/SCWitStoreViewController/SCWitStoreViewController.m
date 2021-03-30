@@ -269,8 +269,11 @@
     
     NSArray <SCWitStoreModel *> *dataList = indexPath.section == 0 ? cacheModel.storeList : self.viewModel.professionalList;
     
-    SCWitStoreModel *model = dataList[indexPath.row];
-    [self pushToWebView:model.storeLink title:@"智慧门店"];
+    if (indexPath.row < dataList.count) {
+        SCWitStoreModel *model = dataList[indexPath.row];
+        [self pushToWebView:model.storeLink title:@"智慧门店"];
+    }
+
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

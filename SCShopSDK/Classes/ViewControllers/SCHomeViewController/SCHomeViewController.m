@@ -18,7 +18,6 @@
 #import "SCHomeAdCell.h"
 #import "SCHomeTagCell.h"
 #import "SCShoppingManager.h"
-#import "SCWitStoreViewController.h"
 #import "SCHomeItemsView.h"
 #import "SCSearchViewController.h"
 #import "SCHomeMoreView.h"
@@ -101,20 +100,20 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 #pragma mark -request
 - (void)requestData
 {
-    //请求触点   只请求一次
+    //触点   只请求一次
     if (!self.viewModel.gridList) [self requestTouchData];
     
-    //推荐门店
+    //推荐门店   每次刷新重新请求
     [self requestRecommendStoreData];
     
-    //发现好店
-    [self requestGoodStoreData];
+    //发现好店   只请求一次
+    if (!self.viewModel.goodStoreList)  [self requestGoodStoreData];
     
     //分类只请求一次  后面再调用只刷新商品列表
     if (!self.viewModel.categoryList) {
         [self requestCategoryData]; //请求分类
         
-    }else {
+    }else {  //刷新时会调用
         [_itemsView refresh]; //刷新商品
     }
 
@@ -248,7 +247,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
                 [self pushToNewPage:SC_JSMCC_PATH(SCJsmccCodeOrder) title:@""];
                 
             }else {
-                if (model) {
+                if (VALID_STRING(model.linkUrl)) {
                     [self pushToNewPage:model.linkUrl title:model.contentName];
                 }else {
                     [self showWithStatus:@"敬请期待"];
@@ -368,8 +367,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         @weakify(self)
         goodCell.moreBlock = ^{
             @strongify(self)
-            SCWitStoreViewController *vc = [SCWitStoreViewController new];
-            [self.navigationController pushViewController:vc animated:YES];
+            [self pushToNewPage:SC_JSMCC_PATH(SCJsmccCodeWitStore) title:@""];
             [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_C09" url:@"" inPage:NSStringFromClass(self.class)];
         };
         
@@ -435,7 +433,6 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
             @strongify(self)
             [self.tagView pushToIndex:index needCallBack:NO];
             
-
         };
         
         self.itemsView.selectBlock = ^(SCCommodityModel * _Nonnull model) {
@@ -477,6 +474,10 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 #pragma mark -Action
 - (void)gridSelect:(NSInteger)index
 {
+    if (index >= self.viewModel.gridList.count) {
+        return;
+    }
+    
     SCHomeTouchModel *model = self.viewModel.gridList[index];
     
     [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_B0%li",index+1) url:model.linkUrl inPage:NSStringFromClass(self.class)];

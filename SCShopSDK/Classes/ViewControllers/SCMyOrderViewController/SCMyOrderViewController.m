@@ -17,7 +17,7 @@
 #import "SCApolloOrderModel.h"
 #import "MJRefresh.h"
 #import "SCAlertViewController.h"
-#import "SCLifeViewController.h"
+
 @interface SCMyOrderViewController ()<UITableViewDelegate,UITableViewDataSource,scMyOrderTopItemDelegate>
 @property(nonatomic,strong)UITableView *listTable;
 @property(nonatomic,strong) SCMyOrderTopItemView *topItemView;
@@ -169,8 +169,7 @@
 
 #pragma mark --去逛逛
 -(void)toGuangGuang{
-    SCLifeViewController *tag = [[SCLifeViewController alloc]init];
-    [self.navigationController pushViewController:tag animated:YES];
+    [SCURLSerialization gotoController:SC_JSMCC_PATH(SCJsmccCodeLife) navigation:self.navigationController];
 }
 
 -(void)loadMore{

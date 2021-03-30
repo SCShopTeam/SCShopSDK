@@ -10,7 +10,6 @@
 #import "SCFavouriteViewModel.h"
 #import "SCFavouriteCell.h"
 #import "SCCartEmptyView.h"
-#import "SCLifeViewController.h"
 #import "SCRecommendItemView.h"
 
 @interface SCFavouriteViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -64,17 +63,23 @@
 {
     SCFavouriteCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCFavouriteCell.class) forIndexPath:indexPath];
     
-    SCFavouriteModel *model = self.viewModel.favouriteList[indexPath.row];
-    cell.model = model;
+    if (indexPath.row < self.viewModel.favouriteList) {
+        SCFavouriteModel *model = self.viewModel.favouriteList[indexPath.row];
+        cell.model = model;
+    }
+
     
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SCFavouriteModel *model = self.viewModel.favouriteList[indexPath.row];
-    
-    [SCURLSerialization gotoNewPage:model.categoryUrl title:@"" navigation:self.navigationController];
+    if (indexPath.row < self.viewModel.favouriteList.count) {
+        SCFavouriteModel *model = self.viewModel.favouriteList[indexPath.row];
+        
+        [SCURLSerialization gotoNewPage:model.categoryUrl title:@"" navigation:self.navigationController];
+    }
+
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -174,7 +179,7 @@
         @weakify(self)
         _emptyView.pushBlock = ^{
             @strongify(self)
-            [self.navigationController pushViewController:[SCLifeViewController new] animated:YES];
+            [SCURLSerialization gotoController:SC_JSMCC_PATH(SCJsmccCodeLife) navigation:self.navigationController];
         };
 
     }

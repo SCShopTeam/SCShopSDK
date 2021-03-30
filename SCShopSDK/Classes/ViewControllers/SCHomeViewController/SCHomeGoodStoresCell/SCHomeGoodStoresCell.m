@@ -102,8 +102,8 @@ static NSInteger kMaxGoodShopCount = 3;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    SCGoodStoresModel *model = self.goodStoreList[indexPath.row];
-    if (self.enterShopBlock) {
+    if (self.enterShopBlock && indexPath.row < self.goodStoreList.count) {
+        SCGoodStoresModel *model = self.goodStoreList[indexPath.row];
         self.enterShopBlock(indexPath.row, model.shopInfo);
     }
 }

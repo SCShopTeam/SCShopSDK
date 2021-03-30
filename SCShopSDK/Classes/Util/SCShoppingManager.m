@@ -10,6 +10,7 @@
 #import "SCHomeViewController.h"
 #import "SCBaseNavigationController.h"
 #import "SCLocationService.h"
+#import "SCProgressHUD.h"
 
 @implementation SCShoppingManager
 
@@ -28,6 +29,7 @@
 {
     self = [super init];
     if (self) {
+        [SCProgressHUD setDefaultStyle:SCProgressHUDStyleDark];
         [[SCLocationService sharedInstance] startLocation:nil]; //获取定位并缓存
     }
     return self;

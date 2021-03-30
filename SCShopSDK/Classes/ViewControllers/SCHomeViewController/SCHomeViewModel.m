@@ -112,12 +112,6 @@
     
     //banner
     NSMutableArray *bannerModels = [SCHomeTouchModel createModelsWithDict:result[@"SCDBBANNER_I"]];
-    //剔除空数据
-    [bannerModels enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(SCHomeTouchModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (!VALID_STRING(obj.picUrl)) {
-            [bannerModels removeObject:obj];
-        }
-    }];
     self.bannerList = bannerModels.copy;
     
     //广告
@@ -163,26 +157,28 @@
 {
     SCUserInfo *userInfo = [SCUserInfo currentUser];
     
-    if (!VALID_STRING(userInfo.phoneNumber)) {
+    if (!VALID_STRING(userInfo.phoneNumber) || !VALID_STRING(userInfo.uan)) {
         self.storeModel = nil;
         
         if (completion) {
-            completion(@"phone null");
+            completion(@"phone or uan null");
         }
         
         return;
     }
     
     //有手机号，有定位才可以请求
+    BOOL useCache = !self.storeModel; //第一次请求用缓存，后续刷新都要重新定位
+    
     [[SCLocationService sharedInstance] startLocation:^(SCLocationService * _Nonnull ls) {
         [self requestRecommendStoreDataWithLongitude:ls.longitude latitude:ls.latitude userInfo:userInfo completion:completion];
-    }];
+    } useCache:useCache];
 }
 
 - (void)requestRecommendStoreDataWithLongitude:(nullable NSString *)longitude latitude:(nullable NSString *)latitude userInfo:(SCUserInfo *)userInfo completion:(SCHttpRequestCompletion)completion
 {
-    NSDictionary *param = @{@"longitude": longitude?:@"",
-                            @"latitude": latitude?:@"",
+    NSDictionary *param = @{@"longitude": (VALID_STRING(longitude) ? longitude : @""),
+                            @"latitude": (VALID_STRING(latitude) ? latitude : @""),
                             @"areaNum": userInfo.uan,
                             @"phoneNum": userInfo.phoneNumber};
     
@@ -198,7 +194,7 @@
         NSDictionary *result = responseObject[B_RESULT];
         SCHomeStoreModel *storeModel = [SCHomeStoreModel yy_modelWithDictionary:result];
         
-        if (!storeModel.storeId) {
+        if (!VALID_STRING(storeModel.storeId)) {
             self.storeModel = storeModel;
             if (completion) {
                 completion(nil);

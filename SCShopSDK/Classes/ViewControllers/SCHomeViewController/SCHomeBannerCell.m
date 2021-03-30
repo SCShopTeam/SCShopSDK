@@ -40,7 +40,8 @@
     NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:bannerList.count];
     
     for (SCHomeTouchModel *model in bannerList) {
-        [mulArr addObject:(model.picUrl?:@"")];
+        NSString *picUrl = VALID_STRING(model.picUrl) ? model.picUrl : @"";
+        [mulArr addObject:picUrl];
     }
     
     self.cycleView.imageURLStringsGroup = mulArr;
