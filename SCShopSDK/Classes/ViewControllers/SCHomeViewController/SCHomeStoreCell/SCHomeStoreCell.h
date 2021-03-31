@@ -18,10 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) void (^callBlock)(NSString *contactPhone);
 @property (nonatomic, copy) void (^serviceBlock)(NSString *serviceUrl);
 @property (nonatomic, copy) void (^storePageBlock)(NSString *storeLink);
-@property (nonatomic, copy) void (^moreGoodsBlock)(NSString *storeLink);
 @property (nonatomic, copy) void (^storeGoodsBlock)(NSString *goodsDetailUrl, NSInteger index);
 @property (nonatomic, copy) void (^activityGoodsBlock)(NSString *link, NSInteger index);
-@property (nonatomic, copy) void (^activityLinkBlock)(NSString *link, SCHomeActivityType type);
+@property (nonatomic, copy) void (^activityLinkBlock)(NSString *link);
 
 + (CGFloat)getRowHeight:(SCHomeStoreModel *)model;
 

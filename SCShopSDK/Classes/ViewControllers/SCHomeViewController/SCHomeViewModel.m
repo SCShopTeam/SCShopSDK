@@ -21,7 +21,7 @@
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *bannerList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *gridList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *adList;                     //广告
-@property (nonatomic, strong) NSMutableDictionary <NSNumber *, SCHomeTouchModel *> *popupDict; //弹窗
+@property (nonatomic, strong) NSArray <SCHomeTouchModel *> *popupList;           //弹窗
 
 @property (nonatomic, strong) SCHomeStoreModel *storeModel;               //推荐门店
 @property (nonatomic, copy) NSMutableDictionary *serviceUrlCaches;
@@ -86,7 +86,7 @@
     //顶部按钮
     NSArray *topIds = @[@"DBBQLFL_I", @"DBBQLHD_I"];
     NSMutableArray *tempTops = [NSMutableArray arrayWithCapacity:topIds.count];
-    
+
     for (NSString *topId in topIds) {
         NSMutableArray *models = [SCHomeTouchModel createModelsWithDict:result[topId]];
         if (models.count > 0) {
@@ -99,13 +99,15 @@
     NSArray *gridIds = @[@"SCSYDYGG_I", @"SCSYDEGG_I", @"SCSYDSGG_I", @"SCSYDSGG1_I", @"SCSYDWGG_I", @"SCSYDLGG_I", @"SCSYDQGG_I", @"SCSYDBGG_I"];
     NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:gridIds.count];
     
-    for (NSString *touchId in gridIds) {
-        NSMutableArray *models = [SCHomeTouchModel createModelsWithDict:result[touchId]];
+    [gridIds enumerateObjectsUsingBlock:^(NSString *_Nonnull gridId, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSMutableArray *models = [SCHomeTouchModel createModelsWithDict:result[gridId]];
         if (models.count > 0) {
-            [mulArr addObject:models.firstObject];
+            SCHomeTouchModel *model = models.firstObject;
+            model.codeIndex = idx;
+            [mulArr addObject:model];
         }
         
-    }
+    }];
     
     self.gridList = mulArr.copy;
     _gridRowHeight = self.gridList.count > 0 ? kHomeGridRowH : 0;
@@ -127,28 +129,29 @@
     
     
     //弹窗
-    NSDictionary *popupDict = @{@"SCSYCBLFC_I": @(SCPopupTypeSide),
-                                @"SCSYZXDC_I": @(SCPopupTypeCenter),
-                                @"SCSYDBYXDC_I": @(SCPopupTypeBottom)};
+    NSDictionary *popupDict = @{@"SCSYZXDC_I": @(SCPopupTypeCenter),
+                                @"SCSYDBYXDC_I": @(SCPopupTypeBottom),
+                                @"SCSYCBLFC_I": @(SCPopupTypeSide)};
     
-    NSMutableDictionary *tempPopups = [NSMutableDictionary dictionary];
+    NSMutableArray *tempPopups = [NSMutableArray arrayWithCapacity:3];
+    
     for (NSString *popupId in popupDict.allKeys) {
         NSMutableArray *models = [SCHomeTouchModel createModelsWithDict:result[popupId]];
         
-        for (SCHomeTouchModel *model in models) {
-            NSNumber *popupNum = popupDict[popupId];
-            BOOL show = [SCPopupManager validPopup:model type:popupNum.integerValue];
+        for (SCHomeTouchModel *model in models) { //一个位置的浮窗触点可能会返回好几个，遍历查找是否需要展示，每个位置最多只取一个
+            SCPopupType popupType = [popupDict safeIntegerValueForKey:popupId];
+            BOOL show = [SCPopupManager validPopup:model type:popupType];
             if (show) {
-                tempPopups[popupNum] = model;
+                model.popupType = popupType;
+                [tempPopups addObject:model];
+                
                 break;
             }
-            
         }
-        
     }
-    
-    self.popupDict = tempPopups.copy;
-    
+
+    self.popupList = tempPopups.copy;
+
 }
 
 

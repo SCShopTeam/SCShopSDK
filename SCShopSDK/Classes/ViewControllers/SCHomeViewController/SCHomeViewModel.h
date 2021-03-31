@@ -17,21 +17,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SCHomeViewModel : NSObject
 
-@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *topList;
-@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *bannerList;
-@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *gridList;
-@property (nonatomic, assign, readonly) CGFloat gridRowHeight;
-@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *adList;                     //广告
-@property (nonatomic, strong, readonly) NSDictionary <NSNumber *, SCHomeTouchModel *> *popupDict; //弹窗
-
-@property (nonatomic, strong ,readonly) SCHomeStoreModel *storeModel;               //推荐门店
-@property (nonatomic, assign, readonly) CGFloat storeRowHeight;
-
-@property (nonatomic, strong, readonly) NSArray <SCGoodStoresModel *> *goodStoreList;              //发现好店
-@property (nonatomic, assign, readonly) CGFloat goodStoresRowHeight;
-
-@property (nonatomic, strong, readonly) NSArray <SCCategoryModel *> *categoryList;                //分类
-
+/*触点接口*/
+@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *topList;             //顶部宫格
+@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *bannerList;          //轮播图
+@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *gridList;            //8宫格
+@property (nonatomic, assign, readonly) CGFloat gridRowHeight;                             //宫格楼层高度
+@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *adList;              //广告
+@property (nonatomic, strong, readonly) NSArray <SCHomeTouchModel *> *popupList;           //弹窗
+/*门店接口*/
+@property (nonatomic, strong ,readonly) SCHomeStoreModel *storeModel;                      //推荐门店
+@property (nonatomic, assign, readonly) CGFloat storeRowHeight;                            //门店楼层高度
+/*好店接口*/
+@property (nonatomic, strong, readonly) NSArray <SCGoodStoresModel *> *goodStoreList;      //发现好店
+@property (nonatomic, assign, readonly) CGFloat goodStoresRowHeight;                       //好店楼层高度
+/*分类接口*/
+@property (nonatomic, strong, readonly) NSArray <SCCategoryModel *> *categoryList;         //分类
+/*商品接口*/
 @property (nonatomic, strong, readonly) NSMutableArray<SCCommodityModel *> *commodityList; //商品
 @property (nonatomic, assign, readonly) BOOL hasNoData;
 

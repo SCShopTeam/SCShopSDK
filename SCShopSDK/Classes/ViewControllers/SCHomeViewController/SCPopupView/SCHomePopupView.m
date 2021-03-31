@@ -9,23 +9,57 @@
 #import "SCHomePopupView.h"
 
 @interface SCHomePopupView ()
+@property (nonatomic, strong) SCHomeTouchModel *model;
+@property (nonatomic, copy) SCPopupBlock clickBlock;
 @property (nonatomic, strong) UIButton *imageButton;
 @property (nonatomic, strong) UIButton *closeButton;
 
 @end
 
 @implementation SCHomePopupView
++ (void)showIn:(UIViewController *)vc model:(SCHomeTouchModel *)model clickBlock:(nonnull SCPopupBlock)clickBlock
+{
+    if (!vc || !model || model.popupType < 0 || model.popupType > 2) {
+        return;
+    }
+    
+    CGFloat viewW = vc.view.width;
+    CGFloat viewH = vc.view.height;
+
+    CGRect frame;
+    
+    if (model.popupType == SCPopupTypeSide) {
+        CGFloat w = SCREEN_FIX(62.5);
+        CGFloat h = SCREEN_FIX(78);
+        frame = CGRectMake(viewW - w, (viewH - TAB_BAR_HEIGHT - h)/2, w, h);
+        
+    }else if (model.popupType == SCPopupTypeBottom) {
+        CGFloat h = SCREEN_FIX(200);
+        frame = CGRectMake(0, viewH - h - TAB_BAR_HEIGHT, viewW, h);
+        
+    }else {
+        CGFloat w = SCREEN_FIX(285);
+        CGFloat h = SCREEN_FIX(400);
+        frame = CGRectMake((viewW - w)/2, (viewH - TAB_BAR_HEIGHT - h)/2, w, h);
+    }
+    
+    SCHomePopupView *popupView = [[SCHomePopupView alloc] initWithFrame:frame];
+    popupView.model = model;
+    popupView.clickBlock = clickBlock;
+    
+    [vc.view addSubview:popupView];
+    
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        _moveAfterClicked = YES;
+        [self closeButton];
     }
     return self;
 }
 
-#pragma mark -data
 - (void)setModel:(SCHomeTouchModel *)model
 {
     _model = model;
@@ -33,25 +67,14 @@
     [self.imageButton sd_setBackgroundImageWithURL:[NSURL URLWithString:model.picUrl] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
 }
 
-#pragma mark -public
-- (void)setCloseFrame:(CGRect)closeFrame
-{
-    self.closeButton.frame = closeFrame;
-}
-
-- (void)setImageFrame:(CGRect)imageFrame
-{
-    self.imageFrame = imageFrame;
-}
-
 #pragma mark -action
 - (void)linkClicked
 {
-    if (_linkBlock) {
-        _linkBlock(self.model);
+    if (_clickBlock) {
+        _clickBlock(self.model);
     }
     
-    if (_moveAfterClicked) {
+    if (self.model.popupType != SCPopupTypeSide) {
         [self removeFromSuperview];
     }
 }

@@ -130,19 +130,20 @@ DEF_SINGLETON(SCSearchHistoryUtil)
     if (!_db) {
         // 获取数据库文件的路径
         NSString *docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-        NSString *path = [docPath stringByAppendingPathComponent:@"SCSearchHistory.sqlite"];
+        NSString *path = [docPath stringByAppendingPathComponent:SC_COMMON_SQLITE];
         // 1..创建数据库对象
         _db = [FMDatabase databaseWithPath:path];
         // 2.打开数据库
         if ([_db open]) {
-            //        DDLOG(@"Open database Success");
+            NSString *createTableSqlString = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (id integer PRIMARY KEY AUTOINCREMENT, %@ text NOT NULL, %@ text NOT NULL)", kTableName, kRecordKey, kDateKey];
+            
+            [_db executeUpdate:createTableSqlString];
+            
         } else {
-            DDLOG(@"fail to open database:SCSearchHistory.sqlite");
+            DDLOG(@"fail to open database");
         }
         
-        NSString *createTableSqlString = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (id integer PRIMARY KEY AUTOINCREMENT, %@ text NOT NULL, %@ text NOT NULL)", kTableName, kRecordKey, kDateKey];
-        
-        [_db executeUpdate:createTableSqlString];
+
     }
     return _db;
 }

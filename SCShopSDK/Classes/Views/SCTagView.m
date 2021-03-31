@@ -59,6 +59,10 @@
 
 - (void)pushToIndex:(NSInteger)index needCallBack:(BOOL)needCallBack
 {
+    if (index >= self.categoryList.count) {
+        return;
+    }
+    
     [self.categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull model, NSUInteger idx, BOOL * _Nonnull stop) {
         model.selected = idx == index;
     }];
@@ -82,8 +86,14 @@
 {
     SCCategoryModel *model = self.categoryList[indexPath.row];
 
-    return CGSizeMake(model.tagWidth, collectionView.height);
+    return CGSizeMake(model.tagWidth, collectionView.height - _contentEdgeInsets.top - _contentEdgeInsets.bottom);
     
+}
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(nonnull UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
+{
+    CGFloat margin = SCREEN_FIX(10);
+    return UIEdgeInsetsMake(_contentEdgeInsets.top, _contentEdgeInsets.left + margin, _contentEdgeInsets.bottom, _contentEdgeInsets.right + margin);
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -120,17 +130,11 @@
         CGFloat margin = SCREEN_FIX(10);
 
         UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
-        layout.minimumLineSpacing      = SCREEN_FIX(10);
-        layout.minimumInteritemSpacing = SCREEN_FIX(10);
-        layout.sectionInset            = UIEdgeInsetsMake(0, margin, 0, margin);
+        layout.minimumLineSpacing      = margin;
+        layout.minimumInteritemSpacing = margin;
         layout.scrollDirection         = UICollectionViewScrollDirectionHorizontal;
         
-        CGFloat x = _contentEdgeInsets.left;
-        CGFloat y = _contentEdgeInsets.top;
-        CGFloat w = self.width - x - _contentEdgeInsets.right;
-        CGFloat h = self.height - y - _contentEdgeInsets.bottom;
-        
-        _collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(x, y, w, h) collectionViewLayout:layout];
+        _collectionView = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:layout];
         _collectionView.backgroundColor                = [UIColor whiteColor];
         _collectionView.delegate                       = self;
         _collectionView.dataSource                     = self;

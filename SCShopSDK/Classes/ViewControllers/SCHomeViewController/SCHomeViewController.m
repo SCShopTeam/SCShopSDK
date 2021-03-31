@@ -16,13 +16,13 @@
 #import "SCHomeStoreCell.h"
 #import "SCHomeGoodStoresCell.h"
 #import "SCHomeAdCell.h"
-#import "SCHomeTagCell.h"
 #import "SCShoppingManager.h"
 #import "SCHomeItemsView.h"
 #import "SCSearchViewController.h"
 #import "SCHomeMoreView.h"
 #import "SCCartViewController.h"
 #import "SCMyOrderViewController.h"
+#import "SCTagView.h"
 
 typedef NS_ENUM(NSInteger, SCHomeRow) {
     SCHomeRowTop,         //顶部标签
@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 @property (nonatomic, assign) CGFloat maxOffsetY;
 
 @property (nonatomic, strong) SCHomeItemsView *itemsView; //这个楼层不用cell,是因为需要提前加载请求
-@property (nonatomic, weak) SCTagView *tagView;
+@property (nonatomic, strong) SCTagView *tagView; //这个楼层不用cell
 @end
 
 @implementation SCHomeViewController
@@ -63,7 +63,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-
+    
 }
 
 
@@ -84,7 +84,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     
     //请求数据
     [self requestData];
-
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -100,61 +100,46 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 #pragma mark -request
 - (void)requestData
 {
-    //触点   只请求一次
-    if (!self.viewModel.gridList) [self requestTouchData];
+    //触点
+    if (!self.viewModel.gridList) {
+        [self.viewModel requestTouchData:self success:^(id  _Nullable responseObject) {
+            [self.tableView reloadData];
+            [self showPopup]; //展示弹窗
+            
+        } failure:^(NSString * _Nullable errorMsg) {
+            
+        }];
+    }
     
-    //推荐门店   每次刷新重新请求
-    [self requestRecommendStoreData];
+    //推荐门店
+    [self.viewModel requestRecommendStoreData:^(NSString * _Nullable errorMsg) {
+        [self.tableView reloadData];
+    }];
     
-    //发现好店   只请求一次
-    if (!self.viewModel.goodStoreList)  [self requestGoodStoreData];
+    //发现好店
+    if (!self.viewModel.goodStoreList) {
+        [self.viewModel requestGoodStoreList:^(NSString * _Nullable errorMsg) {
+            [self.tableView reloadData];
+        }];
+    }
     
-    //分类只请求一次  后面再调用只刷新商品列表
+    //分类
     if (!self.viewModel.categoryList) {
-        [self requestCategoryData]; //请求分类
+        [self.viewModel requestCategoryList:^(NSString * _Nullable errorMsg) {
+            if (errorMsg) {
+                [self showWithStatus:errorMsg];
+            }
+            self.itemsView.categoryList = self.viewModel.categoryList;
+            self.tagView.categoryList = self.viewModel.categoryList;
+            [self.tableView reloadData];
+        }];
         
-    }else {  //刷新时会调用
-        [_itemsView refresh]; //刷新商品
+    }else { //刷新商品
+        [_itemsView refresh];
     }
 
 }
 
-- (void)requestTouchData
-{
-    [self.viewModel requestTouchData:self success:^(id  _Nullable responseObject) {
-        [self.tableView reloadData];
-        [self showPopup]; //展示弹窗
-        
-    } failure:^(NSString * _Nullable errorMsg) {
-        
-    }];
-}
-
-- (void)requestRecommendStoreData
-{
-    [self.viewModel requestRecommendStoreData:^(NSString * _Nullable errorMsg) {
-        [self.tableView reloadData];
-    }];
-}
-
-- (void)requestGoodStoreData
-{
-    [self.viewModel requestGoodStoreList:^(NSString * _Nullable errorMsg) {
-        [self.tableView reloadData];
-    }];
-
-}
-
-- (void)requestCategoryData
-{
-    [self.viewModel requestCategoryList:^(NSString * _Nullable errorMsg) {
-        if (errorMsg) {
-            [self showWithStatus:errorMsg];
-        }
-        self.itemsView.categoryList = self.viewModel.categoryList;
-        [self.tableView reloadData];
-    }];
-}
 
 #pragma mark -UITableViewDelegate, UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -185,7 +170,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     navBar.serviceBlock = ^{
         @strongify(self)
         [self pushToNewPage:SC_ONLINE_SERVICE_URL title:@"在线客服"];
-    
+        
     };
     
     navBar.moreBlock = ^{
@@ -193,7 +178,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         self.moreView.hidden ^= 1;
     };
     
-
+    
     return navBar;
 }
 
@@ -219,7 +204,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         return kHomeAdRowH;
         
     }else if (row == SCHomeRowTags) { //tag
-        return kHomeTagRowH;
+        return self.tagView.height;
         
     }else if (row == SCHomeRowItems) { //商品
         return self.itemsView.height;
@@ -285,15 +270,15 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         SCHomeGridCell *gridCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeGridCell.class) forIndexPath:indexPath];
         
         gridCell.gridList = self.viewModel.gridList;
-
-        gridCell.touchShowBlock = ^(SCHomeTouchModel * _Nonnull model) {
-            [SCUtilities touchShow:model];
-        };
         
         @weakify(self)
         gridCell.selectBlock = ^(NSInteger index) {
             @strongify(self)
             [self gridSelect:index];
+        };
+        
+        gridCell.touchShowBlock = ^(SCHomeTouchModel * _Nonnull model) {
+            [SCUtilities touchShow:model];
         };
         
         return gridCell;
@@ -319,43 +304,34 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
             [self pushToNewPage:serviceUrl title:@""];
         };
         
-        //门店首页 点击标题
+        //门店首页
         cell.storePageBlock = ^(NSString * _Nonnull storeLink) {
-          @strongify(self)
-            [self pushToNewPage:storeLink title:@""];
-        };
-        
-        //更多热销
-        cell.moreGoodsBlock = ^(NSString * _Nonnull storeLink) {
-          @strongify(self)
+            @strongify(self)
             [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_F06" url:storeLink inPage:NSStringFromClass(self.class)];
             [self pushToNewPage:storeLink title:@""];
         };
         
         //本店优惠商品
         cell.storeGoodsBlock = ^(NSString * _Nonnull goodsDetailUrl, NSInteger index) {
-          @strongify(self)
+            @strongify(self)
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_F0%li",index+7)   url:goodsDetailUrl inPage:NSStringFromClass(self.class)];
             [self pushToNewPage:goodsDetailUrl title:@""];
         };
         
         //活动商品
         cell.activityGoodsBlock = ^(NSString * _Nonnull link, NSInteger index) {
-          @strongify(self)
-            [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_F0%li",index+3)   url:link inPage:NSStringFromClass(self.class)];
+            @strongify(self)
+            [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_F0%li",index+3) url:link inPage:NSStringFromClass(self.class)];
             [self pushToNewPage:link title:@""];
         };
         
         //活动链接
-        cell.activityLinkBlock = ^(NSString * _Nonnull link, SCHomeActivityType type) {
-          @strongify(self)
-            if (type == SCHomeActivityTypeLive || type == SCHomeActivityTypeActivity) {
-                [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_F05" url:link inPage:NSStringFromClass(self.class)];
-            }
-            
+        cell.activityLinkBlock = ^(NSString * _Nonnull link) {
+            @strongify(self)
+            [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_F05" url:link inPage:NSStringFromClass(self.class)];
             [self pushToNewPage:link title:@""];
         };
-
+        
         return cell;
     }
     
@@ -391,7 +367,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         SCHomeAdCell *adCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeAdCell.class) forIndexPath:indexPath];
         
         adCell.adList = self.viewModel.adList;
-
+        
         adCell.touchShowBlock = ^(SCHomeTouchModel * _Nonnull model) {
             [SCUtilities touchShow:model];
         };
@@ -409,14 +385,15 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     
     //标签
     if (row == SCHomeRowTags) {
-        SCHomeTagCell *tagCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeTagCell.class) forIndexPath:indexPath];
-        _tagView = tagCell.tagView;
-        [tagCell setCategoryList:self.viewModel.categoryList];
+        UITableViewCell *tagCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCTagView.class) forIndexPath:indexPath];
+        [tagCell.contentView addSubview:self.tagView];
         
         @weakify(self)
-        tagCell.selectBlock = ^(NSInteger index) {
-            @strongify(self)
+        self.tagView.selectBlock = ^(NSInteger index) {
+          @strongify(self)
             self.itemsView.currentIndex = index;
+            NSInteger code = index+1;
+            [SCUtilities scXWMobStatMgrStr:[NSString stringWithFormat:@"IOS_T_NZDSC_E%@%li",(code<10?@"0":@""),code] url:@"" inPage:NSStringFromClass(self.class)];
 
         };
         
@@ -425,13 +402,15 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     
     //商品
     if (row == SCHomeRowItems) {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(UITableViewCell.class) forIndexPath:indexPath];
-        [cell.contentView addSubview:self.itemsView];
+        UITableViewCell *itemsCell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(SCHomeItemsView.class) forIndexPath:indexPath];
+        [itemsCell.contentView addSubview:self.itemsView];
         
         @weakify(self)
         self.itemsView.scrollBlock = ^(NSInteger index) {
             @strongify(self)
             [self.tagView pushToIndex:index needCallBack:NO];
+            NSInteger code = index+1;
+            [SCUtilities scXWMobStatMgrStr:[NSString stringWithFormat:@"IOS_T_NZDSC_E%@%li",(code<10?@"0":@""),code] url:@"" inPage:NSStringFromClass(self.class)];
             
         };
         
@@ -440,7 +419,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
             [self pushToNewPage:model.detailUrl title:@""];
         };
         
-        return cell;
+        return itemsCell;
     }
     
     return [UITableViewCell new];
@@ -457,7 +436,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     
     //处理多scrollView联动
     CGFloat y = scrollView.contentOffset.y;
-
+    
     
     if (y >= _maxOffsetY && _canScroll) {
         scrollView.contentOffset = CGPointMake(0, _maxOffsetY);
@@ -480,7 +459,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     
     SCHomeTouchModel *model = self.viewModel.gridList[index];
     
-    [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_B0%li",index+1) url:model.linkUrl inPage:NSStringFromClass(self.class)];
+    [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_B0%li",model.codeIndex+1) url:model.linkUrl inPage:NSStringFromClass(self.class)];
     
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     
@@ -488,7 +467,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     if (model.isLogin.integerValue > 0 && ![SCUserInfo currentUser].isLogin) {
         if ([manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
             [manager.delegate scLoginWithNav:self.navigationController back:^{
-//                [self pushToNewPage:model.linkUrl title:model.contentName]; //>>标记  掌厅登录代理有bug,暂不执行该方法
+                //                [self pushToNewPage:model.linkUrl title:model.contentName]; //>>标记  掌厅登录代理有bug,暂不执行该方法
                 [SCUtilities postLoginSuccessNotification];
             }];
         }
@@ -511,61 +490,17 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 
 - (void)showPopup
 {
-    //侧边弹窗
-    SCHomeTouchModel *sideModel = self.viewModel.popupDict[@(SCPopupTypeSide)];
-    if (sideModel) {
-        [SCUtilities touchShow:sideModel];
-        CGFloat w = SCREEN_FIX(62.5);
-        SCHomePopupView *sidePopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(self.view.width-w, 0, w, SCREEN_FIX(78))];
-        sidePopupView.centerY = self.tableView.centerY;
-        sidePopupView.moveAfterClicked = NO;
-        [self.view addSubview:sidePopupView];
+    for (SCHomeTouchModel *model in self.viewModel.popupList) {
+        [SCUtilities touchShow:model];
         
-        sidePopupView.model = sideModel;
         @weakify(self)
-        sidePopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
-            @strongify(self)
+        [SCHomePopupView showIn:self model:model clickBlock:^(SCHomeTouchModel * _Nonnull model) {
+         @strongify(self)
             [self pushToNewPage:model.linkUrl title:model.contentName];
             [SCUtilities touchClick:model];
-        };
+        }];
     }
-    
-    //底部弹窗
-    SCHomeTouchModel *bottomModel = self.viewModel.popupDict[@(SCPopupTypeBottom)];
-    if (bottomModel) {
-        [SCUtilities touchShow:bottomModel];
-        SCHomePopupView *bottomPopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, SCREEN_FIX(200))];
-        bottomPopupView.bottom = self.tableView.bottom;
-        [self.view addSubview:bottomPopupView];
-        
-        bottomPopupView.model = bottomModel;
-        @weakify(self)
-        bottomPopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
-            @strongify(self)
-            [self pushToNewPage:model.linkUrl title:model.contentName];
-            [SCUtilities touchClick:model];
-        };
-    }
-    
-    
-    //中心弹窗
-    SCHomeTouchModel *centerModel = self.viewModel.popupDict[@(SCPopupTypeCenter)];
-    if (centerModel) {
-        [SCUtilities touchShow:centerModel];
-        SCHomePopupView *centerPopupView = [[SCHomePopupView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(285), SCREEN_FIX(400))];
-        centerPopupView.center = self.tableView.center;
-        [self.view addSubview:centerPopupView];
-        
-        centerPopupView.model = centerModel;
-        @weakify(self)
-        centerPopupView.linkBlock = ^(SCHomeTouchModel * _Nonnull model) {
-            @strongify(self)
-            [self pushToNewPage:model.linkUrl title:model.contentName];
-            [SCUtilities touchClick:model];
-        };
-        
-    }
-    
+
 }
 
 #pragma mark -ui
@@ -587,8 +522,8 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         [_tableView registerClass:SCHomeStoreCell.class      forCellReuseIdentifier:NSStringFromClass(SCHomeStoreCell.class)];
         [_tableView registerClass:SCHomeGoodStoresCell.class forCellReuseIdentifier:NSStringFromClass(SCHomeGoodStoresCell.class)];
         [_tableView registerClass:SCHomeAdCell.class         forCellReuseIdentifier:NSStringFromClass(SCHomeAdCell.class)];
-        [_tableView registerClass:SCHomeTagCell.class        forCellReuseIdentifier:NSStringFromClass(SCHomeTagCell.class)];
-        [_tableView registerClass:UITableViewCell.class      forCellReuseIdentifier:NSStringFromClass(UITableViewCell.class)];
+        [_tableView registerClass:UITableViewCell.class      forCellReuseIdentifier:NSStringFromClass(SCTagView.class)];
+        [_tableView registerClass:UITableViewCell.class      forCellReuseIdentifier:NSStringFromClass(SCHomeItemsView.class)];
         
         //如果没有导航栏，会有滚动视图向下偏移20像素的bug,如下设置可以避免
         self.extendedLayoutIncludesOpaqueBars = YES;
@@ -596,7 +531,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
             _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
         } else {
             self.automaticallyAdjustsScrollViewInsets = NO;
-             
+            
         }
     }
     return _tableView;
@@ -605,9 +540,18 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 - (SCHomeItemsView *)itemsView
 {
     if (!_itemsView) {
-        _itemsView = [[SCHomeItemsView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.width, self.tableView.height - kNavBarH - kHomeTagRowH)];
+        _itemsView = [[SCHomeItemsView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.width, self.tableView.height - kNavBarH - self.tagView.height)];
     }
     return _itemsView;
+}
+
+- (SCTagView *)tagView
+{
+    if (!_tagView) {
+        _tagView = [[SCTagView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.width, SCREEN_FIX(51))];
+        _tagView.contentEdgeInsets = UIEdgeInsetsMake(SCREEN_FIX(9), 0, SCREEN_FIX(7), 0);
+    }
+    return _tagView;
 }
 
 - (SCHomeMoreView *)moreView
@@ -620,7 +564,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         
         @weakify(self)
         _moreView.selectBlock = ^(SCShopMoreType type) {
-          @strongify(self)
+            @strongify(self)
             if (type == SCShopMoreTypeMessage || type == SCShopMoreTypeSuggest) { //消息，建议
                 SCShoppingManager *manager = [SCShoppingManager sharedInstance];
                 if ([manager.delegate respondsToSelector:@selector(scMoreSelect:nav:)]) {

@@ -573,7 +573,7 @@ DEF_SINGLETON(SCUtilities)
     
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     
-    if (dict && [manager.delegate respondsToSelector:@selector(scADTouchShow:)]) {
+    if (VALID_DICTIONARY(dict) && [manager.delegate respondsToSelector:@selector(scADTouchShow:)]) {
         [manager.delegate scADTouchShow:dict];
     }
 }

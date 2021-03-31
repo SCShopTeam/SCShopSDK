@@ -173,10 +173,10 @@ static NSInteger kMaxGoodShopCount = 3;
     return _tableView;
 }
 
-- (UIButton *)moreButton
+- (UIControl *)moreButton
 {
     if (!_moreButton) {
-        _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, kBottomH)];
+        _moreButton = [[UIControl alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, kBottomH)];
 //        [_moreButton setBackgroundImage:[UIImage sd_imageWithGIFData:[NSData bundleResource:@"sc_more_stores" type:@"gif"]] forState:UIControlStateNormal];
         [self.contentView addSubview:_moreButton];
         

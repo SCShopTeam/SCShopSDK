@@ -70,6 +70,7 @@
 }
 
 #pragma mark -SCHomeStoreProtocol
+/*top*/
 //电话
 - (void)call
 {
@@ -94,14 +95,14 @@
     }
 }
 
+/*coupon*/
 //更多热销
 - (void)pushToMoreGoods
 {
-    if (_moreGoodsBlock) {
-        _moreGoodsBlock(self.model.storeLink);
+    if (_storePageBlock) {
+        _storePageBlock(self.model.storeLink);
     }
 }
-
 
 //跳转本店优惠商品详情
 - (void)pushToGoodDetail:(NSInteger)index
@@ -112,8 +113,9 @@
     }
 }
 
-//跳转商品页
-- (void)pushToGoodsList:(SCHomeActivityModel *)model index:(NSInteger)index
+/*activity*/
+//跳转活动商品列表
+- (void)pushToActivityGoodsList:(SCHomeActivityModel *)model index:(NSInteger)index
 {
     if (_activityGoodsBlock) {
         _activityGoodsBlock(model.link, index);
@@ -124,18 +126,17 @@
 - (void)pushToActivityPage:(SCHomeActivityModel *)model
 {
     if (_activityLinkBlock) {
-        _activityLinkBlock(model.link, model.type);
+        _activityLinkBlock(model.link);
     }
 }
 
 //跳转直播
 - (void)pushToLivePage:(SCHomeActivityModel *)model
 {
-    if (!_activityLinkBlock) {
-        _activityLinkBlock(model.link, model.type);
+    if (_activityLinkBlock) {
+        _activityLinkBlock(model.link);
     }
 }
-
 
 #pragma mark -ui
 - (SCHomeStoreTopView *)topView

@@ -21,7 +21,6 @@ static NSString *kPeriodType = @"periodType";
 static NSString *kIdsTable   = @"popup_ids";
 
 @interface SCPopupManager ()
-AS_SINGLETON(SCPopupManager)
 @property (nonatomic, strong) FMDatabase *db;
 
 @end
@@ -82,7 +81,7 @@ DEF_SINGLETON(SCPopupManager)
     }
     
     NSString *periodType     = [touchModel.extraParam safeStringValueForKey:@"periodType"];        //周期类型 eg:MONTH
-    NSInteger periodMaxCount = [touchModel.extraParam safeIntegerValueForKey:@"integerValue"];     //周期内最大次数
+    NSInteger periodMaxCount = [touchModel.extraParam safeIntegerValueForKey:@"periodCount"];      //周期内最大次数
     NSInteger dayMaxCount    = [touchModel.extraParam safeIntegerValueForKey:@"cpmMax"];           //每天显示最大次数
     
     if (periodType.length == 0) {
@@ -236,7 +235,7 @@ DEF_SINGLETON(SCPopupManager)
     if (!_db) {
         //获取数据库文件的路径
         NSString *docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-        NSString *path = [docPath stringByAppendingPathComponent:@"SCPopupRecords.sqlite"];
+        NSString *path = [docPath stringByAppendingPathComponent:SC_COMMON_SQLITE];
         
         // 1.创建数据库对象
         _db = [FMDatabase databaseWithPath:path];
@@ -248,6 +247,9 @@ DEF_SINGLETON(SCPopupManager)
             
             NSString *createIdsSqlString = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (%@ text, %@ integer)", kIdsTable, kAdId, kPopupType];
             [_db executeUpdate:createIdsSqlString];
+            
+        } else {
+            DDLOG(@"fail to open database");
         }
 
         

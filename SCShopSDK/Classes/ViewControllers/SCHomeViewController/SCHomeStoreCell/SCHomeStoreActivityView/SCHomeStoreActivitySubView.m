@@ -120,8 +120,8 @@
                 @weakify(self)
                 [itemView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
                     @strongify(self)
-                    if ([self.delegate respondsToSelector:@selector(pushToGoodsList: index:)]) {
-                        [self.delegate pushToGoodsList:model index:idx];
+                    if ([self.delegate respondsToSelector:@selector(pushToActivityGoodsList:index:)]) {
+                        [self.delegate pushToActivityGoodsList:model index:idx];
                     }
                 }];
                 

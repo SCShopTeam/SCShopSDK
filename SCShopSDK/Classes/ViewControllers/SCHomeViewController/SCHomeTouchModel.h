@@ -70,8 +70,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *advClickBodyFormat;
 @property (nonatomic, copy) NSString *isMc;
 
+//自定义
 //父类属性
 @property (nonatomic, strong) NSDictionary *extraParam;
+//下标   部分宫格数据可能返回为空，导致被过滤掉，导致大数据插码错误。例如第二宫格数据为空，首页显示的第二宫格其实是第三宫格，点击时插码时会用的是第二宫格的下标01
+@property (nonatomic, assign) NSInteger codeIndex;
+//弹窗
+@property (nonatomic, assign) SCPopupType popupType;
 
 
 + (nullable NSMutableArray <SCHomeTouchModel *> *)createModelsWithDict:(NSDictionary *)dict;

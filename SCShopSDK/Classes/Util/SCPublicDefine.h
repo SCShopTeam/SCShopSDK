@@ -65,10 +65,8 @@
 #  define DDLOG(...);
 #endif
 
-///-----------------
-/// AppDelegate
-///-----------------
-#define APP_DELEGATE  (JSBCAppDelegate *)[UIApplication sharedApplication].delegate
+//数据库
+#define SC_COMMON_SQLITE     @"SC_SHOP.sqlite"
 
 //字体
 #define SCFONT_SIZED(fontSize)                 [UIFont systemFontOfSize:fontSize]
