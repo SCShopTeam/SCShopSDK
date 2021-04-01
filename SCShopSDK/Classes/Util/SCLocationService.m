@@ -106,6 +106,11 @@ static NSDictionary *kCityCodeDict;
         return;
     }
     
+    if ([SCUtilities isInShoppingDebug] && TARGET_IPHONE_SIMULATOR) { //模拟器debug时使用假数据
+        [self configFakeData];
+        return;
+    }
+    
     _status = SCLocationStatusDoing;
     
     //判断定位服务是否可用
@@ -272,6 +277,15 @@ static NSDictionary *kCityCodeDict;
         _blockList = [NSMutableArray array];
     }
     return _blockList;
+}
+
+//假数据
+- (void)configFakeData
+{
+    self.latitude  = @"32.05719667166901";
+    self.longitude = @"118.7403349462312";
+    self.locationAddress = @"江苏省南京市鼓楼区江东街道南京市鼓楼区草场门大街101号文荟大厦文荟大厦12楼";
+    [self stopLocation];
 }
 
 #pragma mark -坐标转换

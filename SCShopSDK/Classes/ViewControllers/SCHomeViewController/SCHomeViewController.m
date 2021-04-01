@@ -40,7 +40,6 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 //部分楼层高度
 #define kNavBarH     (SCREEN_FIX(48) + STATUS_BAR_HEIGHT)
 
-
 @interface SCHomeViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) SCTableView *tableView;
 @property (nonatomic, strong) SCHomeViewModel *viewModel;
@@ -55,17 +54,16 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 
 @implementation SCHomeViewController
 
--(void)viewDidAppear:(BOOL)animated{
+- (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
--(void)viewWillDisappear:(BOOL)animated{
+- (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
     
 }
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -153,7 +151,6 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 {
     return kNavBarH;
 }
-
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
@@ -368,16 +365,16 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
         
         adCell.adList = self.viewModel.adList;
         
-        adCell.touchShowBlock = ^(SCHomeTouchModel * _Nonnull model) {
-            [SCUtilities touchShow:model];
-        };
-        
         @weakify(self)
         adCell.selectBlock = ^(NSInteger index, SCHomeTouchModel * _Nonnull touchModel) {
             @strongify(self)
             [self pushToNewPage:touchModel.linkUrl title:touchModel.contentName];
             [SCUtilities scXWMobStatMgrStr:NSStringFormat(@"IOS_T_NZDSC_D0%li",index+1) url:touchModel.linkUrl inPage:NSStringFromClass(self.class)];
             [SCUtilities touchClick:touchModel];
+        };
+        
+        adCell.touchShowBlock = ^(SCHomeTouchModel * _Nonnull model) {
+            [SCUtilities touchShow:model];
         };
         
         return adCell;
@@ -580,7 +577,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     return _moreView;
 }
 
--(SCHomeViewModel *)viewModel
+- (SCHomeViewModel *)viewModel
 {
     if (!_viewModel) {
         _viewModel = [SCHomeViewModel new];

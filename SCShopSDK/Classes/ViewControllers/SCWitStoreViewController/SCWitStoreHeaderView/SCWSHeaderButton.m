@@ -77,7 +77,7 @@
     
     //划线价
     CGFloat oldPrice = homeGoodsModel.guidePrice/1000*1.f;
-    self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:oldPrice font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
+    self.oldPriceLabel.attributedText = oldPrice < 1 ? nil : [SCUtilities oldPriceAttributedString:oldPrice font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
     
     //价格
     CGFloat price = homeGoodsModel.wholesalePrice/1000*1.f;

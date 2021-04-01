@@ -117,14 +117,6 @@
                 SCHomeGoodsModel *goodsModel = model.goodsList[idx];
                 itemView.model = goodsModel;
                 
-                @weakify(self)
-                [itemView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
-                    @strongify(self)
-                    if ([self.delegate respondsToSelector:@selector(pushToActivityGoodsList:index:)]) {
-                        [self.delegate pushToActivityGoodsList:model index:idx];
-                    }
-                }];
-                
             }
             
         }];
@@ -194,6 +186,14 @@
             SCActivityItemView *itemView = [[SCActivityItemView alloc] initWithFrame:CGRectMake(edge + (w+margin)*i, self.topicLabel.bottom + SCREEN_FIX(6.5), w, SCREEN_FIX(95))];
             [self addSubview:itemView];
             [temp addObject:itemView];
+            
+            @weakify(self)
+            [itemView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+                @strongify(self)
+                if ([self.delegate respondsToSelector:@selector(pushToActivityGoodsList:index:)]) {
+                    [self.delegate pushToActivityGoodsList:self.model index:i];
+                }
+            }];
         }
         
         _itemViewList = temp.copy;
@@ -246,7 +246,10 @@
     _model = model;
     
     [self.icon sd_setImageWithURL:[NSURL URLWithString:model.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER];
-    self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:(model.guidePrice/1000*1.f) font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
+    
+    CGFloat oldPrice = model.guidePrice/1000*1.f;
+    self.oldPriceLabel.attributedText = oldPrice < 1 ? nil : [SCUtilities oldPriceAttributedString:(model.guidePrice/1000*1.f) font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
+    
     self.priceLabel.text = [NSString stringWithFormat:@"¥%@", [SCUtilities removeFloatSuffix:model.activityPrice/1000*1.f]];
     
     _preferentialFeeButton.hidden  = YES;

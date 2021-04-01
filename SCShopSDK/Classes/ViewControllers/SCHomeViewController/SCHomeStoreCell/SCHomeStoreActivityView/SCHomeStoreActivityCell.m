@@ -47,7 +47,6 @@
         }else {
             self.liveView.hidden = YES;
             subView.hidden = NO;
-            subView.delegate = self.delegate;
             subView.model = model;
         }
             
@@ -64,6 +63,7 @@
         for (int i=0; i<2; i++) {
             CGFloat w = self.width/2;
             SCHomeStoreActivitySubView *view = [[SCHomeStoreActivitySubView alloc] initWithFrame:CGRectMake(w*i, 0, w, self.height)];
+            view.delegate = self.delegate;
             [self.contentView addSubview:view];
             [temp addObject:view];
         }

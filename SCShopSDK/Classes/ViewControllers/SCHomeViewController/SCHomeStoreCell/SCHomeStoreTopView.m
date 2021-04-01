@@ -40,7 +40,7 @@
     
     //距离
     self.distanceLabel.left = self.titleLabel.right + SCREEN_FIX(5);
-    NSString *numStr = [NSString stringWithFormat:@"%lim",model.distance];
+    NSString *numStr = model.distance > 100 ? [NSString stringWithFormat:@"%.1fkm",(model.distance/1000*1.f)] : [NSString stringWithFormat:@"%lim",model.distance];
     NSString *distanceStr = [NSString stringWithFormat:@"距离您%@",numStr];
     NSMutableAttributedString *mulA = [[NSMutableAttributedString alloc] initWithString:distanceStr];
     [mulA addAttributes:@{NSForegroundColorAttributeName:HEX_RGB(@"#ff3434")} range:[distanceStr rangeOfString:numStr]];

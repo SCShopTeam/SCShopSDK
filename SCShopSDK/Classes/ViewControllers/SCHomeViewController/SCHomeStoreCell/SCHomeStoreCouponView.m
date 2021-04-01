@@ -84,14 +84,6 @@
             SCHomeGoodsModel *goodsModel = model.topGoodsList[idx];
             btn.homeGoodsModel = goodsModel;
             
-            @weakify(self)
-            [btn sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
-                @strongify(self)
-                if ([self.delegate respondsToSelector:@selector(pushToGoodDetail:)]) {
-                    [self.delegate pushToGoodDetail:idx];
-                }
-                
-            }];
         }
     }];
 
@@ -103,7 +95,7 @@
     if (!_titleLabel) {
         _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(22), SCREEN_FIX(8), 0, SCREEN_FIX(16))];
         _titleLabel.font = SCFONT_SIZED_FIX(16);
-        _titleLabel.text = @"更多优惠";
+        _titleLabel.text = @"本店优惠";
         [_titleLabel sizeToFit];
         [self addSubview:_titleLabel];
     }
@@ -196,27 +188,35 @@
         CGFloat h = SCREEN_FIX(115);
         
         CGFloat lineW = 1; //分隔线宽度
-        CGFloat x = (self.width - w*3 - lineW*2)/2;
         
-        CGFloat centerY = (self.height - self.titleLabel.bottom)/2 + self.titleLabel.bottom;
-
-        for (int i=1; i<6; i++) {
-            if (i%2) { //按钮
-                SCWSHeaderButton *btn = [[SCWSHeaderButton alloc] initWithFrame:CGRectMake(x, 0, w, h)];
-                btn.centerY = centerY;
-                x = btn.right;
-                [self addSubview:btn];
-                [mulArr addObject:btn];
-                
-            }else {  // 分隔线
-                UIView *line = [[UIView alloc] initWithFrame:CGRectMake(x, 0, lineW, SCREEN_FIX(115))];
-                line.centerY = centerY;
+        CGFloat x = (self.width - w*3 - lineW*2)/2;
+        CGFloat y = (self.height - self.titleLabel.bottom - h)/2 + self.titleLabel.bottom;
+        
+        for (int i=0; i<3; i++) {
+            //按钮
+            SCWSHeaderButton *btn = [[SCWSHeaderButton alloc] initWithFrame:CGRectMake(x, y, w, h)];
+            [self addSubview:btn];
+            
+            @weakify(self)
+            [btn sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
+                @strongify(self)
+                if ([self.delegate respondsToSelector:@selector(pushToGoodDetail:)]) {
+                    [self.delegate pushToGoodDetail:i];
+                }
+            }];
+            
+            [mulArr addObject:btn];
+            
+            //分隔线
+            if (i < 2) {
+                UIView *line = [[UIView alloc] initWithFrame:CGRectMake(btn.right, 0, lineW, SCREEN_FIX(115))];
+                line.centerY = btn.centerY;
                 line.backgroundColor = HEX_RGB(@"#EEEEEE");
                 [self addSubview:line];
                 x = line.right;
             }
-            
         }
+
         _itemButtonList = mulArr.copy;
         
     }
