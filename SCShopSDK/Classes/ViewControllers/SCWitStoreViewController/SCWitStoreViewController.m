@@ -33,6 +33,7 @@
 @property (nonatomic, strong) SCWitStoreHeaderView *headerView;
 @property (nonatomic, strong) SCWitStoreQueryView *queryView;
 @property (nonatomic, strong) SCWitStoreSortView *sortView;
+@property (nonatomic, assign) CGFloat queryOriginY;
 @end
 
 @implementation SCWitStoreViewController
@@ -151,6 +152,8 @@
 #pragma mark -UITableViewDelegate, UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    _queryOriginY = self.topView.bottom + self.headerView.height + kWitStoreCorner - self.queryView.height;
+    
     return self.viewModel.showProfessionalList ? 2 : 1;
     
 }
@@ -280,8 +283,7 @@
 {
     CGFloat offsetY = scrollView.contentOffset.y;
     //坐标
-    CGFloat originY = self.topView.bottom + self.headerView.height + kWitStoreCorner - self.queryView.height;
-    CGFloat newY = originY - offsetY;
+    CGFloat newY = _queryOriginY - offsetY;
     if (newY < self.topView.bottom) {
         newY = self.topView.bottom;
         [self.queryView showBgColor:YES];

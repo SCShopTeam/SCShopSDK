@@ -39,9 +39,8 @@
 @end
 
 @implementation SCAddressSelectView
-+ (void)show:(SCAddressModel *)addressModel addressBlock:(SCAddressBlock)addressBlock
++ (void)showIn:(UIViewController *)vc addressModel:(SCAddressModel *)addressModel addressBlock:(SCAddressBlock)addressBlock
 {
-    UIViewController *vc = [SCUtilities currentViewController];
     if (!vc) {
         return;
     }
@@ -53,9 +52,9 @@
     [addressView showAnimation];
 }
 
-+ (void)show:(SCAddressBlock)addressBlock
++ (void)showIn:(UIViewController *)vc addressBlock:(SCAddressBlock)addressBlock
 {
-    [self show:nil addressBlock:addressBlock];
+    [self showIn:vc addressModel:nil addressBlock:addressBlock];
     
 }
 

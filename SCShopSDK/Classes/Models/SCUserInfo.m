@@ -36,7 +36,7 @@
 
 - (NSString *)phoneNumber
 {
-    if (!_phoneNumber) {
+    if (!VALID_STRING(_phoneNumber)) {
         _phoneNumber = @"";
     }
     return _phoneNumber;

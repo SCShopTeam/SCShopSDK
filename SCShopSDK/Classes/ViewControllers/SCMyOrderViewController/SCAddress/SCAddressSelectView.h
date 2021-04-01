@@ -17,10 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SCAddressSelectView : UIView
 
 //新增或修改地址
-+ (void)show:(nullable SCAddressModel *)addressModel addressBlock:(SCAddressBlock)addressBlock;
++ (void)showIn:(UIViewController *)vc addressModel:(nullable SCAddressModel *)addressModel addressBlock:(SCAddressBlock)addressBlock;
 
 //新增
-+ (void)show:(SCAddressBlock)addressBlock;
++ (void)showIn:(UIViewController *)vc addressBlock:(SCAddressBlock)addressBlock;
 
 
 

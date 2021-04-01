@@ -132,8 +132,7 @@
     NSString *cacheKey = [self getCacheKey];
     
     if (showHud) {
-        UIViewController *vc = [SCUtilities currentViewController];
-        [vc showLoading];
+        [self showLoading];
     }
 
     [SCNetworkManager POST:SC_AGGREGATE_STORE parameters:param success:^(id  _Nullable responseObject) {

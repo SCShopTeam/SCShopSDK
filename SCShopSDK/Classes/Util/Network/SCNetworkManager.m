@@ -18,14 +18,7 @@ static BOOL _isOpenLog;   // 是否已开启日志打印
 static NSMutableArray *_allSessionTask;
 static AFHTTPSessionManager *_sessionManager;
 
-+ (void)openLog {
-    _isOpenLog = YES;
-}
-
-+ (void)closeLog {
-    _isOpenLog = NO;
-}
-
+#pragma mark -取消请求
 + (void)cancelAllRequest {
     // 锁操作
     @synchronized(self) {
@@ -56,12 +49,10 @@ static AFHTTPSessionManager *_sessionManager;
                   success:(SCHttpRequestSuccess)success
                   failure:(SCHttpRequestFailed)failure {
     
+    NSString *requestNum = [SCRequestParams shareInstance].requestNum;
+    
     NSString *requestURL = [_sessionManager.requestSerializer requestBySerializingRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:URL]] withParameters:parameters error:nil].URL.absoluteString;
     //    requestURL = [requestURL jsbcInterfaceUrl]; //加密操作
-    
-    if (_isOpenLog) {
-        NSLog(@"%@", NSStringFormat(@"requestURL = %@",requestURL));
-    }
     
     NSString *appPwd = [SCRequestParams shareInstance].appPwd;
     [_sessionManager.requestSerializer setValue:appPwd?:@"" forHTTPHeaderField:@"appPwd"];
@@ -73,12 +64,13 @@ static AFHTTPSessionManager *_sessionManager;
 //    [_sessionManager.requestSerializer setValue:cmtokenid forHTTPHeaderField:@"Cookie"];
     
     NSURLSessionTask *sessionTask = [_sessionManager GET:requestURL parameters:nil headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
+        
+        NSLog(@"%@ : %@", requestNum, _isOpenLog ? [self jsonToString:responseObject] : @"success");
         
         [[self allSessionTask] removeObject:task];
         success ? success(responseObject) : nil;
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
+        NSLog(@"%@ : %@", requestNum, _isOpenLog ? error : @"failure");
         [[self allSessionTask] removeObject:task];
         failure ? failure(error.why) : nil;
     }];
@@ -111,6 +103,7 @@ static AFHTTPSessionManager *_sessionManager;
                    failure:(SCHttpRequestFailed)failure {
     
     NSMutableDictionary *param = [[SCRequestParams shareInstance]getParams];
+    NSString *requestNum = [SCRequestParams shareInstance].requestNum;
     
     if (VALID_DICTIONARY(parameters)) {
         [param addEntriesFromDictionary:parameters];
@@ -141,14 +134,14 @@ static AFHTTPSessionManager *_sessionManager;
 
     
     NSURLSessionTask *sessionTask = [_sessionManager POST:URL parameters:param headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
-        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
+        NSLog(@"%@ : %@", requestNum, _isOpenLog ? [self jsonToString:responseObject] : @"success");
+//        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"%@ : responseObject = %@", URL, [self jsonToString:responseObject]) : @"success");
         
         [[self allSessionTask] removeObject:task];
         
         success ? success(responseObject) : nil;
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
+        NSLog(@"%@ : %@", requestNum, _isOpenLog ? error : @"failure");
         [[self allSessionTask] removeObject:task];
         failure ? failure(error.why) : nil;
     }];
@@ -456,6 +449,14 @@ static AFHTTPSessionManager *_sessionManager;
     return _allSessionTask;
 }
 
+#pragma mark -日志打印
++ (void)openLog {
+    _isOpenLog = YES;
+}
+
++ (void)closeLog {
+    _isOpenLog = NO;
+}
 
 #pragma mark - 初始化AFHTTPSessionManager相关属性
 
@@ -494,7 +495,6 @@ static AFHTTPSessionManager *_sessionManager;
     /*test*/
     //    NSString *cerPath = [[NSBundle mainBundle] pathForResource:@"https" ofType:@"cer"];
     //    [SCNetworkManager setSecurityPolicyWithCerPath:cerPath validatesDomainName:YES];
-    
 }
 
 

@@ -57,44 +57,90 @@
 //获取触点数据
 -(void)scADTouchDataFrom:(UIViewController *)viewController backData:(SC_ADTouchDataBlock)callBack
 {
-    NSDictionary *dict = @{@"SCDBBANNER_I":@{@"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/30725ab5dee54dc291439844f2e03641.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204"},@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/77a9a0373014428e85bf6d30accabcf5.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204"},@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/ca31256176734973b5915db2ce2bdd9a.jpg",@"linkUrl": @"http://wap.js.10086.cn/nact/2204"}]
+    NSDictionary *dict = @{@"SCDBBANNER_I":@{@"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/30725ab5dee54dc291439844f2e03641.png",
+                                                            @"linkUrl": @"http://wap.js.10086.cn/nact/2204"},
+                                                          @{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/77a9a0373014428e85bf6d30accabcf5.png",
+                                                            @"linkUrl": @"http://wap.js.10086.cn/nact/2204"},
+                                                          @{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/ca31256176734973b5915db2ce2bdd9a.jpg",
+                                                            @"linkUrl": @"http://wap.js.10086.cn/nact/2204"}]
                                              
     },
                            @"SCSYCBLFC_I" : @{@"contactName" : @"商城首页侧边栏浮层",
                                               @"periodCount": @99,
                                               @"periodType":@"MONTH",
                                               @"cpmMax": @3,
-                                              @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"nlasretyrefds,d"}]},
-                           @"SCSYZXDC_I" : @{@"contactName" : @"商城首页中心弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @5,
-                                             @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"sddskghjdddddmghj31"}]},
-                           @"SCSYDBYXDC_I" : @{@"contactName" : @"商城首页底部异形弹窗",@"periodCount": @99,@"periodType":@"MONTH",@"cpmMax": @5,
-                                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",@"linkUrl": @"http://wap.js.10086.cn/nact/2204", @"contentNum": @"sdfsdyjuserfgfdgfasaa12131"}]},
+                                              @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",
+                                                             @"linkUrl": @"http://wap.js.10086.cn/nact/2204",
+                                                             @"contentNum": @"nlabtjgffds,d"}]},
+                           @"SCSYZXDC_I" : @{@"contactName" : @"商城首页中心弹窗",
+                                             @"periodCount": @99,
+                                             @"periodType":@"MONTH",
+                                             @"cpmMax": @5,
+                                             @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",
+                                                            @"linkUrl": @"http://wap.js.10086.cn/nact/2204",
+                                                            @"contentNum": @"sddskghasxc31"}]},
+                           @"SCSYDBYXDC_I" : @{@"contactName" : @"商城首页底部异形弹窗",
+                                               @"periodCount": @99,
+                                               @"periodType":@"MONTH",
+                                               @"cpmMax": @5,
+                                               @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/9504e3e32a6d404495de95e9307662a1.png",
+                                                              @"linkUrl": @"http://wap.js.10086.cn/nact/2204",
+                                                              @"contentNum": @"sdfskmgfhg2131"}]},
                            @"SCSYDYGG_I":@{@"contactName":@"商城首页第一宫格",
-                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",@"txt":@"官方好店",@"linkUrl":@"jsmcc://M/8"}]
+                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",
+                                                          @"txt":@"官方好店",
+                                                          @"linkUrl":@"jsmcc://M/8",
+                                                          @"isLogin":@"0"}]
                            },
                            @"SCSYDEGG_I":@{@"contactName":@"商城首页第二宫格",
-                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/a5dc0757e5154a50a13c8e1e014bca2e.png",@"txt":@"移动好货",@"linkUrl":@"jsmcc://M/5?tenantNum=supp329910042810"}]
+                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/a5dc0757e5154a50a13c8e1e014bca2e.png",
+                                                          @"txt":@"移动好货",
+                                                          @"linkUrl":@"jsmcc://M/5?tenantNum=supp329910042810",
+                                                          @"isLogin":@"0"}]
                            },
                            @"SCSYDSGG_I":@{@"contactName":@"商城首页第三宫格",
-                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",@"txt":@"智能生活",@"linkUrl":@"jsmcc://M/6"}]
+                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",
+                                                          @"txt":@"智能生活",
+                                                          @"linkUrl":@"jsmcc://M/6",
+                                                          @"isLogin":@"1"}]
                            },
                            @"SCSYDSGG1_I":@{@"contactName":@"商城首页第四宫格",
-                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/8c29be7e8c714a1eb30c4f9b06980a50.gif",@"txt":@"今日爆款",@"linkUrl":@"https://wx.apollojs.cn/limited-web/limitedDiscount?source=zt0027&storeId=10242466&storeCode=14100025"}]
+                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/8c29be7e8c714a1eb30c4f9b06980a50.gif",
+                                                          @"txt":@"今日爆款",
+                                                          @"linkUrl":@"https://wx.apollojs.cn/limited-web/limitedDiscount?source=zt0027&storeId=10242466&storeCode=14100025",
+                                                          @"isLogin":@"1"}]
                            },
                            @"SCSYDWGG_I":@{@"contactName":@"商城首页第五宫格",
-                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",@"txt":@"官方好店",@"linkUrl":@"jsmcc://M/8"}]
+                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",
+                                                          @"txt":@"官方好店",
+                                                          @"linkUrl":@"jsmcc://M/8",
+                                                          @"isLogin":@"1"}]
                            },
                            @"SCSYDLGG_I":@{@"contactName":@"商城首页第六宫格",
-                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",@"txt":@"移动好货",@"linkUrl":@"jsmcc://M/5?tenantNum=supp329910042810"}]
+                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",
+                                                          @"txt":@"移动好货",
+                                                          @"linkUrl":@"jsmcc://M/5?tenantNum=supp329910042810",
+                                                          @"isLogin":@"1"}]
                            },
                            @"SCSYDQGG_I":@{@"contactName":@"商城首页第七宫格",
-                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",@"txt":@"智能生活",@"linkUrl":@"jsmcc://M/6"}]
+                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/b92ab880f8984f9690c082e4a66671a5.png",
+                                                          @"txt":@"智能生活",
+                                                          @"linkUrl":@"jsmcc://M/6",
+                                                          @"isLogin":@"1"}]
                            },
                            @"SCSYDBGG_I":@{@"contactName":@"商城首页第八宫格",
-                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/a5dc0757e5154a50a13c8e1e014bca2e.png",@"txt":@"今日爆款",@"linkUrl":@"https://wx.apollojs.cn/limited-web/limitedDiscount?source=zt0027&storeId=10242466&storeCode=14100025"}]
+                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/a5dc0757e5154a50a13c8e1e014bca2e.png",
+                                                          @"txt":@"今日爆款",
+                                                          @"linkUrl":@"https://wx.apollojs.cn/limited-web/limitedDiscount?source=zt0027&storeId=10242466&storeCode=14100025",@"isLogin":@"1"}]
+                           },
+                           @"DBBQLFL_I":@{@"contactName":@"顶部标签栏福利",
+                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/992df0f7079c4b0fa564d49080ba59b3.png",@"txt":@"抢话费",@"linkUrl":@"https://wap.js.10086.cn/nact/resource/2438/html/index.html",@"isLogin":@"0"}]
+                           },
+                           @"DBBQLHD_I":@{@"contactName":@"顶部标签栏活动",
+                                           @"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/56eee8000e7145378da09a8b3a401416.png",@"txt":@"爆款秒杀",@"linkUrl":@"https://wx.apollojs.cn/limited-web/limitedDiscount?source=zt0075&storeId=10242466&storeCode=14100025",@"isLogin":@"0"}]
                            },
     };
-    
+   
     callBack(dict);
 }
 
@@ -161,7 +207,7 @@
                                @"phoneNumber":@"15251803168",
                                @"isJSMobile":@"1",
                                @"uan":@"14",
-                               @"cmtokenid": @"7D27BC6D0B424353B0003DEEAAB622A3@js.ac.10086.cn",
+                               @"cmtokenid": @"4A6662009EC94AC19400F01AD6994C3C@js.ac.10086.cn",
                                @"name": @"测试号"
     };
     

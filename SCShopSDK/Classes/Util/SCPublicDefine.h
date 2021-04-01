@@ -60,9 +60,9 @@
 /// 打印日志定义
 ///-----------------
 #ifdef DEBUG
-#  define DDLOG(format, ...) NSLog((@"[函数名:%s]" "[行号:%d]" format), __FUNCTION__, __LINE__, ##__VA_ARGS__);
+//#  define NSLog(format, ...) NSLog((@"[函数名:%s]" "[行号:%d]" format), __FUNCTION__, __LINE__, ##__VA_ARGS__); //sdk对外使用,内部api不需要暴露
 #else
-#  define DDLOG(...);
+#  define NSLog(...) nil;
 #endif
 
 //数据库

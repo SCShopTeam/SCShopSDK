@@ -287,24 +287,23 @@
 }
 
 -(void)showSelectAreaView{
-            if (!self.editModel) {
-                self.editModel = [[SCAddressModel alloc]init];
-            }
-            [self tableTap];
-            __weak typeof(self.editModel)wkmodel = self.editModel;
-            [SCAddressSelectView show:^(SCAddressModel * _Nonnull addressModel) {
-                NSLog(@"...");
-                wkmodel.provinceNum = addressModel.provinceNum;
-                wkmodel.provinceName = addressModel.provinceName;
-                
-                wkmodel.cityNum = addressModel.cityNum;
-                wkmodel.cityName = addressModel.cityName;
-                
-                wkmodel.regionNum = addressModel.regionNum;
-                wkmodel.regionName = addressModel.regionName;
-    //            [self.table reloadData];
-                [self.table reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
-            }];
+    if (!self.editModel) {
+        self.editModel = [[SCAddressModel alloc]init];
+    }
+    [self tableTap];
+    __weak typeof(self.editModel)wkmodel = self.editModel;
+    [SCAddressSelectView showIn:self addressBlock:^(SCAddressModel * _Nonnull addressModel) {
+        wkmodel.provinceNum = addressModel.provinceNum;
+        wkmodel.provinceName = addressModel.provinceName;
+        
+        wkmodel.cityNum = addressModel.cityNum;
+        wkmodel.cityName = addressModel.cityName;
+        
+        wkmodel.regionNum = addressModel.regionNum;
+        wkmodel.regionName = addressModel.regionName;
+        //            [self.table reloadData];
+        [self.table reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:2 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+    }];
 }
 
 @end

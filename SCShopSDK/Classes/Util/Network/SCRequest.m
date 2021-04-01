@@ -190,9 +190,7 @@
 {
     [SCRequestParams shareInstance].requestNum = @"goodsType.queryGoodsTypeList";
     
-    [SCNetworkManager GET:SC_GOODTYPE_LIST
-               parameters:@{}
-                  success:^(id  _Nullable responseObject) {
+    [SCNetworkManager GET:SC_GOODTYPE_LIST parameters:@{} success:^(id  _Nullable responseObject) {
         if (![SCNetworkTool checkResult:responseObject key:nil forClass:NSArray.class failure:failureBlock]) {
             return;
         }
@@ -210,13 +208,12 @@
         if (successBlock) {
             successBlock(temp.copy);
         }
-        
-    }
-                  failure:^(NSString * _Nullable errorMsg) {
+    } failure:^(NSString * _Nullable errorMsg) {
         if (failureBlock) {
             failureBlock(errorMsg);
         }
     }];
+
 }
 
 //+(void)scCategoryListBlock:(void (^)(BOOL, NSArray * _Nullable, NSString * _Nullable))callBack{
@@ -374,7 +371,7 @@
     if (datas) {
         NSArray *models = [SCCommodityModel getModelsFrom:datas];
         if (successBlock) {
-            successBlock(models, @[]);
+            successBlock(models, datas);
         }
         
         return;

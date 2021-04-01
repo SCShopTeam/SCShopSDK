@@ -140,7 +140,7 @@ DEF_SINGLETON(SCSearchHistoryUtil)
             [_db executeUpdate:createTableSqlString];
             
         } else {
-            DDLOG(@"fail to open database");
+            NSLog(@"fail to open database");
         }
         
 

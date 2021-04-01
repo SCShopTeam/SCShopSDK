@@ -249,7 +249,7 @@ DEF_SINGLETON(SCPopupManager)
             [_db executeUpdate:createIdsSqlString];
             
         } else {
-            DDLOG(@"fail to open database");
+            NSLog(@"fail to open database");
         }
 
         
