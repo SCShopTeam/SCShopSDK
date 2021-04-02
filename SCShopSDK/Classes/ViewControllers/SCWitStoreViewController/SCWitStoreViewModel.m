@@ -150,10 +150,12 @@
             return;
         }
         
+        NSDictionary *result = responseObject[A_RESULT];
+        NSInteger totalPageCount = [result safeIntegerValueForKey:@"pageCount"];
         
-        NSArray *result = responseObject[A_RESULT][resultKey];
+        NSArray *data = result[resultKey];
         
-        NSMutableArray *models = [self handleStoreResult:result];
+        NSMutableArray *models = [self handleStoreResult:data];
         
         if (page == 1 && self.requestModel.queryType == SCWitQueryTypeNear && self.requestModel.sortType == SCWitSortTypeNear && models.count > 0 ) {
             //更新最近门店信息
@@ -173,7 +175,7 @@
         }
         
         [cacheModel.storeList addObjectsFromArray:models];
-        cacheModel.hasMoreData = result.count >= kCountCurPage;
+        cacheModel.hasMoreData = page < totalPageCount;
         cacheModel.page = page;
         
         if ([self.currentKey isEqualToString:cacheKey]) {

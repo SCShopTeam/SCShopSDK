@@ -13,6 +13,8 @@
 #import "SCLocationService.h"
 #import "SCShoppingManager.h"
 
+static NSArray <SCCommodityModel *> *kCacheRecommendList; //为你推荐缓存
+
 
 @implementation SCRequest
 
@@ -340,12 +342,16 @@
             return;
         }
 
-        NSArray *records = responseObject[B_RESULT][key];
+        NSDictionary *result = responseObject[B_RESULT];
+        NSInteger totalPages = [result safeIntegerValueForKey:@"pages"];
+        BOOL hasNoData = pageNum >= totalPages;
+        
+        NSArray *records = result[key];
         
         NSArray *models = [SCCommodityModel getModelsFrom:records];
         
         if (successBlock) {
-            successBlock(models, records);
+            successBlock(models, hasNoData);
         }
         
     } failure:^(NSString * _Nullable errorMsg) {
@@ -358,34 +364,19 @@
 //为你推荐
 + (void)requestRecommend:(SCCommodityBlock)successBlock failure:(SCHttpRequestFailed)failureBlock
 {
-    SCUserInfo *userInfo = [SCUserInfo currentUser];
-    
     //先找缓存
-    NSString *cacheKey = @"SC_RECOMMEND_CACHE";
-    NSDictionary *caches = [SCCacheManager getCachedObjectWithKey:cacheKey];
-    
-    NSMutableDictionary *temp = VALID_DICTIONARY(caches) ? caches.mutableCopy : [NSMutableDictionary dictionary];
-    
-    NSArray *datas = temp[userInfo.phoneNumber];
-    
-    if (datas) {
-        NSArray *models = [SCCommodityModel getModelsFrom:datas];
+    if (kCacheRecommendList) {
         if (successBlock) {
-            successBlock(models, datas);
+            successBlock(kCacheRecommendList, YES);
         }
-        
         return;
     }
     
-    [self requestCommoditiesWithTypeNum:nil brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:1 success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, NSArray * _Nonnull originDatas) {
-        NSArray *cacheDatas = originDatas ?: @[];
-        
-        temp[userInfo.phoneNumber] = cacheDatas;
-        
-        [SCCacheManager cacheObject:temp forKey:cacheKey withTimeoutInterval:60*60];//缓存保留1小时
+    [self requestCommoditiesWithTypeNum:nil brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:1 success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, BOOL hasNoData) {
+        kCacheRecommendList = commodityList;
         
         if (successBlock) {
-            successBlock(commodityList, originDatas);
+            successBlock(commodityList, YES);
         }
         
         

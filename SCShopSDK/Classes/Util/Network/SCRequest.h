@@ -27,7 +27,7 @@ typedef NS_ENUM(NSInteger, SCCategorySortType) {
 
 typedef void(^SCCategoryBlock)(NSArray <SCCategoryModel *> *categoryList);
 
-typedef void(^SCCommodityBlock)(NSArray <SCCommodityModel *> *commodityList, NSArray *originDatas);
+typedef void(^SCCommodityBlock)(NSArray <SCCommodityModel *> *commodityList, BOOL hasNoData);
 
 
 @interface SCRequest : NSObject

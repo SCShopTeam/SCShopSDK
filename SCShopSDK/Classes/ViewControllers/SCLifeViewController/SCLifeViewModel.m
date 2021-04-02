@@ -58,7 +58,7 @@
         
     }
     
-    [SCRequest requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:page success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, NSArray * _Nonnull originDatas) {
+    [SCRequest requestCommoditiesWithTypeNum:typeNum brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:page success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, BOOL hasNoData) {
         self.isRequesting = NO;
         
         if (page == 1) {
@@ -66,7 +66,7 @@
         }
         
         [self.commodityList addObjectsFromArray:commodityList];
-        self.hasNoData = commodityList.count < kCountCurPage;
+        self.hasNoData = hasNoData;
         
         if (completion) {
             completion(nil);

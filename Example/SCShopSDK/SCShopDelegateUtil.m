@@ -207,7 +207,7 @@
                                @"phoneNumber":@"15251803168",
                                @"isJSMobile":@"1",
                                @"uan":@"14",
-                               @"cmtokenid": @"4A6662009EC94AC19400F01AD6994C3C@js.ac.10086.cn",
+                               @"cmtokenid": @"4B4523BCB088468985C209F8B4C9F7E4@js.ac.10086.cn",
                                @"name": @"测试号"
     };
     

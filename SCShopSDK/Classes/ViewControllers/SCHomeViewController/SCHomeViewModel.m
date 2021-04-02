@@ -411,14 +411,13 @@
 #pragma mark -商品
 - (void)requestCommodityListData:(NSString *)typeNum pageNum:(NSInteger)pageNum completion:(SCHttpRequestCompletion)completion
 {
-    [SCRequest requestCommoditiesWithTypeNum:(typeNum?:@"") brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, NSArray * _Nonnull originDatas) {
-        
+    [SCRequest requestCommoditiesWithTypeNum:(typeNum?:@"") brandNum:nil tenantNum:nil categoryName:nil cityNum:nil isPreSale:NO sort:SCCategorySortKeySale sortType:SCCategorySortTypeDesc pageNum:pageNum success:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, BOOL hasNoData) {
         if (pageNum == 1) {
             [self.commodityList removeAllObjects];
         }
         
         [self.commodityList addObjectsFromArray:commodityList];
-        self.hasNoData = commodityList.count < kCountCurPage;
+        self.hasNoData = hasNoData;
         
         if (completion) {
             completion(nil);

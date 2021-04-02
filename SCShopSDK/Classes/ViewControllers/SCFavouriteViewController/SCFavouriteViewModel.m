@@ -54,7 +54,7 @@
 
 - (void)requestRecommend:(SCHttpRequestCompletion)completion
 {
-    [SCRequest requestRecommend:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, NSArray * _Nonnull originDatas) {
+    [SCRequest requestRecommend:^(NSArray<SCCommodityModel *> * _Nonnull commodityList, BOOL hasNoData) {
         self.recommendList = commodityList;
         if (completion) {
             completion(nil);
