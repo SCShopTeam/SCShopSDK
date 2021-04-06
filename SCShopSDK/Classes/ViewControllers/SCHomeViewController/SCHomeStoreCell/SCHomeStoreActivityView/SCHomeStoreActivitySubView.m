@@ -89,7 +89,6 @@
     //主题
     self.topicLabel.text = model.topic;
     self.topicLabel.textColor = textColor;
-    [self.topicLabel sizeToFit];
     
     
     //活动
@@ -155,8 +154,10 @@
 - (UILabel *)topicLabel
 {
     if (!_topicLabel) {
-        _topicLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(22), self.titleLabel.bottom + SCREEN_FIX(6), 0, SCREEN_FIX(11))];
+        CGFloat x = SCREEN_FIX(22);
+        _topicLabel = [[UILabel alloc] initWithFrame:CGRectMake(x, self.titleLabel.bottom + SCREEN_FIX(6), self.width-x*2, SCREEN_FIX(11))];
         _topicLabel.font = SCFONT_SIZED_FIX(11);
+        _topicLabel.textAlignment = NSTextAlignmentLeft;
         [self addSubview:_topicLabel];
     }
     return _topicLabel;

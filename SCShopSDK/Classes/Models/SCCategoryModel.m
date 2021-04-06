@@ -13,6 +13,21 @@
     return @{@"secondList": SecondCategoryModel.class};
 }
 
++ (NSArray<SCCategoryModel *> *)parsingModelsFromData:(NSArray *)data
+{
+    NSMutableArray *temp = [NSMutableArray arrayWithCapacity:data.count];
+    
+    for (NSDictionary *dict in data) {
+        if (VALID_DICTIONARY(dict)) {
+            SCCategoryModel *model = [SCCategoryModel yy_modelWithDictionary:dict];
+            [temp addObject:model];
+        }
+        
+    }
+    
+    return temp.copy;
+}
+
 @end
 
 

@@ -35,9 +35,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     SCHomeRowItems        //商品
 };
 
-//楼层数量
-#define kRowNum      (SCHomeRowItems + 1)
-//部分楼层高度
+//导航栏高度
 #define kNavBarH     (SCREEN_FIX(48) + STATUS_BAR_HEIGHT)
 
 @interface SCHomeViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -144,7 +142,12 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 {
     self.maxOffsetY = kHomeTopRowH + kHomeBannerRowH + self.viewModel.gridRowHeight + self.viewModel.storeRowHeight + self.viewModel.goodStoresRowHeight + kHomeAdRowH;
     
-    return kRowNum;
+    if (self.viewModel.categoryList) {
+        return SCHomeRowItems+1;
+        
+    }else {
+        return SCHomeRowAd+1;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section

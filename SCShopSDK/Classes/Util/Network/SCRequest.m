@@ -13,6 +13,7 @@
 #import "SCLocationService.h"
 #import "SCShoppingManager.h"
 
+static NSArray *kCacheCategoryList; //分类缓存
 static NSArray <SCCommodityModel *> *kCacheRecommendList; //为你推荐缓存
 
 
@@ -190,6 +191,16 @@ static NSArray <SCCommodityModel *> *kCacheRecommendList; //为你推荐缓存
 
 + (void)requestCategory:(SCCategoryBlock)successBlock failure:(SCHttpRequestFailed)failureBlock
 {
+    if (kCacheCategoryList) {
+        NSArray *models = [SCCategoryModel parsingModelsFromData:kCacheCategoryList];
+        if (successBlock) {
+            successBlock(models);
+        }
+        
+        return;
+    }
+    
+    
     [SCRequestParams shareInstance].requestNum = @"goodsType.queryGoodsTypeList";
     
     [SCNetworkManager GET:SC_GOODTYPE_LIST parameters:@{} success:^(id  _Nullable responseObject) {
@@ -197,18 +208,12 @@ static NSArray <SCCommodityModel *> *kCacheRecommendList; //为你推荐缓存
             return;
         }
         NSArray *result = responseObject[B_RESULT];
-        NSMutableArray *temp = [NSMutableArray arrayWithCapacity:result.count];
+        kCacheCategoryList = result;
         
-        for (NSDictionary *dict in result) {
-            if (VALID_DICTIONARY(dict)) {
-                SCCategoryModel *model = [SCCategoryModel yy_modelWithDictionary:dict];
-                [temp addObject:model];
-            }
-            
-        }
+        NSArray *models = [SCCategoryModel parsingModelsFromData:result];
         
         if (successBlock) {
-            successBlock(temp.copy);
+            successBlock(models);
         }
     } failure:^(NSString * _Nullable errorMsg) {
         if (failureBlock) {

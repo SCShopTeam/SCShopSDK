@@ -20,6 +20,8 @@
 @property (nonatomic, assign) CGFloat tagWidth;
 @property (nonatomic, assign) BOOL selected;
 
++ (NSArray <SCCategoryModel *> *)parsingModelsFromData:(NSArray *)data;
+
 @end
 
 @interface SecondCategoryModel : NSObject
