@@ -161,7 +161,7 @@
     if (!_topicLabel) {
         CGFloat x = SCREEN_FIX(22);
         _topicLabel = [[UILabel alloc] initWithFrame:CGRectMake(x, self.titleLabel.bottom + SCREEN_FIX(6), self.width-x*2, SCREEN_FIX(11))];
-        _topicLabel.font = SCFONT_SIZED_FIX(11);
+        _topicLabel.font = SCFONT_SIZED(11);
         _topicLabel.textAlignment = NSTextAlignmentLeft;
         [self addSubview:_topicLabel];
     }
@@ -270,6 +270,7 @@
         
     }else if (model.parentType == SCHomeActivityTypeGroup) {
         self.groupPersonCountButton.hidden = NO;
+        self.groupPersonCountButton.titleLabel.font = (model.groupPersonCount >= 10 ? SCFONT_SIZED_FIX(8) : SCFONT_SIZED_FIX(9));
         [self.groupPersonCountButton setTitle:[NSString stringWithFormat:@"%li人团",model.groupPersonCount] forState:UIControlStateNormal];
     }
     
@@ -335,7 +336,6 @@
         _groupPersonCountButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, SCREEN_FIX(32), SCREEN_FIX(17))];
         _groupPersonCountButton.centerX = self.icon.centerX;
         _groupPersonCountButton.bottom  = self.icon .bottom - SCREEN_FIX(3.5);
-        _groupPersonCountButton.titleLabel.font = SCFONT_SIZED_FIX(9);
         [_groupPersonCountButton setBackgroundImage:SCIMAGE(@"home_group_num") forState:UIControlStateNormal];
         [_groupPersonCountButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         _groupPersonCountButton.userInteractionEnabled = NO;

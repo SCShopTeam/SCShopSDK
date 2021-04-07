@@ -54,9 +54,14 @@
 {
     _homeGoodsModel = homeGoodsModel;
     
+    //ui坐标要重新调整
+    self.titleLabel.top += (IsIPhoneXLater ? SCREEN_FIX(4.5) : SCREEN_FIX(2));
+    self.titleLabel.font = SCFONT_SIZED(12);
+    self.priceLabel.textColor = HEX_RGB(@"#FF0000");
+    
     //图片
     [self.icon sd_setImageWithURL:[NSURL URLWithString:homeGoodsModel.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-        CGFloat bigWh = self.titleLabel.top;
+        CGFloat bigWh = self.titleLabel.top - SCREEN_FIX(4);
         CGFloat imgWh = MIN(bigWh, image.size.height);
         self.icon.size = CGSizeMake(imgWh, imgWh);
         self.icon.centerX = self.width/2;
@@ -76,6 +81,7 @@
     self.titleLabel.text = homeGoodsModel.goodsName;
     
     //划线价
+//    homeGoodsModel.guidePrice = 4000000;
     CGFloat oldPrice = homeGoodsModel.guidePrice/1000.0;
     self.oldPriceLabel.attributedText = oldPrice < 1 ? nil : [SCUtilities oldPriceAttributedString:oldPrice font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
     
@@ -88,7 +94,7 @@
     CGFloat maxWidth = self.width - edge*2;
     self.priceLabel.width   = MIN(maxWidth, self.priceLabel.width);
     self.priceLabel.centerX = self.width/2;
-    self.priceLabel.bottom = self.oldPriceLabel.top - SCREEN_FIX(3);
+    self.priceLabel.bottom = self.oldPriceLabel.top - (IsIPhoneXLater ? SCREEN_FIX(3) : SCREEN_FIX(2));
     
     self.yuanLabel.right  = self.priceLabel.left;
     self.yuanLabel.bottom = self.priceLabel.bottom;

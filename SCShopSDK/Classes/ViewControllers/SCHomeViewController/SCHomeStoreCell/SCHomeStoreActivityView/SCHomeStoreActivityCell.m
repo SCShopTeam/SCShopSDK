@@ -110,10 +110,18 @@
     
     [self sd_setBackgroundImageWithURL:[NSURL URLWithString:model.imageUrl] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
     
-    self.textLabel.text = [NSString stringWithFormat:@"%li",model.liveAudience];
-    [self.textLabel sizeToFit];
-    self.textLabel.width += SCREEN_FIX(8.5);
-    self.textBg.width = self.textLabel.right;
+    if (model.liveAudience >= 1) {
+        self.textLabel.text = [NSString stringWithFormat:@"%li",model.liveAudience];
+        [self.textLabel sizeToFit];
+        self.textLabel.width += SCREEN_FIX(8.5);
+        self.textBg.width = self.textLabel.right;
+        self.textBg.hidden = NO;
+        
+    }else {
+        self.textBg.hidden = YES;
+    }
+    
+
 }
 
 - (UIView *)textBg

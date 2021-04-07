@@ -178,11 +178,11 @@
 
 - (void)requestRecommendStoreDataWithLongitude:(nullable NSString *)longitude latitude:(nullable NSString *)latitude userInfo:(SCUserInfo *)userInfo completion:(SCHttpRequestCompletion)completion
 {
-    NSDictionary *param = @{@"longitude": longitude?:@"",
-                            @"latitude": latitude?:@"",
+    NSDictionary *param = @{@"longitude": longitude?:@"118.7403349462312", //默认传南京
+                            @"latitude": latitude?:@"32.05719667166901",   //默认传南京
                             @"areaNum": userInfo.uan,
                             @"phoneNum": userInfo.phoneNumber};
-    
+
     [SCRequestParams shareInstance].requestNum = @"apollo.queryFloorGoods";
     
     [SCNetworkManager POST:SC_STORE_FLOOR parameters:param success:^(id  _Nullable responseObject) {

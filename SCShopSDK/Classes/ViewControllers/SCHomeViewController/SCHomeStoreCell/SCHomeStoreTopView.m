@@ -130,8 +130,8 @@
 - (UILabel *)distanceLabel
 {
     if (!_distanceLabel) {
-        _distanceLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, self.line.bottom + SCREEN_FIX(13), 20, SCREEN_FIX(12))];
-        _distanceLabel.font = SCFONT_SIZED_FIX(12);
+        _distanceLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, self.line.bottom + (IsIPhoneXLater ? SCREEN_FIX(14.5) : SCREEN_FIX(13)), 20, SCREEN_FIX(12))];
+        _distanceLabel.font = SCFONT_SIZED(12);
         _distanceLabel.textColor = HEX_RGB(@"#7F7F7E");
         [self addSubview:_distanceLabel];
     }
