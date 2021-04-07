@@ -55,7 +55,7 @@
     _homeGoodsModel = homeGoodsModel;
     
     //ui坐标要重新调整
-    self.titleLabel.top += (IsIPhoneXLater ? SCREEN_FIX(4.5) : SCREEN_FIX(2));
+    self.titleLabel.top = (IsIPhoneXLater ? SCREEN_FIX(68.5) : SCREEN_FIX(66));
     self.titleLabel.font = SCFONT_SIZED(12);
     self.priceLabel.textColor = HEX_RGB(@"#FF0000");
     
@@ -81,7 +81,6 @@
     self.titleLabel.text = homeGoodsModel.goodsName;
     
     //划线价
-//    homeGoodsModel.guidePrice = 4000000;
     CGFloat oldPrice = homeGoodsModel.guidePrice/1000.0;
     self.oldPriceLabel.attributedText = oldPrice < 1 ? nil : [SCUtilities oldPriceAttributedString:oldPrice font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
     
