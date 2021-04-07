@@ -107,7 +107,8 @@ static NSDictionary *kCityCodeDict;
     }
     
     if ([SCUtilities isInShoppingDebug] && TARGET_IPHONE_SIMULATOR) { //模拟器debug时使用假数据
-        [self configFakeData];
+//        [self configFakeData];
+        [self stopLocation];
         return;
     }
     

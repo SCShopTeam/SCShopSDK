@@ -171,17 +171,15 @@
     }
     
     //有手机号，有定位才可以请求
-    BOOL useCache = !self.storeModel; //第一次请求用缓存，后续刷新都要重新定位
-    
     [[SCLocationService sharedInstance] startLocation:^(SCLocationService * _Nonnull ls) {
         [self requestRecommendStoreDataWithLongitude:ls.longitude latitude:ls.latitude userInfo:userInfo completion:completion];
-    } useCache:useCache];
+    } useCache:NO];
 }
 
 - (void)requestRecommendStoreDataWithLongitude:(nullable NSString *)longitude latitude:(nullable NSString *)latitude userInfo:(SCUserInfo *)userInfo completion:(SCHttpRequestCompletion)completion
 {
-    NSDictionary *param = @{@"longitude": (VALID_STRING(longitude) ? longitude : @""),
-                            @"latitude": (VALID_STRING(latitude) ? latitude : @""),
+    NSDictionary *param = @{@"longitude": longitude?:@"",
+                            @"latitude": latitude?:@"",
                             @"areaNum": userInfo.uan,
                             @"phoneNum": userInfo.phoneNumber};
     
@@ -196,6 +194,10 @@
         
         NSDictionary *result = responseObject[B_RESULT];
         SCHomeStoreModel *storeModel = [SCHomeStoreModel yy_modelWithDictionary:result];
+        
+        if (!longitude || !latitude) {
+            storeModel.locationError = YES;
+        }
         
         if (!VALID_STRING(storeModel.storeId)) {
             self.storeModel = storeModel;

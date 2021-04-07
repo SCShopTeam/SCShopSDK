@@ -63,8 +63,10 @@ typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nul
 //首页
 + (UINavigationController *)homePage;
 
+//清除缓存， 包括图片，下载文件，userdefaults,数据库等
++ (void)clearCaches;
 
-//打开接口日志打印 默认关闭 只测试用
+//debug功能:打开接口日志打印 默认关闭
 + (void)openNetworkLog;
 
 

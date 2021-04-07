@@ -46,7 +46,12 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
+        //从后台切换到前台时，有可能出现倒计时错误的情况
+        [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillEnterForegroundNotification object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+            if (self.model.type == SCHomeActivityTypeLimited) {
+                [self.countdownView startCountdown:self.model.endTime];
+            }
+        }];
     }
     return self;
 }

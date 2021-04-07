@@ -40,11 +40,18 @@
     
     //距离
     self.distanceLabel.left = self.titleLabel.right + SCREEN_FIX(5);
-    NSString *numStr = model.distance > 100 ? [NSString stringWithFormat:@"%.1fkm",(model.distance/1000.0)] : [NSString stringWithFormat:@"%lim",model.distance];
-    NSString *distanceStr = [NSString stringWithFormat:@"距离您%@",numStr];
-    NSMutableAttributedString *mulA = [[NSMutableAttributedString alloc] initWithString:distanceStr];
-    [mulA addAttributes:@{NSForegroundColorAttributeName:HEX_RGB(@"#ff3434")} range:[distanceStr rangeOfString:numStr]];
-    self.distanceLabel.attributedText = mulA;
+    
+    if (model.locationError) {
+        self.distanceLabel.text = @"暂无位置信息";
+        
+    }else {
+        NSString *numStr = model.distance > 100 ? [NSString stringWithFormat:@"%.1fkm",(model.distance/1000.0)] : [NSString stringWithFormat:@"%lim",model.distance];
+        NSString *distanceStr = [NSString stringWithFormat:@"距离您%@",numStr];
+        NSMutableAttributedString *mulA = [[NSMutableAttributedString alloc] initWithString:distanceStr];
+        [mulA addAttributes:@{NSForegroundColorAttributeName:HEX_RGB(@"#ff3434")} range:[distanceStr rangeOfString:numStr]];
+        self.distanceLabel.attributedText = mulA;
+    }
+    
     [self.distanceLabel sizeToFit];
     
     //亮点标签

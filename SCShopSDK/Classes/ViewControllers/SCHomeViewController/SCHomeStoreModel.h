@@ -41,6 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 //接口3.2
 @property (nonatomic, copy) NSArray <NSArray <SCHomeActivityModel *> *> *activityList; //活动
 
+//自定义
+@property (nonatomic, assign) BOOL locationError;
+
 - (void)parsingTopGoodsModelsFromData:(NSDictionary *)data;
 - (void)parsingActivityModelsFromData:(NSDictionary *)data;
 
