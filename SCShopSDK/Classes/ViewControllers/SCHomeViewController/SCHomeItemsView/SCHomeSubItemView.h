@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) void (^selectBlock)(SCCommodityModel *model);
 
 - (void)refresh:(BOOL)showLoading;
+- (void)scrollToTop;
 
 @end
 

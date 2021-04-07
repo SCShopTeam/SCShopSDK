@@ -111,7 +111,8 @@
     if (currentIndex == self.currentIndex) {
         SCHomeSubItemView *view = self.subViewDict[[self getKeyFromIndex:self.currentIndex]];
         if (view) {
-            [view refresh:YES];
+//            [view refresh:YES];
+            [view scrollToTop];
         }
         
     }else {

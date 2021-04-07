@@ -296,7 +296,7 @@
     }
     
     
-    cell.imageView.image = [UIImage sc_imageNamed:@"home_witapollo_good_def"];
+    cell.commodityImgV.image = [UIImage sc_imageNamed:@"home_witapollo_good_def"];
     cell.nameLab.text = @"";
     cell.desLab.text = @"";
     cell.priceLab.text = @"";

@@ -158,8 +158,8 @@
 - (UIButton *)moreButton
 {
     if (!_moreButton) {
-        CGFloat w = SCREEN_FIX(56);
-        _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(self.width - SCREEN_FIX(8.5) - w, SCREEN_FIX(13.5), w, SCREEN_FIX(11))];
+        CGFloat w = SCREEN_FIX(58);
+        _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(self.width - SCREEN_FIX(8.5) - w, SCREEN_FIX(8), w, SCREEN_FIX(20))];
         [_moreButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         _moreButton.titleLabel.font = SCFONT_SIZED_FIX(11);
         [_moreButton setTitle:@"更多热销" forState:UIControlStateNormal];

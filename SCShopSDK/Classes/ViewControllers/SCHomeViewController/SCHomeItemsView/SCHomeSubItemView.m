@@ -79,6 +79,10 @@
     self.collectionView.contentOffset = CGPointMake(0, 1);
 }
 
+- (void)scrollToTop
+{
+    [self.collectionView setContentOffset:CGPointMake(0, 1) animated:YES];
+}
 
 #pragma mark -UICollectionViewDelegate, UICollectionViewDataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section

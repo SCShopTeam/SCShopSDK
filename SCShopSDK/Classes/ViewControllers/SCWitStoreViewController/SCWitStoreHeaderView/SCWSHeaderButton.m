@@ -34,7 +34,7 @@
     self.titleLabel.text = witGoodModel.goodsName;
     
     //价格
-    CGFloat price = witGoodModel.wholesalePrice/1000*1.f;
+    CGFloat price = witGoodModel.wholesalePrice/1000.0;
     self.priceLabel.text = [SCUtilities removeFloatSuffix:price];
     [self.priceLabel sizeToFit];
     
@@ -76,11 +76,11 @@
     self.titleLabel.text = homeGoodsModel.goodsName;
     
     //划线价
-    CGFloat oldPrice = homeGoodsModel.guidePrice/1000*1.f;
+    CGFloat oldPrice = homeGoodsModel.guidePrice/1000.0;
     self.oldPriceLabel.attributedText = oldPrice < 1 ? nil : [SCUtilities oldPriceAttributedString:oldPrice font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
     
     //价格
-    CGFloat price = homeGoodsModel.wholesalePrice/1000*1.f;
+    CGFloat price = homeGoodsModel.wholesalePrice/1000.0;
     self.priceLabel.text = [SCUtilities removeFloatSuffix:price];
     [self.priceLabel sizeToFit];
     

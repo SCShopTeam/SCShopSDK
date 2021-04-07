@@ -44,7 +44,8 @@
         
         SCHomeTopButton *btn = self.btnList[idx];
         
-        [btn sd_setImageWithURL:[NSURL URLWithString:model.picUrl] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
+        UIImage *holder = idx == 0 ? SCIMAGE(@"home_award") : SCIMAGE(@"home_activity");
+        [btn sd_setImageWithURL:[NSURL URLWithString:model.picUrl] forState:UIControlStateNormal placeholderImage:holder];
         [btn setTitle:model.txt forState:UIControlStateNormal];
     }];
 }
