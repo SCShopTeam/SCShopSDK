@@ -12,9 +12,11 @@
 #import "SCRequestParams.h"
 #import "SCLocationService.h"
 #import <WebKit/WebKit.h>
+#import "SCShoppingManager.h"
+
 @implementation SCNetworkManager
 
-static BOOL _isOpenLog;   // 是否已开启日志打印
+static BOOL _isOpenLog = NO;   // debug功能 是否已开启日志打印
 static NSMutableArray *_allSessionTask;
 static AFHTTPSessionManager *_sessionManager;
 
@@ -63,31 +65,17 @@ static AFHTTPSessionManager *_sessionManager;
     }
 //    [_sessionManager.requestSerializer setValue:cmtokenid forHTTPHeaderField:@"Cookie"];
     
-    NSURLSessionTask *sessionTask = [_sessionManager GET:requestURL parameters:nil headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
-        NSLog(@"%@ : %@", requestNum, _isOpenLog ? [self jsonToString:responseObject] : @"success");
+    NSURLSessionTask *sessionTask = [_sessionManager GET:requestURL parameters:nil headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {\
+        [self log:responseObject error:nil requestNum:requestNum];
         
         [[self allSessionTask] removeObject:task];
         success ? success(responseObject) : nil;
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"%@ : %@", requestNum, _isOpenLog ? error : @"failure");
+        [self log:nil error:error requestNum:requestNum];
+        
         [[self allSessionTask] removeObject:task];
         failure ? failure(error.why) : nil;
     }];
-    
-//    NSURLSessionTask *sessionTask = [_sessionManager GET:requestURL parameters:nil progress:^(NSProgress * _Nonnull uploadProgress) {
-//
-//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
-//
-//        [[self allSessionTask] removeObject:task];
-//        success ? success(responseObject) : nil;
-//
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
-//        [[self allSessionTask] removeObject:task];
-//        failure ? failure(error.why) : nil;
-//    }];
     
     // 添加sessionTask到数组
     sessionTask ? [[self allSessionTask] addObject:sessionTask] : nil ;
@@ -134,34 +122,18 @@ static AFHTTPSessionManager *_sessionManager;
 
     
     NSURLSessionTask *sessionTask = [_sessionManager POST:URL parameters:param headers:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"%@ : %@", requestNum, _isOpenLog ? [self jsonToString:responseObject] : @"success");
-//        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"%@ : responseObject = %@", URL, [self jsonToString:responseObject]) : @"success");
+        [self log:responseObject error:nil requestNum:requestNum];
         
         [[self allSessionTask] removeObject:task];
         
         success ? success(responseObject) : nil;
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"%@ : %@", requestNum, _isOpenLog ? error : @"failure");
+        [self log:nil error:error requestNum:requestNum];
+        
         [[self allSessionTask] removeObject:task];
         failure ? failure(error.why) : nil;
     }];
     
-    
-    
-//    NSURLSessionTask *sessionTask = [_sessionManager POST:URL parameters:param progress:^(NSProgress * _Nonnull uploadProgress) {
-//
-//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        NSLog(@"%@", _isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
-//
-//        [[self allSessionTask] removeObject:task];
-//
-//        success ? success(responseObject) : nil;
-//
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
-//        [[self allSessionTask] removeObject:task];
-//        failure ? failure(error.why) : nil;
-//    }];
     
     // 添加最新的sessionTask到数组
     sessionTask ? [[self allSessionTask] addObject:sessionTask] : nil;
@@ -182,7 +154,7 @@ static AFHTTPSessionManager *_sessionManager;
 //    [_sessionManager.requestSerializer setValue:@"iOS" forHTTPHeaderField:@"client"];
 //    //    manager.requestSerializer.cachePolicy = NSURLRequestReloadRevalidatingCacheData;
 //    _sessionManager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json",@"text/json", @"text/JavaScript",@"text/html",@"text/plain",nil];
-//    NSLog(@"httpHeader -> %@",_sessionManager.requestSerializer.HTTPRequestHeaders);
+//    AAAA(@"httpHeader -> %@",_sessionManager.requestSerializer.HTTPRequestHeaders);
 //    NSURLSessionTask *sessionTask = [_sessionManager POST:URL parameters:parameters progress:^(NSProgress * _Nonnull uploadProgress) {
 //
 //    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -223,41 +195,17 @@ static AFHTTPSessionManager *_sessionManager;
             progress ? progress(uploadProgress) : nil;
         });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
+        [self log:responseObject error:nil requestNum:name];
         
         [[self allSessionTask] removeObject:task];
         success ? success(responseObject) : nil;
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
+        [self log:nil error:error requestNum:name];
         
         [[self allSessionTask] removeObject:task];
         failure ? failure(error.why) : nil;
     }];
     
-    
-    
-    
-//    NSURLSessionTask *sessionTask = [_sessionManager POST:URL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-//        NSError *error = nil;
-//        [formData appendPartWithFileURL:[NSURL fileURLWithPath:filePath] name:name error:&error];
-//        (failure && error) ? failure(error.why) : nil;
-//    } progress:^(NSProgress * _Nonnull uploadProgress) {
-//        //上传进度
-//        dispatch_sync(dispatch_get_main_queue(), ^{
-//            progress ? progress(uploadProgress) : nil;
-//        });
-//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
-//
-//        [[self allSessionTask] removeObject:task];
-//        success ? success(responseObject) : nil;
-//
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
-//
-//        [[self allSessionTask] removeObject:task];
-//        failure ? failure(error.why) : nil;
-//    }];
     
     // 添加sessionTask到数组
     sessionTask ? [[self allSessionTask] addObject:sessionTask] : nil ;
@@ -289,7 +237,7 @@ static AFHTTPSessionManager *_sessionManager;
             // 图片经过等比压缩后得到的二进制文件
             //            NSData *imageData = UIImageJPEGRepresentation(images[i], imageScale ?: 1.f);
             NSData *imageData = dataArr[i];
-//            NSLog(@"---%ld---",imageData.length);
+//            AAAA(@"---%ld---",imageData.length);
             // 默认图片的文件名, 若fileNames为nil就使用
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
             formatter.dateFormat = @"yyyy-MM-dd-HH-mm-ss";
@@ -307,61 +255,17 @@ static AFHTTPSessionManager *_sessionManager;
             progress ? progress(uploadProgress) : nil;
         });
     } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
+        [self log:responseObject error:nil requestNum:name];
         
         [[self allSessionTask] removeObject:task];
         success(responseObject);
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
+        [self log:nil error:error requestNum:name];
         
         [[self allSessionTask] removeObject:task];
         failure ? failure(error.why) : nil;
     }];
     
-    
-    
-    
-//    NSURLSessionTask *sessionTask = [_sessionManager POST:URL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-//        NSMutableArray *dataArr = [NSMutableArray array];
-//        for (NSUInteger i = 0; i < images.count; i++) {
-//            NSData *imageData = [SCNetworkManager compressOriginalImage:images[i] toMaxDataSizeKBytes:2];
-//            [dataArr addObject:imageData];
-//        }
-//        for (NSUInteger i = 0; i < dataArr.count; i++) {
-//            // 图片经过等比压缩后得到的二进制文件
-//            //            NSData *imageData = UIImageJPEGRepresentation(images[i], imageScale ?: 1.f);
-//            NSData *imageData = dataArr[i];
-////            NSLog(@"---%ld---",imageData.length);
-//            // 默认图片的文件名, 若fileNames为nil就使用
-//            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-//            formatter.dateFormat = @"yyyy-MM-dd-HH-mm-ss";
-//            NSString *str = [formatter stringFromDate:[NSDate date]];
-//            NSString *imageFileName = NSStringFormat(@"IMG%@%ld.%@",str,i,imageType?:@"jpg");
-//            
-//            [formData appendPartWithFileData:imageData
-//                                        name:name
-//                                    fileName:fileNames ? NSStringFormat(@"%@.%@",fileNames[i],imageType?:@"jpg") : imageFileName
-//                                    mimeType:NSStringFormat(@"image/%@",imageType ?: @"jpg")];  // @"applicaiton/json"
-//        }
-//        
-//    } progress:^(NSProgress * _Nonnull uploadProgress) {
-//        //上传进度
-//        dispatch_sync(dispatch_get_main_queue(), ^{
-//            progress ? progress(uploadProgress) : nil;
-//        });
-//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"responseObject = %@",[self jsonToString:responseObject]) : @"success");
-//        
-//        [[self allSessionTask] removeObject:task];
-//        success(responseObject);
-//        
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        NSLog(@"%@",_isOpenLog ? NSStringFormat(@"error = %@",error) : @"failure");
-//        
-//        [[self allSessionTask] removeObject:task];
-//        failure ? failure(error.why) : nil;
-//    }];
-//    
     // 添加sessionTask到数组
     sessionTask ? [[self allSessionTask] addObject:sessionTask] : nil ;
     
@@ -431,15 +335,6 @@ static AFHTTPSessionManager *_sessionManager;
 }
 
 /**
- *  json转字符串
- */
-+ (NSString *)jsonToString:(id)data {
-    if(!data) { return nil; }
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:data options:NSJSONWritingPrettyPrinted error:nil];
-    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-}
-
-/**
  存储着所有的请求task数组
  */
 + (NSMutableArray *)allSessionTask {
@@ -450,13 +345,44 @@ static AFHTTPSessionManager *_sessionManager;
 }
 
 #pragma mark -日志打印
-+ (void)openLog {
-    _isOpenLog = YES;
++ (void)log:(id)responseObject error:(NSError *)error requestNum:(NSString *)requestNum
+{
+    id result;    //请求结果
+    id blockInfo; //回调信息
+    
+    if (error) {
+        blockInfo = error;
+        result = _isOpenLog ? error : @"failure";
+        
+    }else {
+        blockInfo = [self jsonToString:responseObject];
+        result = _isOpenLog ? blockInfo : @"success";
+        
+    }
+    
+    NSLog(@"%@ : %@", requestNum, result);
+    
+    
+    //debug回调
+    SCShoppingManager *manage = [SCShoppingManager sharedInstance];
+    if (manage.networkLogBlock) {
+        manage.networkLogBlock([NSString stringWithFormat:@"%@ : %@",requestNum, blockInfo]);
+    }
+    
 }
 
-+ (void)closeLog {
-    _isOpenLog = NO;
+/**
+ *  json转字符串
+ */
++ (NSString *)jsonToString:(id)data {
+    if(!data) { return nil; }
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:data options:NSJSONWritingPrettyPrinted error:nil];
+    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
+
+
+
+
 
 #pragma mark - 初始化AFHTTPSessionManager相关属性
 

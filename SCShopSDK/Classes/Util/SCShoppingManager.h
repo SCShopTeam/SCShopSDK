@@ -58,18 +58,12 @@ typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nul
 
 @property (nonatomic, weak) id <SCShoppingDelegate> delegate;
 
+@property (nonatomic, copy) void (^networkLogBlock)(NSString *log);//debug功能，回调请求日志
+
 + (instancetype)sharedInstance;
 
 //首页
 + (UINavigationController *)homePage;
-
-//清除缓存， 包括图片，下载文件，userdefaults,数据库等
-+ (void)clearCaches;
-
-//debug功能:打开接口日志打印 默认关闭
-+ (void)openNetworkLog;
-
-
 
 @end
 

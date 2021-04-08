@@ -55,17 +55,6 @@ typedef void (^SCHttpProgress) (NSProgress *progress);
 + (void)cancelRequestWithURL:(NSString *)URL;
 
 /**
- 开启日志打印 (Debug级别)
- */
-+ (void)openLog;
-
-/**
- 关闭日志打印
- */
-+ (void)closeLog;
-
-
-/**
  *  GET请求,无缓存
  *
  *  @param URL        请求地址

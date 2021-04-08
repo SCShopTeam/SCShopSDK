@@ -54,12 +54,6 @@
     }];
 }
 
-#pragma mark -Public
-+ (void)openNetworkLog
-{
-    [SCNetworkManager openLog];
-}
-
 //首页
 + (UINavigationController *)homePage
 {
@@ -69,25 +63,5 @@
     
     return homeNav;
 }
-
-+ (void)clearCaches
-{
-    //图片
-    [[SDImageCache sharedImageCache] clearMemory];
-    [[SDImageCache sharedImageCache] clearDiskOnCompletion:nil];
-    
-    //数据库
-    NSString *docPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-    NSString *sqlitePath = [docPath stringByAppendingPathComponent:SC_COMMON_SQLITE];
-    [[NSFileManager defaultManager] removeItemAtPath:sqlitePath error:nil];
-    
-    //userdefaults
-//    [NSUserDefaults standardUserDefaults] removeObjectForKey:<#(nonnull NSString *)#>
-    
-    //缓存
-//    SCCacheManager
-    
-}
-
 
 @end

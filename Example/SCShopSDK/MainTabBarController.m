@@ -27,6 +27,10 @@
     
     [self setupTabBar];
     
+//    [SCShoppingManager sharedInstance].networkLogBlock = ^(NSString * _Nonnull log) {
+//        
+//    };
+    
 }
 
 - (void)createTabs

@@ -52,6 +52,7 @@
     __block NSString *cityName = [SCLocationService sharedInstance].city;
     self.requestModel.busiRegCityCode = [SCLocationService sharedInstance].cityCode;
     
+    [SCRequestParams shareInstance].requestNum = @"apollo.queryAreaListAppTerminal";
     [SCNetworkManager POST:SC_AREA_LIST_AT parameters:nil success:^(id  _Nullable responseObject) {
         if (![SCNetworkTool checkResult:responseObject key:nil forClass:NSArray.class failure:nil]) {
             if (areaBlock) {
@@ -135,6 +136,7 @@
         [self showLoading];
     }
 
+    [SCRequestParams shareInstance].requestNum = @"apollo.getAggregateStore";
     [SCNetworkManager POST:SC_AGGREGATE_STORE parameters:param success:^(id  _Nullable responseObject) {
         
         NSString *resultKey = @"result";
@@ -235,6 +237,7 @@
  
     NSDictionary *param = @{@"storeId": storeIds};
     
+    [SCRequestParams shareInstance].requestNum = @"apollo.batchQueryStoCou";
     [SCNetworkManager POST:SC_STO_COU parameters:param success:^(id  _Nullable responseObject) {
         
         NSString *key = @"stoCouMap";
@@ -276,55 +279,34 @@
 
 - (void)requestQueueInfo:(NSMutableArray <SCWitStoreModel *> *)storeList
 {
-    NSMutableArray *hallIds = [NSMutableArray arrayWithCapacity:storeList.count];
-    
     for (SCWitStoreModel *model in storeList) {
-        if (model.line && VALID_STRING(model.storeCode)) {
-            [hallIds addObject:model.storeCode];
+        if (!(model.line && VALID_STRING(model.storeCode))) {
+            continue;
         }
-    }
-    
-    if (hallIds.count == 0) {
-        return;
-    }
-
-    NSMutableDictionary *mulDict = [NSMutableDictionary dictionaryWithCapacity:hallIds.count];
-    
-    dispatch_group_t group = dispatch_group_create();
-    for (NSString *hallId in hallIds) {
-        dispatch_group_enter(group);
-        [SCNetworkManager POST:SC_QUEUE_INFO parameters:@{@"hallId": hallId} success:^(id  _Nullable responseObject) {
-            if ([SCNetworkTool checkResult:responseObject key:nil forClass:NSDictionary.class completion:nil]) {
-                mulDict[hallId] = responseObject[A_RESULT];
-            }
-            
-            dispatch_group_leave(group);
-            
-        } failure:^(NSString * _Nullable errorMsg) {
-            dispatch_group_leave(group);
-        }];
-    }
-    
-    
-    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-        for (SCWitStoreModel *model in storeList) {
-            if (![mulDict.allKeys containsObject:model.storeCode]) {
-                continue;
-            }
-            NSDictionary *dict = mulDict[model.storeCode];
-            SCWitQueueInfoModel *queueModel = [SCWitQueueInfoModel yy_modelWithDictionary:dict];
-            model.queueInfoModel = queueModel;
-
-            if (model.cell) {
-                model.cell.model = model;
-            }
-            if (model.headerView) {
-                model.headerView.model = model;
-            }
-        }
-
         
-    });
+        [SCRequestParams shareInstance].requestNum = @"apollo.qryHallQueueInfo";
+        [SCNetworkManager POST:SC_QUEUE_INFO
+                    parameters:@{@"hallId": model.storeCode}
+                       success:^(id  _Nullable responseObject) {
+            if ([SCNetworkTool checkResult:responseObject key:nil forClass:NSDictionary.class completion:nil]) {
+                NSDictionary *result = responseObject[A_RESULT];
+                SCWitQueueInfoModel *queueModel = [SCWitQueueInfoModel yy_modelWithDictionary:result];
+                model.queueInfoModel = queueModel;
+                
+                if (model.cell) {
+                    model.cell.model = model;
+                }
+                if (model.headerView) {
+                    model.headerView.model = model;
+                }
+            }
+        }
+                       failure:^(NSString * _Nullable errorMsg) {
+            
+        }];
+        
+    }
+
 }
 
 
@@ -340,6 +322,7 @@
                                       @"pageSize": @3},
                             @"phoneNum": ([SCUserInfo currentUser].phoneNumber ?: @"")};
     
+    [SCRequestParams shareInstance].requestNum = @"apollo.pageQueryGoodsTerminal";
     [SCNetworkManager POST:SC_GOODS_TERMINAL parameters:param success:^(id  _Nullable responseObject) {
         NSString *key = @"result";
         if (![SCNetworkTool checkResult:responseObject key:key forClass:NSArray.class failure:failure]) {
@@ -373,7 +356,7 @@
                                        @"pageSize": @(kCountCurPage)},
                             @"queryType": @"1"};
     
-    
+    [SCRequestParams shareInstance].requestNum = @"apollo.getProfessionalStore";
     [SCNetworkManager POST:SC_PROFESSIONAL_STORE parameters:param success:^(id  _Nullable responseObject) {
         NSString *key = @"result";
         if (![SCNetworkTool checkResult:responseObject key:key forClass:NSArray.class failure:nil]) {
@@ -398,6 +381,7 @@
                             @"vouchType": @"01",
                             @"generateType": @"3"};
     
+    [SCRequestParams shareInstance].requestNum = @"apollo.getByVouchNumber";
     [SCNetworkManager POST:SC_VOUCH_NUMBER parameters:param success:^(id  _Nullable responseObject) {
         if (![SCNetworkTool checkResult:responseObject key:nil forClass:NSDictionary.class failure:failure]) {
             return;
