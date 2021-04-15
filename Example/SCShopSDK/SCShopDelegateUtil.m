@@ -214,6 +214,11 @@
     return userInfo;
 }
 
+- (void)scNetworkLog:(NSString *)requestNum responseObject:(id)responseObject error:(NSError *)error
+{
+//    NSLog(@"%@ : %@", requestNum, error ? @"failure" : @"success");
+}
+
 //获取定位
 //- (NSDictionary *)scGetLocationInfo
 //{

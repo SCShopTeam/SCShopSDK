@@ -192,34 +192,29 @@
         [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_Z04" url:@"" inPage:NSStringFromClass(SCHomeViewController.class)];
         
     }else if (code == SCJsmccCodeStoreInfo) { //商铺详情
-        NSString *num = paramDic[@"tenantNum"];
-        SCStoreHomeViewController *shop = [[SCStoreHomeViewController alloc]init];
+        NSString *num = [paramDic safeStringValueForKey:@"tenantNum"];
+        SCStoreHomeViewController *shop = [SCStoreHomeViewController new];
         shop.tenantNum = num;
         [nav pushViewController:shop animated:YES];
         
     }else if (code == SCJsmccCodeLife){  //智能生活
-        SCLifeViewController *tag = [[SCLifeViewController alloc]init];
+        SCLifeViewController *tag = [SCLifeViewController new];
         tag.paramDic = paramDic;
         [nav pushViewController:tag animated:YES];
         
     }else if (code == SCJsmccCodeTabCart || code == SCJsmccCodeCart){  //购物车  3是原tab页
-        SCCartViewController *cat = [[SCCartViewController alloc]init];
+        SCCartViewController *cat = [SCCartViewController new];
         [nav pushViewController:cat animated:YES];
         
         [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_Z03" url:@"" inPage:NSStringFromClass(SCHomeViewController.class)];
         
     }else if (code == SCJsmccCodeWitStore){ //智慧门店  原生
-        SCWitStoreViewController *wit = [[SCWitStoreViewController alloc]init];
+        SCWitStoreViewController *wit = [SCWitStoreViewController new];
         [nav pushViewController:wit animated:YES];
         
     }
     
     
-}
-
-+ (void)ecmcJumpToShopWithUrl:(NSString *)url navigation:(UINavigationController *)nav
-{
-    [self gotoController:url navigation:nav];
 }
 
 @end

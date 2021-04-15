@@ -29,12 +29,9 @@ typedef NS_ENUM(NSInteger, SCJsmccCode) {
 
 //跳转网页
 + (void)gotoWebcustom:(NSString *)url title:(NSString *)title navigation:(UINavigationController *)nav;
+
 //跳转原生页
 + (void)gotoController:(NSString *)url navigation:(UINavigationController *)nav;
-
-
-/// 外部短地址跳转商城原生页
-+ (void)ecmcJumpToShopWithUrl:(NSString *)url navigation:(UINavigationController *)nav;
 
 
 @end

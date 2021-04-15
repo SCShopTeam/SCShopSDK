@@ -51,7 +51,7 @@ typedef void(^SCCommodityBlock)(NSArray <SCCommodityModel *> *commodityList, BOO
 
 //分类查询（大类）
 //+(void)scCategoryListBlock:(void (^)(BOOL, NSArray * _Nullable, NSString * _Nullable))callBack;
-+ (void)requestCategory:(SCCategoryBlock)successBlock failure:(SCHttpRequestFailed)failureBlock;
++ (void)requestCategory:(SCCategoryBlock)successBlock failure:(SCHttpRequestFailed)failureBlock useCache:(BOOL)useCache;
 
 
 //品类列表查询
@@ -60,7 +60,7 @@ typedef void(^SCCommodityBlock)(NSArray <SCCommodityModel *> *commodityList, BOO
 
 
 //为你推荐    品类列表封装接口
-+ (void)requestRecommend:(SCCommodityBlock)successBlock failure:(SCHttpRequestFailed)failureBlock;
++ (void)requestRecommend:(SCCommodityBlock)successBlock failure:(SCHttpRequestFailed)failureBlock useCache:(BOOL)useCache;
 
 
 //商城订单列表

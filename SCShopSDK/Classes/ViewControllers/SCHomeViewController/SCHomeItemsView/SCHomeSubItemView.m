@@ -41,7 +41,7 @@
 {
     _model = model;
     
-    [self requestData];
+    [self refresh:NO];
 }
 
 - (void)requestData
@@ -62,6 +62,7 @@
             self.tipLabel.hidden = NO;
             self.tipLabel.text = @"抱歉，暂无商品，看看其他商品吧~";
         }
+        
     }];
     
 }

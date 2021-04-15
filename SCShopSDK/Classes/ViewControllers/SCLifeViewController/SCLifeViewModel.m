@@ -40,7 +40,7 @@
         if (failure) {
             failure(errorMsg);
         }
-    }];
+    } useCache:YES];
 }
 
 

@@ -29,77 +29,70 @@
             continue;
         }
         
-        if ([dict.allKeys containsObject:@"name"] && VALID_STRING(dict[@"name"])) {
-            NSString *name = dict[@"name"];
-            if ([name isEqualToString:@"F_GOODS_SOURCE"]) {
-                self.goodsSource = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"F_SHOP_ADDR"]) {
-                self.shopAddr = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"rate"]) {
-                self.rate = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"F_LINE_PRICE"]) {
-                self.linePrice = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"F_SHOP_NAME"]) {
-                self.shopName = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"F_SHOP_LNG"]) {
-                self.shopLng = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"F_SHOP_LAT"]) {
-                self.shopLat = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"F_DISTANCE_NUM"]) {
-                self.distanceNum = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"t_busi_num"]) {
-                self.busiNum = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"F_TARGET_ID"]) {
-                self.targetId = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"t_busi_image"]) {
-                self.busiImage = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"F_SOURCE_ID"]) {
-                self.sourceId = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"F_TSECTION_ID"]) {
-                self.tsectionId = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"t_introduce"]) {
-                self.introduce = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"F_TSECTION_NAME"]) {
-                self.tsectionName = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"F_TSECTION_NUM"]) {
-                self.tsectionNum = [self safeValueFor:dict];
-
-            }else if ([name isEqualToString:@"labels"]) {
-                self.labels = [self safeValueFor:dict];
-
-            }
+        NSString *name = [dict safeStringValueForKey:@"name"];
         
+        if (name.length <= 0) {
+            continue;
+        }
+        
+        NSString *value = [dict safeStringValueForKey:@"value"];
+        
+        if ([name isEqualToString:@"F_GOODS_SOURCE"]) {
+            self.goodsSource = value;
+
+        }else if ([name isEqualToString:@"F_SHOP_ADDR"]) {
+            self.shopAddr = value;
+
+        }else if ([name isEqualToString:@"rate"]) {
+            self.rate = value;
+
+        }else if ([name isEqualToString:@"F_LINE_PRICE"]) {
+            self.linePrice = value;
+
+        }else if ([name isEqualToString:@"F_SHOP_NAME"]) {
+            self.shopName = value;
+
+        }else if ([name isEqualToString:@"F_SHOP_LNG"]) {
+            self.shopLng = value;
+
+        }else if ([name isEqualToString:@"F_SHOP_LAT"]) {
+            self.shopLat = value;
+
+        }else if ([name isEqualToString:@"F_DISTANCE_NUM"]) {
+            self.distanceNum = value;
+
+        }else if ([name isEqualToString:@"t_busi_num"]) {
+            self.busiNum = value;
+
+        }else if ([name isEqualToString:@"F_TARGET_ID"]) {
+            self.targetId = value;
+
+        }else if ([name isEqualToString:@"t_busi_image"]) {
+            self.busiImage = value;
+
+        }else if ([name isEqualToString:@"F_SOURCE_ID"]) {
+            self.sourceId = value;
+
+        }else if ([name isEqualToString:@"F_TSECTION_ID"]) {
+            self.tsectionId = value;
+
+        }else if ([name isEqualToString:@"t_introduce"]) {
+            self.introduce = value;
+
+        }else if ([name isEqualToString:@"F_TSECTION_NAME"]) {
+            self.tsectionName = value;
+
+        }else if ([name isEqualToString:@"F_TSECTION_NUM"]) {
+            self.tsectionNum = value;
+
+        }else if ([name isEqualToString:@"labels"]) {
+            self.labels = value;
+
         }
         
     }
     
     return YES;
-}
-
-- (NSString *)safeValueFor:(NSDictionary *)dict
-{
-    if ([dict.allKeys containsObject:@"value"] && VALID_STRING(dict[@"value"])) {
-        NSString *value = dict[@"value"];
-        return value;
-        
-    }else {
-        return @"";
-    }
 }
 
 - (NSAttributedString *)addressAttributedText

@@ -48,6 +48,8 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 
 @property (nonatomic, strong) SCHomeItemsView *itemsView; //这个楼层不用cell,是因为需要提前加载请求
 @property (nonatomic, strong) SCTagView *tagView; //这个楼层不用cell
+
+@property (nonatomic, assign) BOOL needRefresh; //是否需要刷新
 @end
 
 @implementation SCHomeViewController
@@ -60,24 +62,24 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-    
+    if (self.navigationController.viewControllers.count <= 1) { //说明是切换到其它tab页了
+        self.needRefresh = YES;
+    }
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //隐藏原生导航栏
+    //ui
     self.hideNavigationBar = YES;
+    [self tableView];
     
     //scrollview联动相关设置
     self.canScroll = YES;
     [[NSNotificationCenter defaultCenter] addObserverForName:SCNOTI_HOME_TABLE_CAN_SCROLL object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull note) {
         self.canScroll = YES;
     }];
-    
-    //主控件
-    [self tableView];
-    
+
     //请求数据
     [self requestData];
     
@@ -88,8 +90,14 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     [super viewWillAppear:animated];
     //每次进入页面判断用户是否变化，比如登录，或者退出登录，发生变化需要刷新当前页数据
     if (self.viewModel.userHasChanged) {
+        _needRefresh = YES;
+    }
+    
+    if (_needRefresh) {
+        _needRefresh = NO;
         [self requestData];
     }
+    
 }
 
 
@@ -97,15 +105,13 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 - (void)requestData
 {
     //触点
-    if (!self.viewModel.gridList) {
-        [self.viewModel requestTouchData:self success:^(id  _Nullable responseObject) {
-            [self.tableView reloadData];
-            [self showPopup]; //展示弹窗
-            
-        } failure:^(NSString * _Nullable errorMsg) {
-            
-        }];
-    }
+    [self.viewModel requestTouchData:self success:^(id  _Nullable responseObject) {
+        [self.tableView reloadData];
+        [self showPopup]; //展示弹窗
+        
+    } failure:^(NSString * _Nullable errorMsg) {
+
+    }];
     
     //推荐门店
     [self.viewModel requestRecommendStoreData:^(NSString * _Nullable errorMsg) {
@@ -113,14 +119,12 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     }];
     
     //发现好店
-    if (!self.viewModel.goodStoreList) {
-        [self.viewModel requestGoodStoreList:^(NSString * _Nullable errorMsg) {
-            [self.tableView reloadData];
-        }];
-    }
-    
+    [self.viewModel requestGoodStoreList:^(NSString * _Nullable errorMsg) {
+        [self.tableView reloadData];
+    }];
+
     //分类
-    if (!self.viewModel.categoryList) {
+//    if (!self.viewModel.categoryList) {
         [self.viewModel requestCategoryList:^(NSString * _Nullable errorMsg) {
             if (errorMsg) {
                 [self showWithStatus:errorMsg];
@@ -130,10 +134,9 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
             [self.tableView reloadData];
         }];
         
-    }else { //刷新商品
-        [_itemsView refresh];
-    }
-
+//    }else { //刷新商品
+//        [_itemsView refresh];
+//    }
 }
 
 
@@ -234,12 +237,12 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
             }else {
                 if (VALID_STRING(model.linkUrl)) {
                     [self pushToNewPage:model.linkUrl title:model.contentName];
+                    
                 }else {
                     [self showWithStatus:@"敬请期待"];
+                    
                 }
-                
             }
-            
         };
         
         return cell;
@@ -572,6 +575,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
                 }
                 
             }else {  //刷新
+                [self.itemsView showLoading];
                 [self requestData];
             }
             

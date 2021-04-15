@@ -189,9 +189,9 @@ static NSArray <SCCommodityModel *> *kCacheRecommendList; //为你推荐缓存
     }];
 }
 
-+ (void)requestCategory:(SCCategoryBlock)successBlock failure:(SCHttpRequestFailed)failureBlock
++ (void)requestCategory:(SCCategoryBlock)successBlock failure:(SCHttpRequestFailed)failureBlock useCache:(BOOL)useCache
 {
-    if (kCacheCategoryList) {
+    if (useCache && kCacheCategoryList) {
         NSArray *models = [SCCategoryModel parsingModelsFromData:kCacheCategoryList];
         if (successBlock) {
             successBlock(models);
@@ -367,10 +367,10 @@ static NSArray <SCCommodityModel *> *kCacheRecommendList; //为你推荐缓存
 }
 
 //为你推荐
-+ (void)requestRecommend:(SCCommodityBlock)successBlock failure:(SCHttpRequestFailed)failureBlock
++ (void)requestRecommend:(SCCommodityBlock)successBlock failure:(SCHttpRequestFailed)failureBlock useCache:(BOOL)useCache
 {
     //先找缓存
-    if (kCacheRecommendList) {
+    if (useCache && kCacheRecommendList) {
         if (successBlock) {
             successBlock(kCacheRecommendList, YES);
         }

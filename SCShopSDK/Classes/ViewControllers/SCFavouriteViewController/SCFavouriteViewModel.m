@@ -63,7 +63,7 @@
         if (completion) {
             completion(errorMsg);
         }
-    }];
+    } useCache:YES];
 
 }
 

@@ -28,10 +28,6 @@
 
 - (void)setCategoryList:(NSArray<SCCategoryModel *> *)categoryList
 {
-    if (categoryList == _categoryList) {
-        return;
-    }
-    
     _categoryList = categoryList;
     
     //计算宽度
@@ -47,7 +43,12 @@
         model.tagWidth = labelWidth;
     }
 
-    [self.collectionView reloadData];
+    [categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (obj.selected == YES) {
+            [self pushToIndex:idx needCallBack:NO];
+            *stop = YES;
+        }
+    }];
 
 }
 
@@ -59,7 +60,7 @@
 
 - (void)pushToIndex:(NSInteger)index needCallBack:(BOOL)needCallBack
 {
-    if (index >= self.categoryList.count) {
+    if (index < 0 || index >= self.categoryList.count) {
         return;
     }
     

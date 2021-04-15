@@ -11,7 +11,8 @@
 
 @interface SCHomeItemsView () <UICollectionViewDelegate,UICollectionViewDataSource>
 @property (nonatomic, strong) UICollectionView *collectionView;
-@property (nonatomic, strong) NSMutableDictionary <NSString *, SCHomeSubItemView *> *subViewDict;
+//@property (nonatomic, strong) NSMutableDictionary <NSString *, SCHomeSubItemView *> *subViewDict;
+@property (nonatomic, strong) NSMutableArray <SCHomeSubItemView *> *subViewList;
 
 @end
 
@@ -28,33 +29,49 @@
 
 - (void)setCategoryList:(NSArray<SCCategoryModel *> *)categoryList
 {
-    if (categoryList == _categoryList) {
+    _categoryList = categoryList;
+    
+    [self createItemViews];
+    
+    __block NSInteger selectIndex = 0;
+    
+    [categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull model, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (idx >= self.subViewList.count) {
+            *stop = YES;
+        }
+        
+        SCHomeSubItemView *view = self.subViewList[idx];
+        view.model = model;
+        
+        if (model.selected) {
+            selectIndex = idx;
+        }
+        
+    }];
+    
+    [self.collectionView reloadData];
+    
+    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:selectIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+}
+
+- (void)createItemViews
+{
+    //不重建，只增量补
+    NSInteger num = self.categoryList.count - self.subViewList.count;
+    
+    if (num <= 0) {
         return;
     }
     
-    _categoryList = categoryList;
-    
-    [self.subViewDict removeAllObjects];
-    
-    [categoryList enumerateObjectsUsingBlock:^(SCCategoryModel * _Nonnull model, NSUInteger idx, BOOL * _Nonnull stop) {
+    for (NSInteger i = 0; i < num; i++) {
         SCHomeSubItemView *view = [[SCHomeSubItemView alloc] initWithFrame:self.bounds];
-        view.model = model;
-        [self.subViewDict setValue:view forKey:[self getKeyFromIndex:idx]];
-    }];
-    
-    
-    
-    [self.collectionView reloadData];
-}
-
-- (NSString *)getKeyFromIndex:(NSInteger)index
-{
-    return [NSString stringWithFormat:@"%li",index];
+        [self.subViewList addObject:view];
+    }
 }
 
 - (void)refresh
 {
-    [self.subViewDict.allValues enumerateObjectsUsingBlock:^(SCHomeSubItemView * _Nonnull subView, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.subViewList enumerateObjectsUsingBlock:^(SCHomeSubItemView * _Nonnull subView, NSUInteger idx, BOOL * _Nonnull stop) {
         [subView refresh:(idx == self.currentIndex)];
     }];
 
@@ -74,20 +91,24 @@
         [view removeFromSuperview];
     }
     
-    NSString *key = [self getKeyFromIndex:indexPath.row];
-    SCHomeSubItemView *subView = self.subViewDict[key];
-    if (subView) {
-        [cell.contentView addSubview:subView];
-    }
-    
-    @weakify(self)
-    subView.selectBlock = ^(SCCommodityModel * _Nonnull model) {
-        @strongify(self)
-        if (self.selectBlock) {
-            self.selectBlock(model);
+    if (indexPath.row < self.subViewList.count) {
+        SCHomeSubItemView *subView = self.subViewList[indexPath.row];
+        if (subView) {
+            [cell.contentView addSubview:subView];
+            
+            @weakify(self)
+            subView.selectBlock = ^(SCCommodityModel * _Nonnull model) {
+                @strongify(self)
+                if (self.selectBlock) {
+                    self.selectBlock(model);
+                }
+            };
+            
         }
-    };
+    }
+
     
+
     
     return cell;
 }
@@ -108,8 +129,13 @@
 
 - (void)setCurrentIndex:(NSInteger)currentIndex
 {
+    if (currentIndex < 0 || currentIndex >= self.subViewList.count || currentIndex >= self.categoryList.count) {
+        currentIndex = 0;
+        return;
+    }
+    
     if (currentIndex == self.currentIndex) {
-        SCHomeSubItemView *view = self.subViewDict[[self getKeyFromIndex:self.currentIndex]];
+        SCHomeSubItemView *view = self.subViewList[currentIndex];
         if (view) {
 //            [view refresh:YES];
             [view scrollToTop];
@@ -147,12 +173,20 @@
     return _collectionView;
 }
 
-- (NSMutableDictionary<NSString *,SCHomeSubItemView *> *)subViewDict
+//- (NSMutableDictionary<NSString *,SCHomeSubItemView *> *)subViewDict
+//{
+//    if (!_subViewDict) {
+//        _subViewDict = [NSMutableDictionary dictionary];
+//    }
+//    return _subViewDict;
+//}
+
+- (NSMutableArray<SCHomeSubItemView *> *)subViewList
 {
-    if (!_subViewDict) {
-        _subViewDict = [NSMutableDictionary dictionary];
+    if (!_subViewList) {
+        _subViewList = [NSMutableArray array];
     }
-    return _subViewDict;
+    return _subViewList;
 }
 
 @end

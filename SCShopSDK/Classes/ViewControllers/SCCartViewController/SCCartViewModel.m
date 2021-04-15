@@ -62,7 +62,7 @@ NSString *const SC_CART_DELETE_NOTIFICATION = @"SC_CART_DELETE_NOTIFICATION";
         if (completion) {
             completion(errorMsg);
         }
-    }];
+    } useCache:YES];
 
 }
 

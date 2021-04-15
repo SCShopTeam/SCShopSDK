@@ -12,7 +12,6 @@
 #import "SCLocationService.h"
 #import "SCProgressHUD.h"
 
-
 @implementation SCShoppingManager
 
 #pragma mark -SETUP

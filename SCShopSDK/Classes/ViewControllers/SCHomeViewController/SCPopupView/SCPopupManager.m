@@ -22,6 +22,7 @@ static NSString *kIdsTable   = @"popup_ids";
 
 @interface SCPopupManager ()
 @property (nonatomic, strong) FMDatabase *db;
+@property (nonatomic, strong) NSMutableArray <NSString *>*showedSideIds;
 
 @end
 
@@ -30,13 +31,13 @@ DEF_SINGLETON(SCPopupManager)
 
 + (BOOL)validPopup:(SCHomeTouchModel *)touchModel type:(SCPopupType)type
 {
-    //目前侧边弹窗没有限制
-    if (type == SCPopupTypeSide) {
-        return YES;
-    }
-    
-    
     SCPopupManager *m = [SCPopupManager sharedInstance];
+    
+    //侧边弹窗没有周期展示的规则，但是也要限制打开一次客户端只展示一次，否则每次刷新都会出现一次侧边弹窗
+    if (type == SCPopupTypeSide) {
+        return [m canShowSidePopup:touchModel];
+    }
+
     
     //查找该广告有没有展示过
     BOOL hasShowed = [m hasShowed:touchModel type:type];
@@ -59,6 +60,20 @@ DEF_SINGLETON(SCPopupManager)
     return show;
 }
 
+- (BOOL)canShowSidePopup:(SCHomeTouchModel *)touchModel
+{
+    if (!_showedSideIds) {
+        _showedSideIds = [NSMutableArray arrayWithCapacity:1];
+    }
+    
+    if ([_showedSideIds containsObject:touchModel.contentNum]) {
+        return NO;
+        
+    }else {
+        [_showedSideIds addObject:touchModel.contentNum];
+        return YES;
+    }
+}
 
 - (BOOL)hasShowed:(SCHomeTouchModel *)touchModel type:(SCPopupType)type
 {

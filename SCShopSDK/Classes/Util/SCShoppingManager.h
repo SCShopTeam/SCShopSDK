@@ -47,6 +47,9 @@ typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nul
 //更多选项
 - (void)scMoreSelect:(SCShopMoreType)type nav:(UINavigationController *)nav;
 
+//debug功能，查看商城请求日志
+- (void)scNetworkLog:(NSString *)requestNum responseObject:(id)responseObject error:(NSError *)error;
+
 @required
 //获取用户信息
 - (NSDictionary *)scGetUserInfo;
@@ -58,12 +61,11 @@ typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nul
 
 @property (nonatomic, weak) id <SCShoppingDelegate> delegate;
 
-@property (nonatomic, copy) void (^networkLogBlock)(NSString *log);//debug功能，回调请求日志
-
 + (instancetype)sharedInstance;
 
 //首页
 + (UINavigationController *)homePage;
+
 
 @end
 

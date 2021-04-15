@@ -186,8 +186,6 @@
     [SCRequestParams shareInstance].requestNum = @"apollo.queryFloorGoods";
     
     [SCNetworkManager POST:SC_STORE_FLOOR parameters:param success:^(id  _Nullable responseObject) {
-        self.storeModel = nil;
-        
         if (![SCNetworkTool checkResult:responseObject key:nil forClass:NSDictionary.class completion:completion]) {
             return;
         }
@@ -406,7 +404,7 @@
         if (completion) {
             completion(errorMsg);
         }
-    }];
+    } useCache:NO];
     
 }
 

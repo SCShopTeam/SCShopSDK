@@ -16,7 +16,6 @@
 
 @implementation SCNetworkManager
 
-static BOOL _isOpenLog = NO;   // debug功能 是否已开启日志打印
 static NSMutableArray *_allSessionTask;
 static AFHTTPSessionManager *_sessionManager;
 
@@ -347,26 +346,18 @@ static AFHTTPSessionManager *_sessionManager;
 #pragma mark -日志打印
 + (void)log:(id)responseObject error:(NSError *)error requestNum:(NSString *)requestNum
 {
-    id result;    //请求结果
-    id blockInfo; //回调信息
+    //打印日志
+    id log = error ? @"failure" : @"success";
+//    id log = error ?: responseObject;   //如果需要打印详细信息，就放开这段注释
     
-    if (error) {
-        blockInfo = error;
-        result = _isOpenLog ? error : @"failure";
-        
-    }else {
-        blockInfo = [self jsonToString:responseObject];
-        result = _isOpenLog ? blockInfo : @"success";
-        
-    }
-    
-    NSLog(@"%@ : %@", requestNum, result);
+    //打印
+    NSLog(@"%@ : %@", requestNum, log);
     
     
     //debug回调
     SCShoppingManager *manage = [SCShoppingManager sharedInstance];
-    if (manage.networkLogBlock) {
-        manage.networkLogBlock([NSString stringWithFormat:@"%@ : %@",requestNum, blockInfo]);
+    if ([manage.delegate respondsToSelector:@selector(scNetworkLog:responseObject:error:)]) {
+        [manage.delegate scNetworkLog:requestNum responseObject:responseObject error:error];
     }
     
 }
