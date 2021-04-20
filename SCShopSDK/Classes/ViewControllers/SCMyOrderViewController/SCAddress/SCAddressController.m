@@ -140,8 +140,10 @@
     if ([SCUtilities isValidArray:objArr]) {
         
         for (NSDictionary *dic in objArr) {
-            SCAddressModel *model = [SCAddressModel yy_modelWithDictionary:dic];
-            [addressList addObject:model];
+            if ([SCUtilities isValidDictionary:dic]) {
+                SCAddressModel *model = [SCAddressModel yy_modelWithDictionary:dic];
+                [addressList addObject:model];
+            }
         }
     }
     
@@ -168,7 +170,7 @@
 //    }else{
 //        noOrderView.hidden = NO;
 //    }
-    return addressList.count;
+    return [SCUtilities isValidArray:addressList] ? addressList.count : 0;
 }
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
@@ -212,6 +214,12 @@
 -(void)scAddressDoneClick:(addressClickType)type cell:(nonnull UITableViewCell *)cell{
     SCAddressCell *addressCell = (SCAddressCell *)cell;
     NSIndexPath *indexpath = [table indexPathForCell:addressCell];
+    //越界判断
+    if (![SCUtilities isValidArray:addressList] ||
+        addressList.count<=indexpath.row ||
+        ![SCUtilities isValidString:addressList[indexpath.row].addressNum]) {
+        return;
+    }
     NSString *addressNum = addressList[indexpath.row].addressNum;
     if (type == addressEditType) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestData) name:@"EDIT_ADDRESS_SUCCESS" object:nil];
