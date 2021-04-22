@@ -145,7 +145,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
 {
     self.maxOffsetY = kHomeTopRowH + kHomeBannerRowH + self.viewModel.gridRowHeight + self.viewModel.storeRowHeight + self.viewModel.goodStoresRowHeight + kHomeAdRowH;
     
-    if (self.viewModel.categoryList) {
+    if (VALID_ARRAY(self.viewModel.categoryList) ) {
         return SCHomeRowItems+1;
         
     }else {

@@ -58,7 +58,7 @@
     [self.distanceLabel sizeToFit];
     
     //亮点标签
-    BOOL isInHoure = model.distance < 5000; //是否是1小时达
+    BOOL isInHoure = model.distance <= 5000; //是否是1小时达
 
     //最多显示4个标签， 1小时达占一个
     NSInteger maxLightSpotNum = isInHoure ? 3 : 4;
