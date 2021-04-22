@@ -44,8 +44,9 @@
     [self.collectionView reloadData];
     
     if (self.touchShowBlock) {
-        SCHomeTouchModel *firstModel = gridList.firstObject;
-        self.touchShowBlock(firstModel);
+        for (SCHomeTouchModel *model in gridList) {
+            self.touchShowBlock(model);
+        }
     }
     
 }

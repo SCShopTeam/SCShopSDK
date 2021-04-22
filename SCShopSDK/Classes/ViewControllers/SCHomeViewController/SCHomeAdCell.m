@@ -60,14 +60,13 @@
             SCHomeTouchModel *model = adList[idx];
             
             [btn sd_setBackgroundImageWithURL:[NSURL URLWithString:model.picUrl] forState:UIControlStateNormal placeholderImage:IMG_PLACE_HOLDER];
+            
+            if (self.touchShowBlock) {
+                self.touchShowBlock(model);
+            }
         }
         
     }];
-    
-    if (self.touchShowBlock) {
-        SCHomeTouchModel *firstModel = adList.firstObject;
-        self.touchShowBlock(firstModel);
-    }
 }
 
 - (UIView *)line

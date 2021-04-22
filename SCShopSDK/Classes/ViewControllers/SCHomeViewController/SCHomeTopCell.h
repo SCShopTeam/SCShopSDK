@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) void (^selectBlock)(SCHomeTopType type, SCHomeTouchModel *model);
 
+@property (nonatomic, copy) void (^touchShowBlock)(SCHomeTouchModel *model); //触点曝光
+
 @end
 
 NS_ASSUME_NONNULL_END

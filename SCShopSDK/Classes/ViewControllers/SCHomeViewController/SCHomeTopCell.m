@@ -47,6 +47,10 @@
         UIImage *holder = idx == 0 ? SCIMAGE(@"home_award") : SCIMAGE(@"home_activity");
         [btn sd_setImageWithURL:[NSURL URLWithString:model.picUrl] forState:UIControlStateNormal placeholderImage:holder];
         [btn setTitle:model.txt forState:UIControlStateNormal];
+        
+        if (self.touchShowBlock) {
+            self.touchShowBlock(model);
+        }
     }];
 }
 

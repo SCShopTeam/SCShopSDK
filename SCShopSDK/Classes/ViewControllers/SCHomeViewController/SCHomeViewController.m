@@ -237,12 +237,17 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
             }else {
                 if (VALID_STRING(model.linkUrl)) {
                     [self pushToNewPage:model.linkUrl title:model.contentName];
+                    [SCUtilities touchClick:model];
                     
                 }else {
                     [self showWithStatus:@"敬请期待"];
                     
                 }
             }
+        };
+        
+        cell.touchShowBlock = ^(SCHomeTouchModel * _Nonnull model) {
+            [SCUtilities touchShow:model];
         };
         
         return cell;
