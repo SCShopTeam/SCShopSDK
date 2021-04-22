@@ -44,8 +44,11 @@
     if (model.locationError) {
         self.distanceLabel.text = @"暂无位置信息";
         
+    }else if (model.distance >= 10000) { //大于10km不展示
+        self.distanceLabel.text = nil;
+        
     }else {
-        NSString *numStr = model.distance >= 1000 ? [NSString stringWithFormat:@"%.1fkm",(model.distance/1000.0)] : [NSString stringWithFormat:@"%lim",model.distance];
+        NSString *numStr = model.distance >= 1000 ? [NSString stringWithFormat:@"%.1fkm",(model.distance/1000.0)] : [NSString stringWithFormat:@"%lim",model.distance]; //大于1000m单位用km
         NSString *distanceStr = [NSString stringWithFormat:@"距离您%@",numStr];
         NSMutableAttributedString *mulA = [[NSMutableAttributedString alloc] initWithString:distanceStr];
         [mulA addAttributes:@{NSForegroundColorAttributeName:HEX_RGB(@"#ff3434")} range:[distanceStr rangeOfString:numStr]];
@@ -55,7 +58,7 @@
     [self.distanceLabel sizeToFit];
     
     //亮点标签
-    BOOL isInHoure = model.distance <= 5000; //是否是1小时达
+    BOOL isInHoure = model.distance < 5000; //是否是1小时达
 
     //最多显示4个标签， 1小时达占一个
     NSInteger maxLightSpotNum = isInHoure ? 3 : 4;
