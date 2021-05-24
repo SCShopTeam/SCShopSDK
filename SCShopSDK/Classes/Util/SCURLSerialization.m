@@ -41,8 +41,8 @@
     
     
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
-    if (manager.delegate && [manager.delegate respondsToSelector:@selector(scWebWithUrl:title:nav:)]) {
-        [manager.delegate scWebWithUrl:url title:title nav:nav];
+    if (manager.delegate && [manager.delegate respondsToSelector:@selector(scJsmccPage:title:nav:)]) {
+        [manager.delegate scJsmccPage:url title:title nav:nav];
     }else{
         SCWebViewCustom *custom = [[SCWebViewCustom alloc]init];
         
@@ -64,12 +64,20 @@
         return;
     }
     
+    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     
-    if ([url hasPrefix:@"jsmcc://"] && url.length > 8) {
-        NSString *temp = [url substringFromIndex:8];
-        NSMutableDictionary *paramDic;
-        NSString *cmd = temp;
+    //掌厅页面
+    if ([url hasPrefix:@"jsmcc://H/"] && url.length > 10) {
+        if ([manager.delegate respondsToSelector:@selector(scJsmccPage:title:nav:)]) {
+            [manager.delegate scJsmccPage:url title:@"" nav:nav];
+        }
         
+        return;
+    }
+    
+    //商城页面
+    if ([url hasPrefix:@"jsmcc://M/"] && url.length > 10) {
+        NSString *cmd = [url substringFromIndex:8];
         
         if ([cmd containsString:@"M/0"]) {
             if (url.length > 16) {
@@ -78,14 +86,16 @@
             }
             
         } else {
-            if ([temp containsString:@"?"]) {
-                NSArray *tempArr = [temp componentsSeparatedByString:@"?"];
+            NSMutableDictionary *paramDic;
+            
+            if ([cmd containsString:@"?"]) {
+                NSArray *tempArr = [cmd componentsSeparatedByString:@"?"];
                 cmd = tempArr.firstObject;
-                if (tempArr.count>1) {
+                if (tempArr.count > 1) {
                     paramDic = [NSMutableDictionary dictionary];
-                    NSArray *tempAgianArr = [tempArr.lastObject componentsSeparatedByString:@"&"];
+                    NSArray *tempAgianArr = [tempArr[1] componentsSeparatedByString:@"&"];
                     for (NSString *str in tempAgianArr) {
-                        if ([SCUtilities isValidString:str] && [str containsString:@"="]) {
+                        if ([str containsString:@"="]) {
                             NSArray *arr = [str componentsSeparatedByString:@"="];
                             if ([SCUtilities isValidArray:arr] && arr.count==2) {
                                 [paramDic setValue:arr.lastObject forKey:arr.firstObject];
@@ -105,13 +115,8 @@
     
     if ([url hasPrefix:@"phonestore://"] && url.length > 13) {
         NSString *temp = [url substringFromIndex:13];
-        if (![SCUtilities isValidString:temp]) {
-            return;
-        }
         
-        if ([temp isEqualToString:@"jumpToLogin"]) {
-            NSLog(@"--sc-- jumpToLogin调用登陆");
-            
+        if ([temp isEqualToString:@"jumpToLogin"]) { //登录
             if ([SCUserInfo currentUser].isLogin) {
                 return;
             }

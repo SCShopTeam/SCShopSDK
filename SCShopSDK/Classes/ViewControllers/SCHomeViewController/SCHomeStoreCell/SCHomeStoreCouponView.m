@@ -14,7 +14,7 @@
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UIButton *couponIcon;
 @property (nonatomic, strong) UILabel *tipLabel;
-@property (nonatomic, strong) NSArray <UILabel *> *couponLabelList;
+@property (nonatomic, strong) UILabel *couponLabel;
 @property (nonatomic, strong) UIButton *moreButton;
 @property (nonatomic, strong) NSArray <SCWSHeaderButton *> *itemButtonList;
 
@@ -37,10 +37,9 @@
 
     //如果没有优惠券，或者优惠券类型是1 ,就显示提示语
     BOOL hideCoupons = model.couponList.count == 0 || [model.couponList.firstObject.couId isEqualToString:@"1"];
-    
-    NSMutableArray *temp = [NSMutableArray arrayWithCapacity:2];
-    
+
     if (hideCoupons) {
+        self.couponLabel.hidden = YES;
         self.tipLabel.hidden = NO;
         NSString *tipStr = model.couponList.count > 0 ? model.couponList.firstObject.limitDesc : @"逛智慧门店，立享会员服务";
         self.tipLabel.text = tipStr;
@@ -48,31 +47,12 @@
         
     }else {
         self.tipLabel.hidden = YES;
-        [model.couponList enumerateObjectsUsingBlock:^(SCHomeCouponModel * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (idx < 2) { //最多显示两个标签
-                [temp addObject:obj.limitDesc];
-            }
-        }];
+        self.couponLabel.hidden = NO;
+        NSString *text = model.couponList.firstObject.limitDesc;
+        CGFloat textW = [text calculateWidthWithFont:self.couponLabel.font height:self.couponLabel.height];
+        self.couponLabel.width = textW + SCREEN_FIX(8);
+        self.couponLabel.text = text;
     }
-
-    //优惠券
-    __block CGFloat x = self.couponIcon.right + SCREEN_FIX(4.5);
-
-    [self.couponLabelList enumerateObjectsUsingBlock:^(UILabel * _Nonnull label, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (idx >= temp.count || hideCoupons) {
-            label.hidden = YES;
-            
-        }else {
-            label.hidden = NO;
-            label.left = x;
-            NSString *text = temp[idx];
-            label.text = text;
-            CGFloat textW = [text calculateWidthWithFont:label.font height:label.height];
-            label.width = textW + SCREEN_FIX(8);
-            x = label.right + SCREEN_FIX(6.5);
-            
-        }
-    }];
     
     //商品
     [self.itemButtonList enumerateObjectsUsingBlock:^(SCWSHeaderButton * _Nonnull btn, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -132,27 +112,20 @@
     return _tipLabel;
 }
 
-- (NSArray<UILabel *> *)couponLabelList
+- (UILabel *)couponLabel
 {
-    if (!_couponLabelList) {
-        NSMutableArray *temp = [NSMutableArray arrayWithCapacity:2];
-        
-        for (int i=0; i<2; i++) {
-            UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 0, SCREEN_FIX(16.5))];
-            label.centerY = self.titleLabel.centerY;
-            label.layer.borderWidth = 1;
-            label.layer.borderColor = HEX_RGB(@"#FF0300").CGColor;
-            label.layer.cornerRadius = 3;
-            label.textAlignment = NSTextAlignmentCenter;
-            label.font = SCFONT_SIZED_FIX(10);
-            label.textColor = HEX_RGB(@"#FF0000");
-            [self addSubview:label];
-            [temp addObject:label];
-        }
-        
-        _couponLabelList = temp.copy;
+    if (!_couponLabel) {
+        _couponLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.couponIcon.right + SCREEN_FIX(4.5), 0, 0, SCREEN_FIX(16.5))];
+        _couponLabel.centerY = self.titleLabel.centerY;
+        _couponLabel.layer.borderWidth = 1;
+        _couponLabel.layer.borderColor = HEX_RGB(@"#FF0300").CGColor;
+        _couponLabel.layer.cornerRadius = 3;
+        _couponLabel.textAlignment = NSTextAlignmentCenter;
+        _couponLabel.font = SCFONT_SIZED_FIX(10);
+        _couponLabel.textColor = HEX_RGB(@"#FF0000");
+        [self addSubview:_couponLabel];
     }
-    return _couponLabelList;
+    return _couponLabel;
 }
 
 - (UIButton *)moreButton

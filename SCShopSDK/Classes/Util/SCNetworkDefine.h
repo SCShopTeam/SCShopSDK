@@ -13,8 +13,8 @@
 //是否是正式环境
 #define IS_RELEASE_ENVIRONMENT   YES
 //host
-#define BASE_WEB_URL (IS_RELEASE_ENVIRONMENT ? @"http://wap.js.10086.cn/ex" : @"http://wap.js.10086.cn/ex/test")
-#define BASE_HOST (IS_RELEASE_ENVIRONMENT ? @"http://wap.js.10086.cn/ex/mall/api/v1" : @"http://wap.js.10086.cn/ex/test/mall/api/v1")
+#define BASE_WEB_URL (IS_RELEASE_ENVIRONMENT ? @"https://wap.js.10086.cn/ex" : @"https://wap.js.10086.cn/ex/test")
+#define BASE_HOST (IS_RELEASE_ENVIRONMENT ? @"https://wap.js.10086.cn/ex/mall/api/v1" : @"https://wap.js.10086.cn/ex/test/mall/api/v1")
 
 #define APOLLO_HOST (IS_RELEASE_ENVIRONMENT ? @"https://wx.apollojs.cn/apollosrv/api/othersystem/terminal/v1.0" : @"https://cnr.asiainfo.com/apollosrv/api/othersystem/terminal/v1.0")
 #define A_MEMBER_HOST (IS_RELEASE_ENVIRONMENT ? @"https://wx.apollojs.cn/membersrv/api/othersystem/terminal/v1.0" : @"https://cnr.asiainfo.com/membersrv/api/othersystem/terminal/v1.0")

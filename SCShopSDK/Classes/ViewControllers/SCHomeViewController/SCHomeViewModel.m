@@ -183,7 +183,7 @@
                             @"areaNum": userInfo.uan,
                             @"phoneNum": userInfo.phoneNumber};
 
-    [SCRequestParams shareInstance].requestNum = @"apollo.queryFloorGoods";
+    [SCRequestParams shareInstance].requestNum = @"apollo.queryStoreFloor";
     
     [SCNetworkManager POST:SC_STORE_FLOOR parameters:param success:^(id  _Nullable responseObject) {
         if (![SCNetworkTool checkResult:responseObject key:nil forClass:NSDictionary.class completion:completion]) {

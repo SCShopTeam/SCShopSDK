@@ -42,8 +42,8 @@ typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nul
 
 //搜索
 - (void)scSearch:(NSString *)text backData:(SC_SearchBlock)callBack;
-//web
-- (void)scWebWithUrl:(NSString *)urlStr title:(NSString *)title nav:(UINavigationController *)nav;
+//掌厅页面
+- (void)scJsmccPage:(NSString *)urlStr title:(NSString *)title nav:(UINavigationController *)nav;
 //更多选项
 - (void)scMoreSelect:(SCShopMoreType)type nav:(UINavigationController *)nav;
 
