@@ -58,70 +58,26 @@
 
 + (void)gotoController:(NSString *)url navigation:(UINavigationController *)nav
 {
-    //jsmcc://M/5?tenantNum=TN00000010
-    //phonestore://jumpToLogin
+    //jsmcc://H/   jsmcc://MA/    jscmcc://L/   掌厅
+    //jsmcc://M/5?tenantNum=TN00000010          商城
+    //phonestore://jumpToLogin                  登录
     if (![SCUtilities isValidString:url] || !nav) {
         return;
     }
     
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     
-    //掌厅页面
-    if ([url hasPrefix:@"jsmcc://H/"] && url.length > 10) {
-        if ([manager.delegate respondsToSelector:@selector(scJsmccPage:title:nav:)]) {
-            [manager.delegate scJsmccPage:url title:@"" nav:nav];
+    if ([url hasPrefix:@"phonestore://"]) {
+        if (url.length <= 13) {
+            return;
         }
         
-        return;
-    }
-    
-    //商城页面
-    if ([url hasPrefix:@"jsmcc://M/"] && url.length > 10) {
-        NSString *cmd = [url substringFromIndex:8];
-        
-        if ([cmd containsString:@"M/0"]) {
-            if (url.length > 16) {
-                NSString *webUrl = [url substringFromIndex:16];
-                [self gotoWebcustom:webUrl title:@"" navigation:nav];
-            }
-            
-        } else {
-            NSMutableDictionary *paramDic;
-            
-            if ([cmd containsString:@"?"]) {
-                NSArray *tempArr = [cmd componentsSeparatedByString:@"?"];
-                cmd = tempArr.firstObject;
-                if (tempArr.count > 1) {
-                    paramDic = [NSMutableDictionary dictionary];
-                    NSArray *tempAgianArr = [tempArr[1] componentsSeparatedByString:@"&"];
-                    for (NSString *str in tempAgianArr) {
-                        if ([str containsString:@"="]) {
-                            NSArray *arr = [str componentsSeparatedByString:@"="];
-                            if ([SCUtilities isValidArray:arr] && arr.count==2) {
-                                [paramDic setValue:arr.lastObject forKey:arr.firstObject];
-                            }
-                        }
-                    }
-                }
-            }
-            
-            [self gotoJsmcc:cmd navigation:nav paramDic:paramDic];
-        }
-        
-        return;
-    }
-    
-    
-    
-    if ([url hasPrefix:@"phonestore://"] && url.length > 13) {
         NSString *temp = [url substringFromIndex:13];
         
         if ([temp isEqualToString:@"jumpToLogin"]) { //登录
             if ([SCUserInfo currentUser].isLogin) {
                 return;
             }
-            
-            SCShoppingManager *manager = [SCShoppingManager sharedInstance];
             
             if (manager.delegate && [manager.delegate respondsToSelector:@selector(scLoginWithNav:back:)]) {
                 [manager.delegate scLoginWithNav:nav back:^ {
@@ -130,9 +86,56 @@
                 }];
                 
             }
+            
+            return;
         }
         
         return;
+    }
+    
+    //非商城页面由掌厅处理跳转
+    if (![url hasPrefix:@"jsmcc://M/"]) {
+        if ([manager.delegate respondsToSelector:@selector(scJsmccPage:title:nav:)]) {
+            [manager.delegate scJsmccPage:url title:@"" nav:nav];
+        }
+        
+        return;
+    }
+    
+    //商城页面
+    if (url.length <= 10) {
+        return;;
+    }
+    
+    NSString *cmd = [url substringFromIndex:8];
+    
+    if ([cmd containsString:@"M/0"]) {
+        if (url.length > 16) {
+            NSString *webUrl = [url substringFromIndex:16];
+            [self gotoWebcustom:webUrl title:@"" navigation:nav];
+        }
+        
+    } else {
+        NSMutableDictionary *paramDic;
+        
+        if ([cmd containsString:@"?"]) {
+            NSArray *tempArr = [cmd componentsSeparatedByString:@"?"];
+            cmd = tempArr.firstObject;
+            if (tempArr.count > 1) {
+                paramDic = [NSMutableDictionary dictionary];
+                NSArray *tempAgianArr = [tempArr[1] componentsSeparatedByString:@"&"];
+                for (NSString *str in tempAgianArr) {
+                    if ([str containsString:@"="]) {
+                        NSArray *arr = [str componentsSeparatedByString:@"="];
+                        if ([SCUtilities isValidArray:arr] && arr.count==2) {
+                            [paramDic setValue:arr.lastObject forKey:arr.firstObject];
+                        }
+                    }
+                }
+            }
+        }
+        
+        [self gotoJsmcc:cmd navigation:nav paramDic:paramDic];
     }
     
 }
