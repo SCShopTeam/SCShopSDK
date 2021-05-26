@@ -75,10 +75,45 @@
     NSMutableArray *models = [NSMutableArray arrayWithCapacity:temp.count/2];
     NSInteger index = 1;
     while (index < temp.count) {   //model两两组成一个数组，作为一个元素。 如果总数量是奇数，多余的一个model去除
-        id model1 = temp[index-1];
-        id model2 = temp[index];
+        SCHomeActivityModel *model1 = temp[index-1];
+        SCHomeActivityModel *model2 = temp[index];
         [models addObject:@[model1,model2]];
         index+=2;
+        
+        //有个隐藏划线价的逻辑：同一页面，所有商品(4个，一边两个)划线价都没有，才隐藏
+        BOOL hideOldPrice = YES;
+        
+        for (int i=0; i<2; i++) {
+            if (i<model1.goodsList.count) {
+                SCHomeGoodsModel *goodsModel = model1.goodsList[i];
+                CGFloat oldPrice = goodsModel.guidePrice/1000.0;
+                if (oldPrice >= 1) {
+                    hideOldPrice = NO;
+                    break;
+                }
+            }
+            
+            if (i<model2.goodsList.count) {
+                SCHomeGoodsModel *goodsModel = model2.goodsList[i];
+                CGFloat oldPrice = goodsModel.guidePrice/1000.0;
+                if (oldPrice >= 1) {
+                    hideOldPrice = NO;
+                    break;
+                }
+            }
+
+            for (SCHomeGoodsModel *goodsModel in model1.goodsList) {
+                goodsModel.hideOldPrice = hideOldPrice;
+            }
+            
+            for (SCHomeGoodsModel *goodsModel in model2.goodsList) {
+                goodsModel.hideOldPrice = hideOldPrice;
+            }
+            
+        }
+        
+        
+
     }
     
     self.activityList = models.copy;
@@ -122,6 +157,7 @@
             model.startTime    = [data safeStringValueForKey:@"startTime"];
             model.endTime      = [data safeStringValueForKey:@"endTime"];
             model.imageUrl     = [data safeStringValueForKey:@"liveImageUrl"];
+            model.orgAppId     = [data safeStringValueForKey:@"orgAppId"];
             model.goodsList    = [SCHomeGoodsModel parsingModelsFromData:data[@"liveGoodsList"] parentType:type];
         }
             break;

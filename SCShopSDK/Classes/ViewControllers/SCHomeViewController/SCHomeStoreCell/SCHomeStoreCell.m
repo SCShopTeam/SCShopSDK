@@ -133,8 +133,10 @@
 //跳转直播
 - (void)pushToLivePage:(SCHomeActivityModel *)model
 {
+    NSString *url = [NSString stringWithFormat:@"jsmcc://H/283++%@++%@++0",model.orgAppId, model.link];
+    
     if (_activityLinkBlock) {
-        _activityLinkBlock(model.link);
+        _activityLinkBlock(url);
     }
 }
 

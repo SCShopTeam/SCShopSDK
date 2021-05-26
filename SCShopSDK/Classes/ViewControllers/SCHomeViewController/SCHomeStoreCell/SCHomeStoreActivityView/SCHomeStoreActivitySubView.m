@@ -22,7 +22,9 @@
 @interface SCActivityCountdownView : UIView //倒计时
 @property (nonatomic, assign) NSInteger countdownSeconds;
 @property (nonatomic, strong) UILabel *hourLabel;
+@property (nonatomic, strong) UILabel *sep1Label; //冒号
 @property (nonatomic, strong) UILabel *minuteLabel;
+@property (nonatomic, strong) UILabel *sep2Label; //冒号
 @property (nonatomic, strong) UILabel *secondLabel;
 @property (nonatomic, weak) NSTimer *timer;
 - (void)startCountdown:(NSString *)endTime;
@@ -183,9 +185,9 @@
     if (!_itemViewList) {
         NSMutableArray *temp = [NSMutableArray arrayWithCapacity:2];
         
-        CGFloat w = SCREEN_FIX(65);
+        CGFloat w = SCREEN_FIX(70);
         //    CGFloat h = SCREEN_FIX(95);
-        CGFloat edge = SCREEN_FIX(21); //屏幕边距
+        CGFloat edge = SCREEN_FIX(20); //屏幕边距
         CGFloat margin = self.width - edge*2 - w*2;
         
         for (int i=0; i<2; i++) {
@@ -253,9 +255,20 @@
     
     [self.icon sd_setImageWithURL:[NSURL URLWithString:model.goodsPictureUrl] placeholderImage:IMG_PLACE_HOLDER];
     
-    CGFloat oldPrice = model.guidePrice/1000.0;
-    self.oldPriceLabel.attributedText = oldPrice < 1 ? nil : [SCUtilities oldPriceAttributedString:oldPrice font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
-    
+    if (model.hideOldPrice) {
+        self.oldPriceLabel.hidden = YES;
+        
+        CGFloat centerY = (self.height - self.icon.bottom)/2 + self.icon.bottom;
+        self.priceLabel.centerY = centerY;
+        
+    }else {
+        self.oldPriceLabel.hidden = NO;
+        CGFloat oldPrice = model.guidePrice/1000.0;
+        self.oldPriceLabel.attributedText = [SCUtilities oldPriceAttributedString:oldPrice font:self.oldPriceLabel.font color:self.oldPriceLabel.textColor];
+        
+        self.priceLabel.bottom = self.height;
+    }
+
     self.priceLabel.text = [NSString stringWithFormat:@"¥%@", [SCUtilities removeFloatSuffix:model.activityPrice/1000.0]];
     
     _preferentialFeeButton.hidden  = YES;
@@ -362,6 +375,7 @@
 
 - (void)prepareUI
 {
+    NSMutableArray *seps = [NSMutableArray arrayWithCapacity:2];
     NSMutableArray *temp = [NSMutableArray arrayWithCapacity:3];
     
     CGFloat wh = self.height;
@@ -379,6 +393,7 @@
             label.text = @":";
             [self addSubview:label];
             x = label.right;
+            [seps addObject:label];
             
         }else {
             UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(x, 0, wh, wh)];
@@ -397,6 +412,9 @@
     _hourLabel   = temp[0];
     _minuteLabel = temp[1];
     _secondLabel = temp[2];
+    
+    _sep1Label = seps[0];
+    _sep2Label = seps[1];
 }
 
 - (void)startCountdown:(NSString *)endTime
@@ -457,17 +475,32 @@
 {
     _countdownSeconds = countdownSeconds;
     
-    //format of hour
-    NSString *str_hour = [NSString stringWithFormat:@"%02ld",countdownSeconds/3600];
-    self.hourLabel.text = str_hour;
-    //format of minute
-    NSString *str_minute = [NSString stringWithFormat:@"%02ld",(countdownSeconds%3600)/60];
-    self.minuteLabel.text = str_minute;
-    //format of second
-    NSString *str_second = [NSString stringWithFormat:@"%02ld",countdownSeconds%60];
-    self.secondLabel.text = str_second;
+    NSInteger hour = countdownSeconds/3600;
     
-    
+    if (hour > 24) { //超过一天
+        _sep1Label.hidden = YES;
+        _sep2Label.hidden = YES;
+        _secondLabel.hidden = YES;
+        
+        NSString *str_day = [NSString stringWithFormat:@"%ld",hour/24];
+        self.hourLabel.text = str_day;
+        self.minuteLabel.text = @"天";
+        
+    }else {
+        _sep1Label.hidden = NO;
+        _sep2Label.hidden = NO;
+        _secondLabel.hidden = NO;
+        
+        //format of hour
+        NSString *str_hour = [NSString stringWithFormat:@"%02ld",countdownSeconds/3600];
+        self.hourLabel.text = str_hour;
+        //format of minute
+        NSString *str_minute = [NSString stringWithFormat:@"%02ld",(countdownSeconds%3600)/60];
+        self.minuteLabel.text = str_minute;
+        //format of second
+        NSString *str_second = [NSString stringWithFormat:@"%02ld",countdownSeconds%60];
+        self.secondLabel.text = str_second;
+    }
     
 }
 

@@ -11,10 +11,10 @@
 #import "SCHomeStoreModel.h"
 
 @interface SCHomeStoreCouponView ()
-@property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UIButton *couponIcon;
 @property (nonatomic, strong) UILabel *tipLabel;
-@property (nonatomic, strong) UILabel *couponLabel;
+//@property (nonatomic, strong) UILabel *couponLabel;
+@property (nonatomic, strong) UIView *couponView;
 @property (nonatomic, strong) UIButton *moreButton;
 @property (nonatomic, strong) NSArray <SCWSHeaderButton *> *itemButtonList;
 
@@ -37,9 +37,9 @@
 
     //如果没有优惠券，或者优惠券类型是1 ,就显示提示语
     BOOL hideCoupons = model.couponList.count == 0 || [model.couponList.firstObject.couId isEqualToString:@"1"];
-
+    
     if (hideCoupons) {
-        self.couponLabel.hidden = YES;
+        self.couponView.hidden = YES;
         self.tipLabel.hidden = NO;
         NSString *tipStr = model.couponList.count > 0 ? model.couponList.firstObject.limitDesc : @"逛智慧门店，立享会员服务";
         self.tipLabel.text = tipStr;
@@ -47,11 +47,9 @@
         
     }else {
         self.tipLabel.hidden = YES;
-        self.couponLabel.hidden = NO;
-        NSString *text = model.couponList.firstObject.limitDesc;
-        CGFloat textW = [text calculateWidthWithFont:self.couponLabel.font height:self.couponLabel.height];
-        self.couponLabel.width = textW + SCREEN_FIX(8);
-        self.couponLabel.text = text;
+        self.couponView.hidden = NO;
+        [self createCouponLabels];
+        
     }
     
     //商品
@@ -69,25 +67,46 @@
 
 }
 
-#pragma mark -ui
-- (UILabel *)titleLabel
+- (void)createCouponLabels
 {
-    if (!_titleLabel) {
-        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_FIX(22), SCREEN_FIX(8), 0, SCREEN_FIX(16))];
-        _titleLabel.font = SCFONT_SIZED_FIX(16);
-        _titleLabel.text = @"本店优惠";
-        [_titleLabel sizeToFit];
-        [self addSubview:_titleLabel];
+    for (UIView *subView in self.couponView.subviews) {
+        [subView removeFromSuperview];
     }
-    return _titleLabel;
+    
+    CGFloat x = 0;
+    
+    for (SCHomeCouponModel *coupon in _model.couponList) {
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(x, 0, 0, _couponView.height)];
+        label.layer.borderWidth = 1;
+        label.layer.borderColor = HEX_RGB(@"#FF0300").CGColor;
+        label.layer.cornerRadius = 3;
+        label.textAlignment = NSTextAlignmentCenter;
+        label.font = SCFONT_SIZED_FIX(10);
+        label.textColor = HEX_RGB(@"#FF0000");
+        
+        NSString *text = coupon.limitDesc;
+        CGFloat textW = [text calculateWidthWithFont:label.font height:label.height] + SCREEN_FIX(8);
+        
+        label.width = textW;
+        label.text = text;
+        
+        if (label.right > _couponView.width) {
+            break;
+        }
+        
+        [_couponView addSubview:label];
+        
+        x = label.right + SCREEN_FIX(2.5);
+    }
+   
 }
 
+#pragma mark -ui
 //icon
 - (UIButton *)couponIcon
 {
     if (!_couponIcon) {
-        _couponIcon = [[UIButton alloc] initWithFrame:CGRectMake(self.titleLabel.right + SCREEN_FIX(4.5), 0, SCREEN_FIX(39), SCREEN_FIX(15))];
-        _couponIcon.centerY = self.titleLabel.centerY;
+        _couponIcon = [[UIButton alloc] initWithFrame:CGRectMake(SCREEN_FIX(19.5), SCREEN_FIX(9.5), SCREEN_FIX(39), SCREEN_FIX(15))];
         _couponIcon.userInteractionEnabled = NO;
         [_couponIcon setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_couponIcon setTitle:@"优惠券" forState:UIControlStateNormal];
@@ -102,7 +121,7 @@
 {
     if (!_tipLabel) {
         _tipLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.couponIcon.right + SCREEN_FIX(3), 0, SCREEN_FIX(132.5), SCREEN_FIX(15.5))];
-        _tipLabel.centerY = self.titleLabel.centerY;
+        _tipLabel.centerY = self.couponIcon.centerY;
         _tipLabel.backgroundColor = HEX_RGB(@"#FFF8DC");
         _tipLabel.textAlignment = NSTextAlignmentCenter;
         _tipLabel.font = SCFONT_SIZED_FIX(10);
@@ -112,30 +131,14 @@
     return _tipLabel;
 }
 
-- (UILabel *)couponLabel
-{
-    if (!_couponLabel) {
-        _couponLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.couponIcon.right + SCREEN_FIX(4.5), 0, 0, SCREEN_FIX(16.5))];
-        _couponLabel.centerY = self.titleLabel.centerY;
-        _couponLabel.layer.borderWidth = 1;
-        _couponLabel.layer.borderColor = HEX_RGB(@"#FF0300").CGColor;
-        _couponLabel.layer.cornerRadius = 3;
-        _couponLabel.textAlignment = NSTextAlignmentCenter;
-        _couponLabel.font = SCFONT_SIZED_FIX(10);
-        _couponLabel.textColor = HEX_RGB(@"#FF0000");
-        [self addSubview:_couponLabel];
-    }
-    return _couponLabel;
-}
-
 - (UIButton *)moreButton
 {
     if (!_moreButton) {
-        CGFloat w = SCREEN_FIX(58);
-        _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(self.width - SCREEN_FIX(8.5) - w, SCREEN_FIX(8), w, SCREEN_FIX(20))];
+        CGFloat w = SCREEN_FIX(36);
+        _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(self.width - SCREEN_FIX(8.5) - w, SCREEN_FIX(7), w, SCREEN_FIX(20))];
         [_moreButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         _moreButton.titleLabel.font = SCFONT_SIZED_FIX(11);
-        [_moreButton setTitle:@"更多热销" forState:UIControlStateNormal];
+        [_moreButton setTitle:@"更多" forState:UIControlStateNormal];
         [_moreButton setImage:SCIMAGE(@"home_coupon_more") forState:UIControlStateNormal];
         [_moreButton layoutButtonWithEdgeInsetsStyle:XGButtonEdgeInsetsStyleRight imageTitleSpace:SCREEN_FIX(3.5)];
         
@@ -152,6 +155,18 @@
     return _moreButton;
 }
 
+- (UIView *)couponView
+{
+    if (!_couponView) {
+        CGFloat x = self.couponIcon.right + SCREEN_FIX(4.5);
+        CGFloat w = self.moreButton.left - x - SCREEN_FIX(2);
+        _couponView = [[UIView alloc] initWithFrame:CGRectMake(x, 0, w, SCREEN_FIX(16.5))];
+        _couponView.centerY = self.couponIcon.centerY;
+        [self addSubview:_couponView];
+    }
+    return _couponView;
+}
+
 - (NSArray<SCWSHeaderButton *> *)itemButtonList
 {
     if (!_itemButtonList) {
@@ -163,7 +178,7 @@
         CGFloat lineW = 1; //分隔线宽度
         
         CGFloat x = (self.width - w*3 - lineW*2)/2;
-        CGFloat y = (self.height - self.titleLabel.bottom - h)/2 + self.titleLabel.bottom;
+        CGFloat y = SCREEN_FIX(35);
         
         for (int i=0; i<3; i++) {
             //按钮

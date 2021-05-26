@@ -85,6 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *offerType;          //预售：预售模式
 @property (nonatomic, assign) NSInteger preferentialFee;  //预售：抵扣、膨胀金额
 @property (nonatomic, copy) NSString *activityId;         //活动：活动id
+@property (nonatomic, copy) NSString *orgAppId;           //直播：小程序id
 
 //自定义
 @property (nonatomic, assign) SCHomeActivityType type; //类型
@@ -117,6 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 //自定义
 @property (nonatomic, assign) SCHomeActivityType parentType; //上级model类型
+@property (nonatomic, assign) BOOL hideOldPrice;
 
 + (NSArray <SCHomeGoodsModel *> *)parsingModelsFromData:(NSArray *)data parentType:(SCHomeActivityType)parentType;
 
