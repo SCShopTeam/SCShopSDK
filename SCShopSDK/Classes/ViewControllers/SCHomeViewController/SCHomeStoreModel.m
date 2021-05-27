@@ -157,7 +157,7 @@
             model.startTime    = [data safeStringValueForKey:@"startTime"];
             model.endTime      = [data safeStringValueForKey:@"endTime"];
             model.imageUrl     = [data safeStringValueForKey:@"liveImageUrl"];
-            model.orgAppId     = [data safeStringValueForKey:@"orgAppId"];
+//            model.orgAppId     = [data safeStringValueForKey:@"orgAppId"];
             model.goodsList    = [SCHomeGoodsModel parsingModelsFromData:data[@"liveGoodsList"] parentType:type];
         }
             break;
