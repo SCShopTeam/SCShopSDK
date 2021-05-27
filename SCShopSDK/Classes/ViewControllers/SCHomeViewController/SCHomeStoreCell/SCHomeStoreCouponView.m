@@ -39,6 +39,9 @@
     BOOL hideCoupons = model.couponList.count == 0 || [model.couponList.firstObject.couId isEqualToString:@"1"];
     
     if (hideCoupons) {
+        [self.couponIcon setTitle:@"门店服务" forState:UIControlStateNormal];
+        self.couponIcon.titleLabel.font = SCFONT_SIZED_FIX(8);
+        
         self.couponView.hidden = YES;
         self.tipLabel.hidden = NO;
         NSString *tipStr = model.couponList.count > 0 ? model.couponList.firstObject.limitDesc : @"逛智慧门店，立享会员服务";
@@ -46,6 +49,9 @@
         self.tipLabel.width = [tipStr calculateWidthWithFont:self.tipLabel.font height:self.tipLabel.height] + SCREEN_FIX(12);
         
     }else {
+        [self.couponIcon setTitle:@"优惠券" forState:UIControlStateNormal];
+        self.couponIcon.titleLabel.font = SCFONT_SIZED_FIX(10);
+        
         self.tipLabel.hidden = YES;
         self.couponView.hidden = NO;
         [self createCouponLabels];
@@ -97,6 +103,11 @@
         [_couponView addSubview:label];
         
         x = label.right + SCREEN_FIX(2.5);
+        
+        //当前版本，先只展示一个优惠券
+        if (coupon == _model.couponList.firstObject) {
+            break;
+        }
     }
    
 }
@@ -109,9 +120,7 @@
         _couponIcon = [[UIButton alloc] initWithFrame:CGRectMake(SCREEN_FIX(19.5), SCREEN_FIX(9.5), SCREEN_FIX(39), SCREEN_FIX(15))];
         _couponIcon.userInteractionEnabled = NO;
         [_couponIcon setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [_couponIcon setTitle:@"优惠券" forState:UIControlStateNormal];
         [_couponIcon setBackgroundImage:SCIMAGE(@"home_coupon_icon") forState:UIControlStateNormal];
-        _couponIcon.titleLabel.font = SCFONT_SIZED_FIX(10);
         [self addSubview:_couponIcon];
     }
     return _couponIcon;
