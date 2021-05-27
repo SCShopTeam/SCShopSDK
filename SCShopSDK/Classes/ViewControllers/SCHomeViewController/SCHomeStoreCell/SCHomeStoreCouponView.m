@@ -138,7 +138,7 @@
         _moreButton = [[UIButton alloc] initWithFrame:CGRectMake(self.width - SCREEN_FIX(8.5) - w, SCREEN_FIX(7), w, SCREEN_FIX(20))];
         [_moreButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         _moreButton.titleLabel.font = SCFONT_SIZED_FIX(11);
-        [_moreButton setTitle:@"更多" forState:UIControlStateNormal];
+        [_moreButton setTitle:@"热销" forState:UIControlStateNormal];
         [_moreButton setImage:SCIMAGE(@"home_coupon_more") forState:UIControlStateNormal];
         [_moreButton layoutButtonWithEdgeInsetsStyle:XGButtonEdgeInsetsStyleRight imageTitleSpace:SCREEN_FIX(3.5)];
         

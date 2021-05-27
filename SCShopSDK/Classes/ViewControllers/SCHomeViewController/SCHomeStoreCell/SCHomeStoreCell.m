@@ -117,8 +117,17 @@
 //跳转活动商品列表
 - (void)pushToActivityGoodsList:(SCHomeActivityModel *)model index:(NSInteger)index
 {
+    NSString *url;
+    if (model.type == SCHomeActivityTypeLive) {
+        SCHomeGoodsModel *goodsModel = index < model.goodsList.count ? model.goodsList[index] : nil;
+        url = goodsModel.goodsDetailUrl;
+        
+    }else {
+        url = model.link;
+    }
+    
     if (_activityGoodsBlock) {
-        _activityGoodsBlock(model.link, index);
+        _activityGoodsBlock(url, index);
     }
 }
 
