@@ -15,6 +15,7 @@
 @property (nonatomic, strong) UILabel *distanceLabel;
 @property (nonatomic, strong) UIButton *serviceButton;
 @property (nonatomic, strong) UIButton *phonebutton;
+@property (nonatomic, strong) NSArray <UIButton *>*lightSpotBtns;
 
 @end
 
@@ -33,14 +34,7 @@
 {
     _model = model;
     
-    //标题
-    self.titleLabel.text = model.storeName;
-    [self.titleLabel sizeToFit];
-    self.titleLabel.width = MIN(self.titleLabel.width, SCREEN_FIX(213));
-    
     //距离
-    self.distanceLabel.left = self.titleLabel.right + SCREEN_FIX(5);
-    
     if (model.locationError) {
         self.distanceLabel.text = @"暂无位置信息";
         
@@ -57,8 +51,19 @@
     
     [self.distanceLabel sizeToFit];
     
+    CGFloat titleW = self.serviceButton.left - 2 - self.distanceLabel.width - SCREEN_FIX(5);
+    
+    //标题
+    self.titleLabel.text = model.storeName;
+    [self.titleLabel sizeToFit];
+    self.titleLabel.width = MIN(self.titleLabel.width, titleW);
+    //
+    self.distanceLabel.left = self.titleLabel.right + SCREEN_FIX(5);
+    
+
+    
     //亮点标签
-    BOOL isInHoure = model.distance <= 5000; //是否是1小时达
+    BOOL isInHoure = model.distance <= 5000 && !model.locationError; //是否是1小时达
 
     //最多显示4个标签， 1小时达占一个
     NSInteger maxLightSpotNum = isInHoure ? 3 : 4;
@@ -76,29 +81,52 @@
 
     
     __block CGFloat x = SCREEN_FIX(19);
-    CGFloat btnH = SCREEN_FIX(18);
-    [temp enumerateObjectsUsingBlock:^(NSString * _Nonnull tag, NSUInteger idx, BOOL * _Nonnull stop) {
-        UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(x, self.height - SCREEN_FIX(8) - btnH, 0, btnH)];
-        btn.titleLabel.font = SCFONT_SIZED_FIX(11);
-        [btn setTitle:tag forState:UIControlStateNormal];
-        btn.userInteractionEnabled = NO;
-        //是否是一小时达的标签
-        BOOL isInHourTag = isInHoure && idx == temp.count - 1;
-        if (isInHourTag) {
-            [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            [btn setBackgroundImage:SCIMAGE(@"home_recommend_tag3") forState:UIControlStateNormal];
+    [self.lightSpotBtns enumerateObjectsUsingBlock:^(UIButton * _Nonnull btn, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (idx >= temp.count) {
+            btn.hidden = YES;
             
         }else {
-            [btn setTitleColor:(idx == 0 ? [UIColor whiteColor] : [UIColor blackColor]) forState:UIControlStateNormal];
-            [btn setBackgroundImage:[UIImage sc_imageNamed:[NSString stringWithFormat:@"home_recommend_tag%li",idx]]forState:UIControlStateNormal];
+            btn.hidden = NO;
+            btn.left = x;
+            NSString *tag = temp[idx];
+            [btn setTitle:tag forState:UIControlStateNormal];
+            //是否是一小时达的标签
+            BOOL isInHourTag = isInHoure && idx == temp.count - 1;
+            if (isInHourTag) {
+                [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                [btn setBackgroundImage:SCIMAGE(@"home_recommend_tag3") forState:UIControlStateNormal];
+                
+            }else {
+                [btn setTitleColor:(idx == 0 ? [UIColor whiteColor] : [UIColor blackColor]) forState:UIControlStateNormal];
+                [btn setBackgroundImage:[UIImage sc_imageNamed:[NSString stringWithFormat:@"home_recommend_tag%li",idx]]forState:UIControlStateNormal];
+            }
+            
+            CGFloat textW = [tag calculateWidthWithFont:btn.titleLabel.font height:btn.height];
+            btn.width = textW + SCREEN_FIX(5)*2; //两边5的间距
+            
+            x = btn.right + SCREEN_FIX(12.5);
         }
-        CGFloat textW = [tag calculateWidthWithFont:btn.titleLabel.font height:btnH];
-        btn.width = textW + SCREEN_FIX(5)*2; //两边5的间距
-    
-        [self addSubview:btn];
-        
-        x = btn.right + SCREEN_FIX(12.5);
     }];
+
+}
+
+- (NSArray<UIButton *> *)lightSpotBtns
+{
+    if (!_lightSpotBtns) {
+        CGFloat btnH = SCREEN_FIX(18);
+        NSMutableArray *temp = [NSMutableArray arrayWithCapacity:4];
+        
+        for (int i=0; i<4; i++) {
+            UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, self.height - SCREEN_FIX(8) - btnH, 0, btnH)];
+            btn.titleLabel.font = SCFONT_SIZED_FIX(11);
+            btn.userInteractionEnabled = NO;
+            [self addSubview:btn];
+            [temp addObject:btn];
+        }
+        
+        _lightSpotBtns = temp.copy;
+    }
+    return _lightSpotBtns;
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -180,6 +208,5 @@
     }
     return _serviceButton;
 }
-
 
 @end
