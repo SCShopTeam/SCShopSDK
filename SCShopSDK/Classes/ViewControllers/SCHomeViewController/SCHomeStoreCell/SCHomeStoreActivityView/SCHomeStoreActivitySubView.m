@@ -475,14 +475,14 @@
 {
     _countdownSeconds = countdownSeconds;
     
-    NSInteger hour = countdownSeconds/3600;
+    NSInteger daySec = 24*60*60; //一天的秒数
     
-    if (hour > 24) { //超过一天
+    if (countdownSeconds > daySec) { //超过一天
 //        _sep1Label.hidden = YES;
         _sep2Label.hidden = YES;
         _secondLabel.hidden = YES;
         
-        NSString *str_day = [NSString stringWithFormat:@"%ld",hour/24];
+        NSString *str_day = [NSString stringWithFormat:@"%ld",countdownSeconds/daySec];
         self.hourLabel.text = str_day;
         self.minuteLabel.text = @"天";
         
