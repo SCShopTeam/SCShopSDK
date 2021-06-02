@@ -478,7 +478,7 @@
     NSInteger hour = countdownSeconds/3600;
     
     if (hour > 24) { //超过一天
-        _sep1Label.hidden = YES;
+//        _sep1Label.hidden = YES;
         _sep2Label.hidden = YES;
         _secondLabel.hidden = YES;
         
@@ -487,7 +487,7 @@
         self.minuteLabel.text = @"天";
         
     }else {
-        _sep1Label.hidden = NO;
+//        _sep1Label.hidden = NO;
         _sep2Label.hidden = NO;
         _secondLabel.hidden = NO;
         
