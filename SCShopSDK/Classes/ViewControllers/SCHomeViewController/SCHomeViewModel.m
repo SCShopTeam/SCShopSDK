@@ -71,11 +71,11 @@
         [SCUtilities pageStart:viewController loadPageName:@"商城首页"];
     }
 
-    [manager.delegate scADTouchData:^(id  _Nonnull touchData, NSError * _Nonnull error) {
+    [manager.delegate scADTouchData:^(id  _Nullable touchData, NSString * _Nullable error) {
         NSString *errorMessage;
         
         if (error || !VALID_DICTIONARY(touchData)) {
-            errorMessage = error.localizedDescription ?: @"get touch failure";
+            errorMessage = error ?: @"get touch failure";
             
         }
         
