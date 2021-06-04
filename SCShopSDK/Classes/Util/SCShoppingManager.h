@@ -17,7 +17,7 @@ typedef NS_ENUM(NSInteger, SCShopMoreType) {
 NS_ASSUME_NONNULL_BEGIN
 
 //首页触点数据回调
-typedef void (^SC_ADTouchDataBlock)(id touchData);
+typedef void (^SC_ADTouchDataBlock)(_Nullable id touchData,  NSError * _Nullable  error);
 //搜索回调接口
 typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nullable errorMsg);
 
@@ -31,10 +31,9 @@ typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nul
 - (void)scConfigCookiesWithUrl:(NSMutableURLRequest *)request wkweb:(WKWebView *)web;
 //大数据插码
 - (void)scXWMobStatMgrStr:(NSString *)coding url:(NSString *)url inPage:(NSString *)className;
-
 //触点
 //获取触点数据
--(void)scADTouchDataFrom:(UIViewController *)viewController backData:(SC_ADTouchDataBlock)callBack;
+-(void)scADTouchData:(SC_ADTouchDataBlock)callBack;
 //处理触点点击
 -(void)scADTouchClick:(NSDictionary *)dic;
 //触点曝光处理
@@ -46,6 +45,9 @@ typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nul
 - (void)scJsmccPage:(NSString *)urlStr title:(NSString *)title nav:(UINavigationController *)nav;
 //更多选项
 - (void)scMoreSelect:(SCShopMoreType)type nav:(UINavigationController *)nav;
+//时长统计
+- (void)scPageStart:(UIViewController *)controller loadPageName:(NSString *)loadPageName;
+- (void)scPageEnd:(UIViewController *)controller errorMessage:(NSString *)errormessage;
 
 //debug功能，查看商城请求日志
 - (void)scNetworkLog:(NSString *)requestNum responseObject:(id)responseObject error:(NSError *)error;

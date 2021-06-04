@@ -63,7 +63,7 @@
 {
     [self showLoading];
     //请求地市
-    [self.viewModel requestAreaList:^(NSString * _Nonnull areaName) {
+    [self.viewModel requestAreaList:self areaBlock:^(NSString * _Nonnull areaName) {
         [self.areaBtn setTitle:areaName forState:UIControlStateNormal];
         [self requestStoreList:1 showCache:NO showHud:NO];
     }];

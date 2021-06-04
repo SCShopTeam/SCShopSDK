@@ -596,6 +596,25 @@ DEF_SINGLETON(SCUtilities)
     }
 }
 
+//时长统计
++ (void)pageStart:(UIViewController *)controller loadPageName:(NSString *)loadPageName
+{
+    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
+    
+    if (controller && loadPageName && [manager.delegate respondsToSelector:@selector(scPageStart:loadPageName:)]) {
+        [manager.delegate scPageStart:controller loadPageName:loadPageName];
+    }
+}
+
++ (void)pageEnd:(UIViewController *)controller errorMessage:(NSString *)errorMessage
+{
+    SCShoppingManager *manager = [SCShoppingManager sharedInstance];
+    
+    if (controller &&  [manager.delegate respondsToSelector:@selector(scPageEnd:errorMessage:)]) {
+        [manager.delegate scPageEnd:controller errorMessage:errorMessage];
+    }
+}
+
 //拨打电话
 + (void)call:(NSString *)phoneNum
 {

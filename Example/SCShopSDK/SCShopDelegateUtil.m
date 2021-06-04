@@ -55,7 +55,7 @@
 
 //触点
 //获取触点数据
--(void)scADTouchDataFrom:(UIViewController *)viewController backData:(SC_ADTouchDataBlock)callBack
+-(void)scADTouchData:(SC_ADTouchDataBlock)callBack
 {
     NSDictionary *dict = @{@"SCDBBANNER_I":@{@"content":@[@{@"picUrl":@"http://wap.js.10086.cn/jsmccClient_img/ecmcServer/images/rec_resource/30725ab5dee54dc291439844f2e03641.png",
                                                             @"linkUrl": @"http://wap.js.10086.cn/nact/2204"},
@@ -141,7 +141,7 @@
                            },
     };
    
-    callBack(dict);
+    callBack(dict, nil);
 }
 
 //处理触点点击

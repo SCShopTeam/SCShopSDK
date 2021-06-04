@@ -95,6 +95,10 @@ NS_ASSUME_NONNULL_BEGIN
 //触点点击
 + (void)touchClick:(id)touch;
 
+//时长统计
++ (void)pageStart:(UIViewController *)controller loadPageName:(NSString *)loadPageName;
++ (void)pageEnd:(UIViewController *)controller errorMessage:(nullable NSString *)errorMessage;
+
 //拨打电话
 + (void)call:(NSString *)phoneNum;
 

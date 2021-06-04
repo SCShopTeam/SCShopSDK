@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cleanCacheData;
 
 //地市列表
-- (void)requestAreaList:(void (^)(NSString *areaName))areaBlock;
+- (void)requestAreaList:(UIViewController *)viewController areaBlock:(void (^)(NSString *areaName))areaBlock;
 
 //门店
 - (void)getAggregateStore:(NSInteger)page showCache:(BOOL)showCache showHud:(BOOL)showHud completion:(SCHttpRequestCompletion)completion;

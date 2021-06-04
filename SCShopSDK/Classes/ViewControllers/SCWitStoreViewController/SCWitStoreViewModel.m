@@ -16,6 +16,8 @@
 @end
 
 @interface SCWitStoreViewModel ()
+@property (nonatomic, assign) BOOL isCommited; //是否上传过时长统计
+
 @property (nonatomic, strong) SCWitStoreModel *nearStoreModel;                //距离最近
 //@property (nonatomic, strong) NSMutableArray <SCWitStoreModel *> *storeList;  //查询列表
 @property (nonatomic, strong) NSArray <SCWitStoreModel *> *professionalList;  //猜你喜欢
@@ -47,47 +49,59 @@
 }
 
 //地市列表
-- (void)requestAreaList:(void (^)(NSString *areaName))areaBlock;
+- (void)requestAreaList:(UIViewController *)viewController areaBlock:(void (^)(NSString * _Nonnull))areaBlock
 {
     __block NSString *cityName = [SCLocationService sharedInstance].city;
     self.requestModel.busiRegCityCode = [SCLocationService sharedInstance].cityCode;
     
+    //时长统计
+    if (!_isCommited) {
+        [SCUtilities pageStart:viewController loadPageName:@"官方好店"];
+    }
+    
     [SCRequestParams shareInstance].requestNum = @"apollo.queryAreaListAppTerminal";
     [SCNetworkManager POST:SC_AREA_LIST_AT parameters:nil success:^(id  _Nullable responseObject) {
-        if (![SCNetworkTool checkResult:responseObject key:nil forClass:NSArray.class failure:nil]) {
-            if (areaBlock) {
-                areaBlock(cityName);
+        if ([SCNetworkTool checkResult:responseObject key:nil forClass:NSArray.class failure:nil]) {
+            SCUserInfo *user = [SCUserInfo currentUser];
+            
+            NSArray *areaList = responseObject[A_RESULT];
+            
+            NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:areaList.count];
+            for (NSDictionary *dict in areaList) {
+                if (!VALID_DICTIONARY(dict)) {
+                    continue;
+                }
+                SCAreaModel *model = [SCAreaModel yy_modelWithDictionary:dict];
+                
+                if (user.isLogin && [model.code isEqualToString:user.uan]) {
+                    model.selected = YES;
+                    self.requestModel.busiRegCityCode = model.code;
+                    cityName = model.name;
+                }
+                
+                [mulArr addObject:model];
             }
-            return;
+
+            self.areaList = mulArr.copy;
+              
         }
         
-        SCUserInfo *user = [SCUserInfo currentUser];
-        
-        NSArray *areaList = responseObject[A_RESULT];
-        
-
-        NSMutableArray *mulArr = [NSMutableArray arrayWithCapacity:areaList.count];
-        for (NSDictionary *dict in areaList) {
-            if (!VALID_DICTIONARY(dict)) {
-                continue;
-            }
-            SCAreaModel *model = [SCAreaModel yy_modelWithDictionary:dict];
-            
-            if (user.isLogin && [model.code isEqualToString:user.uan]) {
-                model.selected = YES;
-                self.requestModel.busiRegCityCode = model.code;
-                cityName = model.name;
-            }
-            
-            [mulArr addObject:model];
+        if (!self.isCommited) {
+            self.isCommited = YES;
+            [SCUtilities pageEnd:viewController errorMessage:nil];
         }
 
-        self.areaList = mulArr.copy;
         if (areaBlock) {
             areaBlock(cityName);
         }
+        
 
     } failure:^(NSString * _Nullable errorMsg) {
+        if (!self.isCommited) {
+            self.isCommited = YES;
+            [SCUtilities pageEnd:viewController errorMessage:errorMsg];
+        }
+        
         if (areaBlock) {
             areaBlock(cityName);
         }

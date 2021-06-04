@@ -17,6 +17,8 @@
 @interface SCHomeViewModel ()
 @property (nonatomic, strong) SCUserInfo *lastUserInfo;
 
+@property (nonatomic, assign) BOOL isCommited; //是否提交过时长统计
+
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *topList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *bannerList;
 @property (nonatomic, strong) NSArray <SCHomeTouchModel *> *gridList;
@@ -57,28 +59,47 @@
 {
     SCShoppingManager *manager = [SCShoppingManager sharedInstance];
     
-    if (![manager.delegate respondsToSelector:@selector(scADTouchDataFrom:backData:)]) {
+    if (![manager.delegate respondsToSelector:@selector(scADTouchData:)]) {
         if (failure) {
             failure(@"delegate null");
         }
         return;
     }
     
-    [manager.delegate scADTouchDataFrom:viewController backData:^(id  _Nonnull touchData) {
-        if (!VALID_DICTIONARY(touchData)) {
-            if (failure) {
-                failure(@"get touch failure");
-            }
+    //时长统计
+    if (!_isCommited) {
+        [SCUtilities pageStart:viewController loadPageName:@"商城首页"];
+    }
+
+    [manager.delegate scADTouchData:^(id  _Nonnull touchData, NSError * _Nonnull error) {
+        NSString *errorMessage;
+        
+        if (error || !VALID_DICTIONARY(touchData)) {
+            errorMessage = error.localizedDescription ?: @"get touch failure";
             
+        }
+        
+        //统计结束
+        if (!self.isCommited) {
+            self.isCommited = YES;
+            [SCUtilities pageEnd:viewController errorMessage:errorMessage];
+        }
+
+        //处理数据
+        if (errorMessage) {
+            if (failure) {
+                failure(errorMessage);
+            }
+
         }else {
             [self parsingTouchData:touchData];
             if (success) {
                 success(nil);
             }
-            
         }
         
     }];
+
 }
 
 - (void)parsingTouchData:(NSDictionary *)result
