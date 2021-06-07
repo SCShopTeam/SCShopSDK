@@ -108,25 +108,26 @@ static NSInteger kTotalCount = 9999;
         return;
     }
     
-    @weakify(self)
-    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:4 repeats:YES block:^(NSTimer * _Nonnull timer) {
-        @strongify(self)
-        NSInteger nextIndex = [self currentCollectionIndex] + 1;
-        
-        if (nextIndex > kTotalCount) {
-            nextIndex = kTotalCount*0.5;
-        }
-        [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:nextIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
-        NSInteger page = nextIndex%self.activityList.count;
-        
-        self.pageControl.currentPage = page;
-        
-    }];
+    NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:4 target:self selector:@selector(autoScroll) userInfo:nil repeats:YES];
     
     _timer = timer;
     
     [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
 }
+
+- (void)autoScroll
+{
+    NSInteger nextIndex = [self currentCollectionIndex] + 1;
+    
+    if (nextIndex > kTotalCount) {
+        nextIndex = kTotalCount*0.5;
+    }
+    [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:nextIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+    NSInteger page = nextIndex%self.activityList.count;
+    
+    self.pageControl.currentPage = page;
+}
+
 
 //解决当父View释放时，当前视图因为被Timer强引用而不能释放的问题
 - (void)willMoveToSuperview:(UIView *)newSuperview
