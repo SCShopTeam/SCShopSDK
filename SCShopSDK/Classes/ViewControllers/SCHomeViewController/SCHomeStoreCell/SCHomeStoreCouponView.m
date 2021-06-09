@@ -35,8 +35,8 @@
 {
     _model = model;
 
-    //如果没有优惠券，或者优惠券类型是1 ,就显示提示语
-    BOOL hideCoupons = model.couponList.count == 0 || [model.couponList.firstObject.couId isEqualToString:@"1"];
+    //如果没有优惠券，就显示提示语
+    BOOL hideCoupons = model.couponList.count == 0 || !VALID_STRING(model.couponList.firstObject.limitDesc);
     
     if (hideCoupons) {
         [self.couponIcon setTitle:@"门店服务" forState:UIControlStateNormal];
@@ -44,7 +44,7 @@
         
         self.couponView.hidden = YES;
         self.tipLabel.hidden = NO;
-        NSString *tipStr = model.couponList.count > 0 ? model.couponList.firstObject.limitDesc : @"逛智慧门店，立享会员服务";
+        NSString *tipStr = @"逛智慧门店，立享会员服务";
         self.tipLabel.text = tipStr;
         self.tipLabel.width = [tipStr calculateWidthWithFont:self.tipLabel.font height:self.tipLabel.height] + SCREEN_FIX(12);
         
