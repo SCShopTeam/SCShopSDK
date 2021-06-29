@@ -84,37 +84,37 @@
 - (void)servicePressed
 {
     NSString *url = [self.viewModel getOnlineServiceUrl:self.tenantNum];
-
-    [SCURLSerialization gotoWebcustom:url title:@"在线客服" navigation:self.navigationController];
-
-}
     
+    [SCURLSerialization gotoWebcustom:url title:@"在线客服" navigation:self.navigationController];
+    
+}
+
 #pragma mark -UIScrollViewDelegate
 
-    - (void)scrollViewDidScroll:(UIScrollView *)scrollView
-    {
-        if (scrollView != _scrollView) {
-            return;
-        }
-
-        //处理多scrollView联动
-        CGFloat y = scrollView.contentOffset.y;
-
-        CGFloat maxOffsetY = self.bannerView.bottom;
-        
-        if (y >= maxOffsetY && _canScroll) {
-            scrollView.contentOffset = CGPointMake(0, maxOffsetY);
-            _canScroll = NO;
-            [[NSNotificationCenter defaultCenter] postNotificationName:SCNOTI_STORE_CELL_CAN_SCROLL object:nil];
-        }
-        
-        if (!_canScroll) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:SCNOTI_STORE_CELL_CAN_SCROLL object:nil];
-            scrollView.contentOffset = CGPointMake(0, maxOffsetY);
-        }
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (scrollView != _scrollView) {
+        return;
     }
     
+    //处理多scrollView联动
+    CGFloat y = scrollView.contentOffset.y;
     
+    CGFloat maxOffsetY = self.bannerView.bottom;
+    
+    if (y >= maxOffsetY && _canScroll) {
+        scrollView.contentOffset = CGPointMake(0, maxOffsetY);
+        _canScroll = NO;
+        [[NSNotificationCenter defaultCenter] postNotificationName:SCNOTI_STORE_CELL_CAN_SCROLL object:nil];
+    }
+    
+    if (!_canScroll) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:SCNOTI_STORE_CELL_CAN_SCROLL object:nil];
+        scrollView.contentOffset = CGPointMake(0, maxOffsetY);
+    }
+}
+
+
 
 #pragma mark -ui
 - (SCStoreScrollView *)scrollView
@@ -145,7 +145,7 @@
         CGFloat iconH = SCREEN_FIX(15.5);
         _iconView = [[UIImageView alloc] initWithFrame:CGRectMake(0, (_topView.height-iconH)/2, SCREEN_FIX(30), iconH)];
         _iconView.image = SCIMAGE(@"qijian");
-
+        
         [_topView addSubview:_iconView];
     }
     return _topView;
@@ -160,7 +160,7 @@
         
         @weakify(self)
         [_bannerView sc_addEventTouchUpInsideHandle:^(id  _Nonnull sender) {
-           @strongify(self)
+            @strongify(self)
             [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSCSDDP_A01" url:@"" inPage:NSStringFromClass(self.class)];
         }];
     }
@@ -175,7 +175,7 @@
         
         @weakify(self)
         _siftView.selectBlock = ^(NSInteger index) {
-          @strongify(self)
+            @strongify(self)
             self.itemsView.currentIndex = index;
             
         };
@@ -193,7 +193,7 @@
         
         @weakify(self)
         _itemsView.scrollBlock = ^(NSInteger index) {
-          @strongify(self)
+            @strongify(self)
             self.siftView.currentIndex = index;
         };
         

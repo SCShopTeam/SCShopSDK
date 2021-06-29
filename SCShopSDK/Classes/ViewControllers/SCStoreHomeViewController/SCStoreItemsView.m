@@ -103,8 +103,7 @@
         _collectionView.delegate        = self;
         _collectionView.dataSource      = self;
         _collectionView.bounces         = NO;
-        [_collectionView registerClass:SCStoreSubItemCell.class forCellWithReuseIdentifier:NSStringFromClass(SCStoreSubItemCell.class)];
-        
+
         [self addSubview:_collectionView];
     }
     return _collectionView;

@@ -52,6 +52,9 @@ typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nul
 //debug功能，查看商城请求日志
 - (void)scNetworkLog:(NSString *)requestNum responseObject:(id)responseObject error:(NSError *)error;
 
+//回调定位信息
+- (void)scLocationInfoWithLogintude:(NSString *)longitude latitude:(NSString *)latitude city:(NSString *)city cityCode:(NSString *)cityCode locationAddress:(NSString *)locationAddress;
+
 @required
 //获取用户信息
 - (NSDictionary *)scGetUserInfo;

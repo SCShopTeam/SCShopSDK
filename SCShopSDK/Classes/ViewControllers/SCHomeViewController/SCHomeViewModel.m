@@ -49,6 +49,16 @@
     
     _lastUserInfo = currentUser;
     
+    //查询用户是否登录
+//    if (hasChanged && currentUser.isLogin) {
+//        [SCRequest scLoginResultBlock:^(BOOL success, NSDictionary * _Nullable objDic, NSString * _Nullable errMsg) {
+//            if (success && VALID_DICTIONARY(objDic)) {
+//                NSString *userRegion = [objDic safeStringValueForKey:@"userRegion"];
+//                [SCRequestParams shareInstance].userRegion = userRegion;
+//            }
+//        }];
+//    }
+    
     return hasChanged;
     
     

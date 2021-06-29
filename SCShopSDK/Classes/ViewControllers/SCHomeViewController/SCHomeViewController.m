@@ -81,7 +81,7 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     }];
 
     //请求数据
-    [self requestData];
+    _needRefresh = YES;
     
 }
 
@@ -166,8 +166,9 @@ typedef NS_ENUM(NSInteger, SCHomeRow) {
     navBar.searchBlock = ^{
         @strongify(self)
         [SCUtilities scXWMobStatMgrStr:@"IOS_T_NZDSC_A02" url:@"" inPage:NSStringFromClass(self.class)];
+        
         SCSearchViewController *vc = [SCSearchViewController new];
-        [self.navigationController pushViewController:vc animated:YES];
+        [self.navigationController pushViewController:vc animated:NO];
     };
     
     navBar.serviceBlock = ^{

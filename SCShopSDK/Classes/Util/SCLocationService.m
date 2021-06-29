@@ -137,24 +137,22 @@ static NSDictionary *kCityCodeDict;
         
         if (placemarks.count > 0) {
             CLPlacemark *mark = placemarks.firstObject;
-            NSDictionary *addressDictionary = mark.addressDictionary;
             
             //城市
-            NSString *city = addressDictionary[@"City"];
-            self.city = city;
+            self.city = mark.locality;
             
-            //城市编码
-            self.cityCode = kCityCodeDict[self.city];
-
             //详细地址
-            NSString *state       = addressDictionary[@"State"];
-            NSString *subLocality = addressDictionary[@"SubLocality"];
-            NSString *street      = addressDictionary[@"Street"];
-            NSString *name        = addressDictionary[@"Name"];
+            NSString *address = [NSString stringWithFormat:@"%@%@%@%@%@", mark.administrativeArea, mark.locality, mark.subLocality, mark.thoroughfare, mark.name];
+            self.locationAddress = address;
             
-            NSString *locationAddress = [NSString stringWithFormat:@"%@%@%@%@%@",state,city,subLocality,street,name];
-            self.locationAddress = locationAddress;
         }
+        
+        //将定位信息传给掌厅
+        if ([[SCShoppingManager sharedInstance].delegate respondsToSelector:@selector(scLocationInfoWithLogintude:latitude:city:cityCode:locationAddress:)]) {
+            [[SCShoppingManager sharedInstance].delegate scLocationInfoWithLogintude:self.longitude latitude:self.latitude city:self.city cityCode:self.cityCode locationAddress:self.locationAddress];
+            
+        }
+        
 
         [self stopLocation];
         

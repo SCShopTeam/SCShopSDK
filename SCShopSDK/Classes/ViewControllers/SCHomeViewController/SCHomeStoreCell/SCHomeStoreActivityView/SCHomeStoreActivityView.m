@@ -185,11 +185,11 @@ static NSInteger kTotalCount = 9999;
         [self addSubview:_pageControl];
         
         @weakify(self)
-        [self.pageControl mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_pageControl mas_makeConstraints:^(MASConstraintMaker *make) {
             @strongify(self)
             make.centerX.mas_equalTo(self.mas_centerX);
             make.bottom.mas_equalTo(self.mas_bottom).offset(-3);
-//            make.width.mas_equalTo(40);
+            //            make.width.mas_equalTo(40);
             make.height.mas_equalTo(5);
         }];
     }

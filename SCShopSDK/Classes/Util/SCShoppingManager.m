@@ -30,27 +30,9 @@
     self = [super init];
     if (self) {
         [SCProgressHUD setDefaultStyle:SCProgressHUDStyleDark];
-        [[SCLocationService sharedInstance] startLocation:nil]; //获取定位并缓存
+//        [[SCLocationService sharedInstance] startLocation:nil]; //获取定位并缓存
     }
     return self;
-}
-
-- (void)setDelegate:(id<SCShoppingDelegate>)delegate
-{
-    if (!delegate) {
-        return;
-    }
-    _delegate = delegate;
-    
-    NSLog(@"--sc-- 商城登陆");
-    [SCRequest scLoginResultBlock:^(BOOL success, NSDictionary *objDic, NSString *errMsg) {
-        if (success && [SCUtilities isValidDictionary:objDic]) {
-            NSString *userRegion = objDic[@"userRegion"];
-            if ([SCUtilities isValidString:userRegion]) {
-                [SCRequestParams shareInstance].userRegion = userRegion;
-            }
-        }
-    }];
 }
 
 //首页

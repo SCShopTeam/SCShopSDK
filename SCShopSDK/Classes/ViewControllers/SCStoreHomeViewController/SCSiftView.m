@@ -31,7 +31,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
         [self collectionView];
         
     }
