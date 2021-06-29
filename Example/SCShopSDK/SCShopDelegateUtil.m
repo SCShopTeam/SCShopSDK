@@ -214,6 +214,12 @@
     return userInfo;
 }
 
+//定位
+- (void)scLocationInfoWithLogintude:(NSString *)longitude latitude:(NSString *)latitude city:(NSString *)city cityCode:(NSString *)cityCode locationAddress:(NSString *)locationAddress
+{
+    
+}
+
 - (void)scNetworkLog:(NSString *)requestNum responseObject:(id)responseObject error:(NSError *)error
 {
 //    NSLog(@"%@ : %@", requestNum, error ? @"failure" : @"success");

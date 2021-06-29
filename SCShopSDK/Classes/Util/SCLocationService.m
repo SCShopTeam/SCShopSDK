@@ -148,8 +148,8 @@ static NSDictionary *kCityCodeDict;
         }
         
         //将定位信息传给掌厅
-        if ([[SCShoppingManager sharedInstance].delegate respondsToSelector:@selector(scLocationInfoWithLogintude:latitude:city:cityCode:locationAddress:)]) {
-            [[SCShoppingManager sharedInstance].delegate scLocationInfoWithLogintude:self.longitude latitude:self.latitude city:self.city cityCode:self.cityCode locationAddress:self.locationAddress];
+        if ([[SCShoppingManager sharedInstance].delegate respondsToSelector:@selector(scLocationInfoWithLogintude:latitude:city:cityCode:locationAddress:timestamp:)]) {
+            [[SCShoppingManager sharedInstance].delegate scLocationInfoWithLogintude:self.longitude latitude:self.latitude city:self.city cityCode:self.cityCode locationAddress:self.locationAddress timestamp:location.timestamp];
             
         }
         

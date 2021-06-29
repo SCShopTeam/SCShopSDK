@@ -53,7 +53,7 @@ typedef void (^SC_SearchBlock)(NSDictionary * _Nullable result,  NSString * _Nul
 - (void)scNetworkLog:(NSString *)requestNum responseObject:(id)responseObject error:(NSError *)error;
 
 //回调定位信息
-- (void)scLocationInfoWithLogintude:(NSString *)longitude latitude:(NSString *)latitude city:(NSString *)city cityCode:(NSString *)cityCode locationAddress:(NSString *)locationAddress;
+- (void)scLocationInfoWithLogintude:(NSString *)longitude latitude:(NSString *)latitude city:(NSString *)city cityCode:(NSString *)cityCode locationAddress:(NSString *)locationAddress timestamp:(NSDate *)timestamp;
 
 @required
 //获取用户信息
